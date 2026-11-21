@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kinkstar_ui/kinkstar_ui.dart';
 
+import 'onboarding/screens.dart';
+
 class UserApp extends StatefulWidget {
   const UserApp({super.key});
 
@@ -18,6 +20,56 @@ class _UserAppState extends State<UserApp> {
         path: '/',
         name: 'home',
         builder: (context, state) => const KsPlaceholderHome(),
+      ),
+      GoRoute(
+        path: '/splash',
+        name: 'splash',
+        builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding/language',
+        name: 'language',
+        builder: (context, state) => const LanguageScreen(),
+      ),
+      GoRoute(
+        path: '/welcome',
+        name: 'welcome',
+        builder: (context, state) => const WelcomeScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding/phone',
+        name: 'phone',
+        builder: (context, state) => const PhoneScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding/otp',
+        name: 'otp',
+        builder: (context, state) => const OtpScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding/country',
+        name: 'country',
+        builder: (context, state) => const CountryScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding/age',
+        name: 'age',
+        builder: (context, state) => const AgeScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding/profile',
+        name: 'profile',
+        builder: (context, state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding/permissions',
+        name: 'permissions',
+        builder: (context, state) => const PermissionsScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding/guide',
+        name: 'guide',
+        builder: (context, state) => const GuideScreen(),
       ),
     ],
   );

@@ -23,3 +23,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/mock/languages.json
+    - assets/mock/user_profile.json
