@@ -124,9 +124,10 @@ abstract final class UserGradients {
     colors: [UserColors.splashStart, UserColors.bg],
     stops: [0, 0.7],
   );
+  // Circle at 50% 35%, sized to the farthest corner of the 390×844 frame.
   static const RadialGradient calling = RadialGradient(
     center: Alignment(0, -0.3),
-    radius: 0.85,
+    radius: 1.493,
     colors: [UserColors.splashStart, UserColors.bg],
     stops: [0, 0.7],
   );

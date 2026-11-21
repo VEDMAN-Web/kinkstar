@@ -26,3 +26,7 @@ flutter:
   assets:
     - assets/mock/languages.json
     - assets/mock/user_profile.json
+    - assets/mock/hosts.json
+    - assets/mock/gifts.json
+    - assets/mock/calls.json
+    - assets/mock/wallet.json

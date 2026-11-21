@@ -75,8 +75,12 @@ abstract final class KsIcons {
       KsSvgCircle(12, 13, 4),
     ]),
   );
-  static const KsGlyph phoneOff = KsFontGlyph(
-    IconData(57656, fontFamily: family, fontPackage: package),
+  static const KsGlyph phoneOff = KsDrawGlyph(
+    KsDrawing([
+      KsSvgPath(
+        'M10.7 13.3a16 16 0 003 2.4l1.3-1.3a2 2 0 012.1-.4c.9.3 1.8.6 2.7.7a2 2 0 011.8 2v3a2 2 0 01-2.2 2A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7M22 2L2 22',
+      ),
+    ]),
   );
   static const KsGlyph phone = KsDrawGlyph(
     KsDrawing([
@@ -91,14 +95,21 @@ abstract final class KsIcons {
       KsSvgPath('M5 10a7 7 0 0014 0M12 19v3'),
     ]),
   );
-  static const KsGlyph micOff = KsFontGlyph(
-    IconData(57625, fontFamily: family, fontPackage: package),
+  static const KsGlyph micOff = KsDrawGlyph(
+    KsDrawing([
+      KsSvgPath(
+        'M2 2l20 20M9 9v3a3 3 0 005.1 2.1M15 9.3V5a3 3 0 00-5.9-.6M17 16.9A7 7 0 015 12v-2m14 0v2a7 7 0 01-.1 1.2M12 19v3',
+      ),
+    ]),
   );
   static const KsGlyph shield = KsDrawGlyph(
     KsDrawing([KsSvgPath('M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z')]),
   );
-  static const KsGlyph bot = KsFontGlyph(
-    IconData(57787, fontFamily: family, fontPackage: package),
+  static const KsGlyph bot = KsDrawGlyph(
+    KsDrawing([
+      KsSvgRect(x: 4, y: 8, width: 16, height: 12, rx: 3),
+      KsSvgPath('M12 4v4M9 13h.01M15 13h.01M9 17h6'),
+    ]),
   );
   static const KsGlyph info = KsFontGlyph(
     IconData(57593, fontFamily: family, fontPackage: package),
@@ -133,8 +144,8 @@ abstract final class KsIcons {
       KsSvgPath('M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z'),
     ]),
   );
-  static const KsGlyph crown = KsFontGlyph(
-    IconData(57814, fontFamily: family, fontPackage: package),
+  static const KsGlyph crown = KsDrawGlyph(
+    KsDrawing([KsSvgPath('M2 18h20l-2-11-5 5-3-7-3 7-5-5z')]),
   );
   static const KsGlyph x = KsFontGlyph(
     IconData(57778, fontFamily: family, fontPackage: package),
@@ -154,11 +165,20 @@ abstract final class KsIcons {
   static const KsGlyph heart = KsFontGlyph(
     IconData(57586, fontFamily: family, fontPackage: package),
   );
-  static const KsGlyph flag = KsFontGlyph(
-    IconData(57553, fontFamily: family, fontPackage: package),
+  static const KsGlyph flag = KsDrawGlyph(
+    KsDrawing([
+      KsSvgPath(
+        'M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1zM4 22v-7',
+      ),
+    ]),
   );
-  static const KsGlyph switchCamera = KsFontGlyph(
-    IconData(57724, fontFamily: family, fontPackage: package),
+  static const KsGlyph switchCamera = KsDrawGlyph(
+    KsDrawing([
+      KsSvgPath(
+        'M20 7h-3l-2-3H9L7 7H4a2 2 0 00-2 2v9a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z',
+      ),
+      KsSvgPath('M9 13a3 3 0 015-2.2M15 13a3 3 0 01-5 2.2'),
+    ]),
   );
   static const KsGlyph star = KsDrawGlyph(
     KsDrawing([
