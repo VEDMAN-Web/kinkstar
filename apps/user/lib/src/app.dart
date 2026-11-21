@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kinkstar_ui/kinkstar_ui.dart';
 
+import 'match/screens.dart';
 import 'onboarding/screens.dart';
 
 class UserApp extends StatefulWidget {
@@ -70,6 +71,26 @@ class _UserAppState extends State<UserApp> {
         path: '/onboarding/guide',
         name: 'guide',
         builder: (context, state) => const GuideScreen(),
+      ),
+      GoRoute(
+        path: '/match',
+        name: 'match',
+        builder: (context, state) => const QuickMatchScreen(),
+      ),
+      GoRoute(
+        path: '/match/found',
+        name: 'matchFound',
+        builder: (context, state) => const MatchFoundScreen(),
+      ),
+      GoRoute(
+        path: '/live',
+        name: 'live',
+        builder: (context, state) => const LiveRoomsScreen(),
+      ),
+      GoRoute(
+        path: '/live/:roomId',
+        name: 'liveRoom',
+        builder: (context, state) => const LiveRoomScreen(),
       ),
     ],
   );
