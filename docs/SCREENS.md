@@ -30,9 +30,9 @@ Reference PNGs are 820×1728. That is the 390×844 phone plus a 10px bezel (`box
 | U16 | Match found (swipe card) | 04 Match & Live | `/match/found` | Match & Live | todo | Tall card, skip / call / follow, auto-skip timer. |
 | U17 | Live rooms list (V2) | 04 Match & Live | `/live` | Match & Live | todo | V2. Room grid. |
 | U18 | Live room with PK battle (V2) | 04 Match & Live | `/live/:roomId` | Match & Live | todo | V2. Split PK bar (crimson / `#2563EB`), chat stack, gift and private-call buttons. |
-| U19 | Messages inbox (Chats / Calls / Following) | 05 Messages | `/messages` | Messages | todo | |
-| U20 | Chat conversation | 05 Messages | `/messages/:threadId` | Messages | todo | |
-| U21 | Chat gift sheet | 05 Messages | `/messages/:threadId/gifts` | Messages | todo | |
+| U19 | Messages inbox (Chats / Calls / Following) | 05 Messages | `/messages` | Messages | done | Priya and Aria's names come from `hosts.json`. The other threads are artboard copy. |
+| U20 | Chat conversation | 05 Messages | `/messages/:threadId` | Messages | done | Free-message count and the price after it come from `user_profile.json`. |
+| U21 | Chat gift sheet | 05 Messages | `/messages/:threadId/gifts` | Messages | done | Diamond balance comes from the profile. Rose, Star, and Crown (500) come from `gifts.json`. Chocolate, Kiss, Fireworks, Diamond ring, and Daily heart are artboard-only. Crown's HOT tag is not in the JSON. |
 | U22 | Me tab | 09 Me & engagement | `/me` | Me & engagement | todo | |
 | U23 | Pre-call confirm sheet | 06 Calls A | `/call/confirm` | Calls | todo | |
 | U24 | Outgoing call (connecting) | 06 Calls A | `/call/outgoing` | Calls | todo | Pulsing rings: 12px and 26px crimson shadows. |
@@ -53,7 +53,7 @@ Reference PNGs are 820×1728. That is the 390×844 phone plus a 10px bezel (`box
 | U39 | Daily check-in | 09 Me & engagement | `/me/check-in` | Me & engagement | todo | 7-day grid. Day 7 spans two columns. |
 | U40 | Events & leaderboard | 09 Me & engagement | `/me/events` | Me & engagement | todo | Event banner is server-driven. |
 | U41 | Refer & earn | 09 Me & engagement | `/me/refer` | Me & engagement | todo | Invite code uses letter-spacing 2px. |
-| U42 | Notifications centre | 05 Messages | `/notifications` | Messages | todo | |
+| U42 | Notifications centre | 05 Messages | `/notifications` | Messages | done | The notice list is artboard copy. It is not in `mock/`. |
 | U43 | AI companion profile (labelled AI) | 09 Me & engagement | `/ai/:hostId` | Me & engagement | todo | Must stay labelled AI. |
 | U45 | Settings | 10 Settings A | `/settings` | Settings | todo | |
 | U46 | Edit profile | 10 Settings A | `/settings/profile` | Settings | todo | |

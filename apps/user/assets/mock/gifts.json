@@ -1,0 +1,53 @@
+[
+  {
+    "id": "gift_rose",
+    "name": "Rose",
+    "price": 10,
+    "category": "popular",
+    "animation": "placeholder/gifts/rose"
+  },
+  {
+    "id": "gift_star",
+    "name": "Star",
+    "price": 30,
+    "category": null,
+    "animation": null
+  },
+  {
+    "id": "gift_wave",
+    "name": "Wave",
+    "price": 20,
+    "category": "interactive",
+    "animation": "placeholder/gifts/wave"
+  },
+  {
+    "id": "gift_sing",
+    "name": "Sing for me",
+    "price": 99,
+    "category": "interactive",
+    "animation": "placeholder/gifts/sing",
+    "tag": "SONG",
+    "chipLabel": "Song"
+  },
+  {
+    "id": "gift_dance",
+    "name": "Dance",
+    "price": 199,
+    "category": "luxury",
+    "animation": "placeholder/gifts/dance"
+  },
+  {
+    "id": "gift_diya",
+    "name": "Diya",
+    "price": 49,
+    "category": "event",
+    "animation": "placeholder/gifts/diya"
+  },
+  {
+    "id": "gift_crown",
+    "name": "Crown",
+    "price": 500,
+    "category": "luxury",
+    "animation": "placeholder/gifts/crown"
+  }
+]

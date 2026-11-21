@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kinkstar_ui/kinkstar_ui.dart';
 
+import 'messages/screens.dart';
 import 'onboarding/screens.dart';
 
 class UserApp extends StatefulWidget {
@@ -70,6 +71,26 @@ class _UserAppState extends State<UserApp> {
         path: '/onboarding/guide',
         name: 'guide',
         builder: (context, state) => const GuideScreen(),
+      ),
+      GoRoute(
+        path: '/messages',
+        name: 'messages',
+        builder: (context, state) => const InboxScreen(),
+      ),
+      GoRoute(
+        path: '/messages/:threadId',
+        name: 'thread',
+        builder: (context, state) => const ChatScreen(),
+      ),
+      GoRoute(
+        path: '/messages/:threadId/gifts',
+        name: 'threadGifts',
+        builder: (context, state) => const ChatGiftScreen(),
+      ),
+      GoRoute(
+        path: '/notifications',
+        name: 'notifications',
+        builder: (context, state) => const NotificationsScreen(),
       ),
     ],
   );
