@@ -39,3 +39,15 @@ bash tool/build_user_release.sh
 ```
 
 `flutter analyze` and `flutter test` are run in each of `apps/user`, `apps/host`, and `packages/ui`. Release APKs are split per ABI (`--split-per-abi`): armeabi-v7a, arm64-v8a, x86_64. There is no universal APK.
+
+## User release APK size
+
+Measured with `bash tool/build_user_release.sh` (Flutter 3.50.1). Bytes are the file size on disk. The megabyte figure is what Flutter prints.
+
+| ABI | Bytes | Flutter |
+| --- | ---: | --- |
+| armeabi-v7a | 13,941,235 | 13.9MB |
+| arm64-v8a | 16,354,043 | 16.4MB |
+| x86_64 | 17,671,381 | 17.7MB |
+
+armeabi-v7a is under the 15MB target. arm64-v8a and x86_64 are over it. On arm64 the APK is `libflutter.so` (11,346,352 bytes) plus `libapp.so` (4,457,432 bytes). Bundled fonts, the Lucide font (tree-shaken from 986,208 bytes to 992), config, and the fallback image are about 250KB together. Both native libraries are already stripped, so there is no further debug-info cut available without dropping Material.
