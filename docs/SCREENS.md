@@ -64,8 +64,8 @@ Reference PNGs are 820×1728. That is the 390×844 phone plus a 10px bezel (`box
 | U51 | Rate the app (official review card) | 11 Settings B | `/settings/rate` | Settings | done | Google Play card uses `#202124` / `#5F6368` / `#9AA0A6`. |
 | U52 | About & legal | 11 Settings B | `/settings/about` | Settings | done | |
 | U53 | Delete account | 11 Settings B | `/settings/delete-account` | Settings | done | |
-| U54 | Force update (remote-config driven) | 11 Settings B | `/force-update` | Settings | done | `features.forceUpdate.minVersion` in config. |
-| U55 | No connection / maintenance | 11 Settings B | `/offline` | Settings | done | `features.maintenance` in config. |
+| U54 | Force update (remote-config driven) | 11 Settings B | `/force-update` | Settings | done | The screen stays on the artboard version 1.2.0. `features.forceUpdate.minVersion` is still 1.0.0. |
+| U55 | No connection / maintenance | 11 Settings B | `/offline` | Settings | done | The screen keeps the artboard maintenance quote. `features.maintenance.message` is still "We'll be back soon." |
 
 User PR order: Onboarding (U01–U10), Discover (U11–U14), Calls (U23–U31), Wallet (U32–U37), Messages (U19–U21, U42), Match & Live (U15–U18), Me & engagement (U22, U38–U43), Settings (U45–U55).
 
