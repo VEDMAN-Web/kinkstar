@@ -55,17 +55,17 @@ Reference PNGs are 820×1728. That is the 390×844 phone plus a 10px bezel (`box
 | U41 | Refer & earn | 09 Me & engagement | `/me/refer` | Me & engagement | todo | Invite code uses letter-spacing 2px. |
 | U42 | Notifications centre | 05 Messages | `/notifications` | Messages | todo | |
 | U43 | AI companion profile (labelled AI) | 09 Me & engagement | `/ai/:hostId` | Me & engagement | todo | Must stay labelled AI. |
-| U45 | Settings | 10 Settings A | `/settings` | Settings | todo | |
-| U46 | Edit profile | 10 Settings A | `/settings/profile` | Settings | todo | |
-| U47 | Blocked users | 10 Settings A | `/settings/blocked` | Settings | todo | |
-| U48 | App language | 10 Settings A | `/settings/language` | Settings | todo | |
-| U49 | Help & feedback | 10 Settings A | `/settings/help` | Settings | todo | |
-| U50 | Report a host | 11 Settings B | `/settings/report` | Settings | todo | |
-| U51 | Rate the app (official review card) | 11 Settings B | `/settings/rate` | Settings | todo | Google Play card uses `#202124` / `#5F6368` / `#9AA0A6`. |
-| U52 | About & legal | 11 Settings B | `/settings/about` | Settings | todo | |
-| U53 | Delete account | 11 Settings B | `/settings/delete-account` | Settings | todo | |
-| U54 | Force update (remote-config driven) | 11 Settings B | `/force-update` | Settings | todo | `features.forceUpdate.minVersion` in config. |
-| U55 | No connection / maintenance | 11 Settings B | `/offline` | Settings | todo | `features.maintenance` in config. |
+| U45 | Settings | 10 Settings A | `/settings` | Settings | done | |
+| U46 | Edit profile | 10 Settings A | `/settings/profile` | Settings | done | |
+| U47 | Blocked users | 10 Settings A | `/settings/blocked` | Settings | done | |
+| U48 | App language | 10 Settings A | `/settings/language` | Settings | done | |
+| U49 | Help & feedback | 10 Settings A | `/settings/help` | Settings | done | |
+| U50 | Report a host | 11 Settings B | `/settings/report` | Settings | done | |
+| U51 | Rate the app (official review card) | 11 Settings B | `/settings/rate` | Settings | done | Google Play card uses `#202124` / `#5F6368` / `#9AA0A6`. |
+| U52 | About & legal | 11 Settings B | `/settings/about` | Settings | done | |
+| U53 | Delete account | 11 Settings B | `/settings/delete-account` | Settings | done | |
+| U54 | Force update (remote-config driven) | 11 Settings B | `/force-update` | Settings | done | The screen stays on the artboard version 1.2.0. `features.forceUpdate.minVersion` is still 1.0.0. |
+| U55 | No connection / maintenance | 11 Settings B | `/offline` | Settings | done | The screen keeps the artboard maintenance quote. `features.maintenance.message` is still "We'll be back soon." |
 
 User PR order: Onboarding (U01–U10), Discover (U11–U14), Calls (U23–U31), Wallet (U32–U37), Messages (U19–U21, U42), Match & Live (U15–U18), Me & engagement (U22, U38–U43), Settings (U45–U55).
 
