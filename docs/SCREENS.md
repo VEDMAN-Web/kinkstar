@@ -28,8 +28,8 @@ Reference PNGs are 820×1728. That is the 390×844 phone plus a 10px bezel (`box
 | U14 | Photo & intro-clip viewer | 03 Discover | `/hosts/:hostId/media` | Discover | todo | Full-bleed black viewer. |
 | U15 | Quick Match (idle) | 04 Match & Live | `/match` | Match & Live | done | Balance, free matches, and Hindi/English come from the profile. The orbit and the 218-host line are artboard copy. |
 | U16 | Match found (swipe card) | 04 Match & Live | `/match/found` | Match & Live | done | Riya is not in `hosts.json`. The card is artboard copy. |
-| U17 | Live rooms list (V2) | 04 Match & Live | `/live` | Match & Live | todo | V2. Room grid. |
-| U18 | Live room with PK battle (V2) | 04 Match & Live | `/live/:roomId` | Match & Live | todo | V2. Split PK bar (crimson / `#2563EB`), chat stack, gift and private-call buttons. |
+| U17 | Live rooms list (V2) | 04 Match & Live | `/live` | Match & Live | done | V2. The festival banner and the four rooms are artboard copy. |
+| U18 | Live room with PK battle (V2) | 04 Match & Live | `/live/:roomId` | Match & Live | done | V2. Kavya's name is in `hosts.json`. The PK scores, chat, and timer are artboard copy. |
 | U19 | Messages inbox (Chats / Calls / Following) | 05 Messages | `/messages` | Messages | todo | |
 | U20 | Chat conversation | 05 Messages | `/messages/:threadId` | Messages | todo | |
 | U21 | Chat gift sheet | 05 Messages | `/messages/:threadId/gifts` | Messages | todo | |

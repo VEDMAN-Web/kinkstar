@@ -13,6 +13,8 @@ void main() {
   final screens = <String, Widget>{
     'U15': const QuickMatchScreen(),
     'U16': const MatchFoundScreen(),
+    'U17': const LiveRoomsScreen(),
+    'U18': const LiveRoomScreen(),
   };
 
   for (final entry in screens.entries) {
