@@ -34,7 +34,7 @@ PRIYA_FIELDS = {"bio", "verified", "freeCall", "topGift", "gallery"}
 LEDGER_TYPES = {"recharge", "call", "gift", "message", "vip", "bonus", "refund"}
 POSITIVE_TYPES = {"recharge", "bonus", "refund"}
 NEGATIVE_TYPES = {"call", "gift", "message", "vip"}
-REF_KEYS = {"hostId", "userId", "refId", "callId", "giftId"}
+REF_KEYS = {"hostId", "userId", "refId", "callId", "giftId", "packId"}
 CALL_STATUSES = {"completed", "missed", "dropped", "refunded"}
 GIFT_CATEGORIES = {"popular", "interactive", "luxury", "event"}
 
@@ -397,10 +397,272 @@ def check_hosts(hosts) -> dict:
     return by_id
 
 
+def _expect(actual, expected, label: str) -> None:
+    if actual != expected:
+        fail(f"{label}: does not match the artboard")
+
+
+def _wallet_packs() -> dict:
+    """U32 store rows. U28 labels stay on the two packs that sheet also draws."""
+    return {
+        "pack_100": {
+            "id": "pack_100",
+            "diamonds": 60,
+            "bonus": 60,
+            "bonusLabel": "+60 bonus",
+            "priceINR": 29,
+            "tags": [],
+            "selected": False,
+        },
+        "pack_300": {
+            "id": "pack_300",
+            "diamonds": 220,
+            "bonus": 220,
+            "bonusLabel": "+220 bonus",
+            "priceINR": 99,
+            "tags": [],
+            "selected": False,
+        },
+        "pack_700": {
+            "id": "pack_700",
+            "diamonds": 600,
+            "bonus": 600,
+            "bonusLabel": "+600 bonus",
+            "priceINR": 249,
+            "tags": ["MOST POPULAR"],
+            "selected": True,
+            "screens": {
+                "U28": {"tag": "BEST", "bonus": None, "bonusLabel": "+20% bonus"},
+                "U32": {"tag": "MOST POPULAR", "bonus": 600, "bonusLabel": "+600 bonus"},
+            },
+        },
+        "pack_1500": {
+            "id": "pack_1500",
+            "diamonds": 1300,
+            "bonus": None,
+            "bonusLabel": "+10%",
+            "priceINR": 499,
+            "tags": [],
+            "selected": False,
+            "screens": {
+                "U28": {"tag": None, "bonus": None, "bonusLabel": None},
+                "U32": {"tag": None, "bonus": None, "bonusLabel": "+10%"},
+            },
+        },
+        "pack_4000": {
+            "id": "pack_4000",
+            "diamonds": 2800,
+            "bonus": None,
+            "bonusLabel": "+15%",
+            "priceINR": 999,
+            "tags": ["BEST VALUE"],
+            "selected": False,
+        },
+        "pack_9000": {
+            "id": "pack_9000",
+            "diamonds": 6000,
+            "bonus": None,
+            "bonusLabel": "+20%",
+            "priceINR": 1999,
+            "tags": [],
+            "selected": False,
+        },
+    }
+
+
+def _wallet_offer() -> dict:
+    mid = "\u00b7"
+    return {
+        "expiresAt": None,
+        "validOnce": True,
+        "badge": "NEW USER OFFER",
+        "title": "Double Diamonds\non your first recharge",
+        "validLine": f"Valid once {mid} ends in 23:41:10",
+        "countdown": "23:41:10",
+        "cta": "Claim offer",
+        "note": "Bonus Diamonds are credited instantly and never expire.",
+        "packs": [
+            {
+                "diamonds": 220,
+                "payFor": 110,
+                "payForLabel": "pay for 110",
+                "priceINR": 49,
+                "tag": None,
+                "selected": False,
+            },
+            {
+                "diamonds": 1200,
+                "payFor": 600,
+                "payForLabel": "pay for 600",
+                "priceINR": 249,
+                "tag": "POPULAR",
+                "selected": True,
+            },
+        ],
+    }
+
+
+def _wallet_methods() -> list:
+    return [
+        {
+            "id": "google_play",
+            "label": "Google Play",
+            "subtitle": "Cards, UPI, Play balance",
+            "selected": True,
+        },
+        {
+            "id": "upi_razorpay_alt_billing",
+            "label": "UPI via Razorpay",
+            "subtitle": "Google's alternative billing (India) \u00b7 PhonePe, GPay, Paytm",
+            "selected": False,
+        },
+    ]
+
+
+def _wallet_payment() -> dict:
+    return {
+        "title": "Choose how to pay",
+        "diamondsLabel": "1,200 Diamonds",
+        "diamonds": 1200,
+        "priceLabel": "\u20b9249",
+        "priceINR": 249,
+        "note": "Both options credit Diamonds instantly. Payment is processed securely by the provider you choose.",
+        "cta": "Continue \u00b7 \u20b9249",
+    }
+
+
+def _wallet_store() -> dict:
+    return {
+        "title": "Diamonds",
+        "historyLabel": "History",
+        "balanceLabel": "Your balance",
+        "balance": 120,
+        "talkTime": "\u2248 3 min of calls",
+        "badge": "NEW USER",
+        "promo": "First recharge: +100% Diamonds",
+        "countdown": "23:41:10",
+        "gst": "Prices include GST. Diamonds never expire.",
+        "refund": "Refund policy",
+        "buy": "Buy 1,200 Diamonds \u00b7 \u20b9249",
+        "buyDiamonds": 1200,
+        "vipTitle": "VIP: calls 15% cheaper",
+        "vipDetail": "+ 30 Diamonds daily \u00b7 \u20b9399/month",
+        "vipView": "View",
+    }
+
+
+def _wallet_success() -> dict:
+    return {
+        "creditLabel": "+1,200",
+        "credit": 1200,
+        "title": "Recharge successful",
+        "line": "600 Diamonds + 600 first-recharge bonus",
+        "base": 600,
+        "bonus": 600,
+        "balanceLabel": "New balance",
+        "newBalance": 1320,
+        "progressLabel": "Level progress",
+        "levelLabel": "Lv 2 \u2192 3",
+        "call": "Call Priya now",
+        "back": "Back to Discover",
+    }
+
+
+def _wallet_plans() -> list:
+    return [
+        {"id": "vip_1w", "duration": "1 week", "priceINR": 129, "tag": None, "selected": False},
+        {"id": "vip_1m", "duration": "1 month", "priceINR": 399, "tag": "SAVE 30%", "selected": True},
+        {"id": "vip_3m", "duration": "3 months", "priceINR": 999, "tag": None, "selected": False},
+    ]
+
+
+def _wallet_perks() -> list:
+    return [
+        "15% off every call minute",
+        "30 free Diamonds every day",
+        "Priority in Quick Match and queues",
+        "Unlimited free messages",
+        "VIP badge, entry effect, exclusive gifts",
+    ]
+
+
+def _wallet_membership() -> dict:
+    return {
+        "pageTitle": "Kinkstar VIP",
+        "name": "VIP Gold",
+        "cancel": "Cancel anytime in Google Play",
+        "renewal": "Auto-renews until cancelled. Renewal price shown before you pay.",
+        "cta": "Start VIP \u00b7 \u20b9399/month",
+    }
+
+
+def _wallet_history() -> dict:
+    mid = "\u00b7"
+    minus = "\u2212"
+    return {
+        "title": "Wallet history",
+        "tabs": [
+            {"label": "Spending", "selected": True},
+            {"label": "Recharges", "selected": False},
+            {"label": "VIP", "selected": False},
+        ],
+        "rows": [
+            {
+                "title": f"Video call {mid} Priya",
+                "subtitle": f"Today 9:51 pm {mid} 8:42",
+                "amount": f"{minus}349",
+                "hostId": "host_priya",
+            },
+            {
+                "title": f"Gift {mid} Rose x10",
+                "subtitle": "Today 9:44 pm",
+                "amount": f"{minus}100",
+                "giftId": "gift_rose",
+                "count": 10,
+            },
+            {
+                "title": f"Messages {mid} Anjali",
+                "subtitle": f"Today 9:10 pm {mid} 4 msgs",
+                "amount": f"{minus}20",
+                "hostId": "host_anjali",
+                "messageCount": 4,
+            },
+            {
+                "title": "Daily check-in",
+                "subtitle": "Today 8:00 pm",
+                "amount": "+15",
+            },
+            {
+                "title": f"AI call {mid} Aria",
+                "subtitle": f"Yesterday {mid} 6:10",
+                "amount": f"{minus}93",
+                "hostId": "host_aria",
+            },
+            {
+                "title": "Quick Match",
+                "subtitle": "Yesterday",
+                "amount": f"{minus}10",
+            },
+        ],
+        "help": "Need help with a charge? Report a problem",
+    }
+
+
 def check_wallet(wallet) -> dict:
     require_keys(
         wallet,
-        {"packs", "firstRechargeOffer", "paymentMethods", "vipPlans", "vipPerks"},
+        {
+            "packs",
+            "firstRechargeOffer",
+            "paymentMethods",
+            "payment",
+            "store",
+            "success",
+            "vipPlans",
+            "vipPerks",
+            "membership",
+            "history",
+        },
         "wallet",
     )
     packs = {}
@@ -410,90 +672,25 @@ def check_wallet(wallet) -> dict:
     if not isinstance(rows, list) or not 5 <= len(rows) <= 7:
         fail("wallet.packs: expected 5 to 7 packs")
         rows = []
-    tag_seen = {"BEST": 0, "BEST_VALUE": 0}
-    pack_optional = {"bonusLabel"}
+    pack_keys = {"id", "diamonds", "bonus", "bonusLabel", "priceINR", "tags", "selected"}
     for i, pack in enumerate(rows):
-        require_keys(
-            pack,
-            {"id", "diamonds", "bonus", "priceINR", "tags"},
-            f"wallet.packs[{i}]",
-            optional=pack_optional,
-        )
-        if not isinstance(pack, dict):
-            continue
-        packs[pack.get("id")] = pack
-        for key in ("diamonds", "priceINR"):
-            if not is_int(pack.get(key)) or pack.get(key) < 0:
-                fail(f"wallet.packs[{i}].{key}: expected a non-negative integer")
-        bonus = pack.get("bonus")
-        if bonus is not None and (not is_int(bonus) or bonus < 0):
-            fail(f"wallet.packs[{i}].bonus: expected null or a non-negative integer")
-        extras = set(pack) - {"id", "diamonds", "bonus", "priceINR", "tags"}
-        if pack.get("id") == "pack_700":
-            if extras != {"bonusLabel"} or pack.get("bonusLabel") != "+20% bonus":
-                fail(f"wallet.packs[{i}]: U28 bonus label must be +20% bonus")
-        elif extras:
-            fail(f"wallet.packs[{i}]: unexpected {sorted(extras)}")
-        tags = pack.get("tags")
-        if not isinstance(tags, list):
-            fail(f"wallet.packs[{i}].tags: expected a list")
-            continue
-        for tag in tags:
-            if tag not in tag_seen:
-                fail(f"wallet.packs[{i}]: unknown tag {tag!r}")
-            else:
-                tag_seen[tag] += 1
-    for tag, count in tag_seen.items():
-        if count != 1:
-            fail(f"wallet.packs: tag {tag} appears {count} times, expected 1")
-    sheet = packs.get("pack_700")
-    if not isinstance(sheet, dict) or (
-        sheet.get("diamonds") != 600
-        or sheet.get("priceINR") != 249
-        or sheet.get("bonus") is not None
-        or sheet.get("tags") != ["BEST"]
-    ):
-        fail("wallet.packs pack_700: U28 shows 600 diamonds at ₹249, tag BEST, +20% bonus")
-    larger = packs.get("pack_1500")
-    if not isinstance(larger, dict) or (
-        larger.get("diamonds") != 1300
-        or larger.get("priceINR") != 499
-        or larger.get("bonus") is not None
-        or larger.get("tags") != []
-    ):
-        fail("wallet.packs pack_1500: U28 shows 1,300 diamonds at ₹499 and no bonus")
-    offer = wallet.get("firstRechargeOffer")
-    require_keys(offer, {"expiresAt", "validOnce"}, "wallet.firstRechargeOffer")
-    if isinstance(offer, dict):
-        parse_time(offer.get("expiresAt"), "wallet.firstRechargeOffer.expiresAt")
-        if offer.get("validOnce") is not True:
-            fail("wallet.firstRechargeOffer.validOnce must be true")
-    methods = wallet.get("paymentMethods")
-    method_ids = []
-    if isinstance(methods, list):
-        for i, method in enumerate(methods):
-            require_keys(method, {"id", "label"}, f"wallet.paymentMethods[{i}]")
-            if isinstance(method, dict):
-                method_ids.append(method.get("id"))
-    if method_ids != ["google_play", "upi_razorpay_alt_billing"]:
-        fail(f"wallet.paymentMethods: unexpected ids {method_ids}")
-    plans = wallet.get("vipPlans")
-    plan_ids = {}
-    if isinstance(plans, list):
-        for i, plan in enumerate(plans):
-            require_keys(plan, {"id", "duration", "priceINR"}, f"wallet.vipPlans[{i}]")
-            if isinstance(plan, dict):
-                plan_ids[plan.get("id")] = plan.get("priceINR")
-    if plan_ids != {"vip_1w": 129, "vip_1m": 399, "vip_3m": 999}:
-        fail(f"wallet.vipPlans: unexpected {plan_ids}")
-    perks = wallet.get("vipPerks")
-    if perks != [
-        "15% off calls",
-        "30 free Diamonds/day",
-        "priority match",
-        "unlimited free messages",
-    ]:
-        fail(f"wallet.vipPerks: unexpected {perks}")
+        require_keys(pack, pack_keys, f"wallet.packs[{i}]", optional={"screens"})
+        if isinstance(pack, dict):
+            packs[pack.get("id")] = pack
+    if packs != _wallet_packs():
+        fail("wallet.packs: does not match the U32 store, with U28 labels kept per screen")
+        for key in _wallet_packs():
+            if packs.get(key) != _wallet_packs()[key]:
+                fail(f"wallet.packs {key}: mismatch")
+    _expect(wallet.get("firstRechargeOffer"), _wallet_offer(), "wallet.firstRechargeOffer")
+    _expect(wallet.get("paymentMethods"), _wallet_methods(), "wallet.paymentMethods")
+    _expect(wallet.get("payment"), _wallet_payment(), "wallet.payment")
+    _expect(wallet.get("store"), _wallet_store(), "wallet.store")
+    _expect(wallet.get("success"), _wallet_success(), "wallet.success")
+    _expect(wallet.get("vipPlans"), _wallet_plans(), "wallet.vipPlans")
+    _expect(wallet.get("vipPerks"), _wallet_perks(), "wallet.vipPerks")
+    _expect(wallet.get("membership"), _wallet_membership(), "wallet.membership")
+    _expect(wallet.get("history"), _wallet_history(), "wallet.history")
     return packs
 
 
@@ -719,11 +916,13 @@ def check_ledger(ledger, packs: dict, calls: dict, gifts: dict, balance: int) ->
             if not pack:
                 fail(f"{label}: {kind} ref does not resolve")
             elif ref == "pack_700" and kind == "recharge":
-                # U28 lists 600 diamonds. This row stays 700 so the sample
-                # still ends at diamondBalance 120. 20% of 600 is not stored.
+                # U32 lists 600 diamonds. This row stays 700 so the sample
+                # still ends at diamondBalance 120, which U23 shows.
                 if amount != 700:
                     fail(f"{label}: sample recharge credit stays 700")
             elif ref == "pack_700" and kind == "bonus":
+                # U32 prints +600 bonus. This row stays 100 so the sample
+                # still ends at 120. The +600 is the store label, not this credit.
                 if amount != 100:
                     fail(f"{label}: sample bonus credit stays 100")
             else:
@@ -1122,6 +1321,23 @@ def _check_calls(calls) -> None:
             "pay": "Pay \u20b9249 with Google Play",
             "otherMethods": "Other payment methods",
             "endWhenEmpty": "End call when balance runs out",
+            "packs": [
+                {"diamonds": 100, "priceINR": 49, "tag": None, "bonusLabel": None},
+                {
+                    "diamonds": 600,
+                    "priceINR": 249,
+                    "tag": "BEST",
+                    "bonusLabel": "+20% bonus",
+                    "packId": "pack_700",
+                },
+                {
+                    "diamonds": 1300,
+                    "priceINR": 499,
+                    "tag": None,
+                    "bonusLabel": None,
+                    "packId": "pack_1500",
+                },
+            ],
         },
         "voice": {
             "hostId": "host_anjali",

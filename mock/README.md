@@ -91,11 +91,14 @@ Display rates for the other human tiers, so the list has a spread: tier A is 60/
 
 ## wallet.json
 
-- `packs`: 6 Diamond packs. Fields `id`, `diamonds`, `bonus`, `priceINR`, `tags`. U28 shows the ₹249 pack as 600 diamonds, tag `BEST`, label `+20% bonus`, and the ₹499 pack as 1,300 diamonds with no bonus line. Those are `pack_700` (`diamonds` 600, `bonus` null, `bonusLabel` `+20% bonus`, tag `BEST`) and `pack_1500` (`diamonds` 1300, `bonus` null). The ids stay `pack_700` and `pack_1500` because the ledger and `rechargePackIds` use them, and neither id is on the artboard. `bonus` is null on those two packs because U28 does not print a diamond bonus count. 20% of 600 is not stored. The other tag is `BEST_VALUE` on `pack_9000`. The sample ledger still credits 700 and then 100 on `pack_700` so the balance can end at 120, which U23 shows as `120 Diamonds`. That credit is not recomputed from the U28 sheet.
-- `firstRechargeOffer`: `expiresAt` (ISO-8601 UTC) and `validOnce` (`true`). No extra Diamond amount was specified, so none is stored.
-- `paymentMethods`: `google_play`, `upi_razorpay_alt_billing`. Fields `id`, `label`.
-- `vipPlans`: 1 week 129, 1 month 399, 3 months 999 INR. Fields `id`, `duration`, `priceINR`.
-- `vipPerks`, on every plan: 15% off calls, 30 free Diamonds/day, priority match, unlimited free messages.
+- `packs`: the six U32 rows. Ids stay `pack_100`, `pack_300`, `pack_700`, `pack_1500`, `pack_4000`, `pack_9000` because `rechargePackIds`, `packages/ui/test/config_test.dart`, and the ledger `refId` `pack_700` use them. The ids are not on the artboard. Diamonds are 60, 220, 600, 1,300, 2,800, 6,000 at ₹29, ₹99, ₹249, ₹499, ₹999, ₹1,999. Integer bonuses are `+60 bonus`, `+220 bonus`, and `+600 bonus`. The other three print `+10%`, `+15%`, and `+20%`, so `bonus` is null there. U32 tags are `MOST POPULAR` on the ₹249 pack and `BEST VALUE` on the ₹999 pack. The ₹249 pack is selected.
+- The same ₹249 and ₹499 packs are also on U28, with different labels. `screens.U28` keeps `BEST` and `+20% bonus` on `pack_700`, and no bonus line on `pack_1500`. `screens.U32` keeps the store labels. Top-level `bonus`, `bonusLabel`, and `tags` follow U32. U28 also draws 100 diamonds at ₹49, which is not a U32 row. That row is `config.calls.lowBalance.packs[0]` and has no pack id.
+- The sample ledger still credits 700 and then 100 on `pack_700`, so the balance can end at 120. U23 shows `120 Diamonds`. U34 shows a new balance of 1,320 on the success preview. That preview is `success.newBalance`. It is not written into `diamondBalance`.
+- `firstRechargeOffer`: U35. `validOnce` is true. `expiresAt` is null because the artboard shows the countdown `23:41:10`, not a date. Offer packs are 220 / `pay for 110` / ₹49, and 1,200 / `pay for 600` / ₹249 tagged `POPULAR`. Those are not the store packs.
+- `paymentMethods`: `google_play` (`Google Play`, subtitle `Cards, UPI, Play balance`, selected) and `upi_razorpay_alt_billing` (`UPI via Razorpay`). The id stays. U33's chooser copy is `payment`.
+- `store`, `success`, `membership`, and `history` are the U32, U34, U36, and U37 strings. `history` is the spending list on the artboard. It is not `ledger.json`. The six rows sum to −557, so they do not replace the ledger that ends at 120. The −349 and `8:42` match `call_priya_842`. The subtitle `Today 9:51 pm` does not match that ledger timestamp, so the timestamp stays.
+- `vipPlans`: 1 week ₹129, 1 month ₹399 tagged `SAVE 30%` and selected, 3 months ₹999.
+- `vipPerks`: `15% off every call minute`, `30 free Diamonds every day`, `Priority in Quick Match and queues`, `Unlimited free messages`, `VIP badge, entry effect, exclusive gifts`.
 
 Rahul's `vip.active` is false. Buying VIP is priced in INR, and no Diamond price was specified, so the ledger has no `vip` row.
 

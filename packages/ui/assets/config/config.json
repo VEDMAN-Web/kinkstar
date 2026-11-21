@@ -220,7 +220,12 @@
       "body": "Your balance runs out in 58 seconds. The call continues while you pay.",
       "pay": "Pay ₹249 with Google Play",
       "otherMethods": "Other payment methods",
-      "endWhenEmpty": "End call when balance runs out"
+      "endWhenEmpty": "End call when balance runs out",
+      "packs": [
+        {"diamonds": 100, "priceINR": 49, "tag": null, "bonusLabel": null},
+        {"diamonds": 600, "priceINR": 249, "tag": "BEST", "bonusLabel": "+20% bonus", "packId": "pack_700"},
+        {"diamonds": 1300, "priceINR": 499, "tag": null, "bonusLabel": null, "packId": "pack_1500"}
+      ]
     },
     "voice": {
       "hostId": "host_anjali",
