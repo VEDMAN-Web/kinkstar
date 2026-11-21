@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kinkstar_ui/kinkstar_ui.dart';
 
+import 'me/screens.dart';
 import 'onboarding/screens.dart';
 
 class UserApp extends StatefulWidget {
@@ -70,6 +71,36 @@ class _UserAppState extends State<UserApp> {
         path: '/onboarding/guide',
         name: 'guide',
         builder: (context, state) => const GuideScreen(),
+      ),
+      GoRoute(
+        path: '/me',
+        name: 'me',
+        builder: (context, state) => const MeScreen(),
+      ),
+      GoRoute(
+        path: '/me/level',
+        name: 'level',
+        builder: (context, state) => const LevelScreen(),
+      ),
+      GoRoute(
+        path: '/me/check-in',
+        name: 'checkIn',
+        builder: (context, state) => const CheckInScreen(),
+      ),
+      GoRoute(
+        path: '/me/events',
+        name: 'events',
+        builder: (context, state) => const EventsScreen(),
+      ),
+      GoRoute(
+        path: '/me/refer',
+        name: 'refer',
+        builder: (context, state) => const ReferScreen(),
+      ),
+      GoRoute(
+        path: '/ai/:hostId',
+        name: 'ai',
+        builder: (context, state) => const AiProfileScreen(),
       ),
     ],
   );
