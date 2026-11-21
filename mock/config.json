@@ -104,13 +104,13 @@
     "maintenance": {
       "on": false,
       "message": {
-        "hi": "हम जल्द वापस आएंगे।",
+        "hi": "We're upgrading Kinkstar Calls. Back at 4:00 am.",
         "en": "We're upgrading Kinkstar Calls. Back at 4:00 am.",
-        "bn": "আমরা শীঘ্রই ফিরে আসব।",
-        "ta": "நாங்கள் விரைவில் திரும்புவோம்.",
-        "te": "మేము త్వరలో తిరిగి వస్తాము.",
-        "mr": "आम्ही लवकरच परत येऊ.",
-        "kn": "ನಾವು ಶೀಘ್ರದಲ್ಲೇ ಮರಳುತ್ತೇವೆ."
+        "bn": "We're upgrading Kinkstar Calls. Back at 4:00 am.",
+        "ta": "We're upgrading Kinkstar Calls. Back at 4:00 am.",
+        "te": "We're upgrading Kinkstar Calls. Back at 4:00 am.",
+        "mr": "We're upgrading Kinkstar Calls. Back at 4:00 am.",
+        "kn": "We're upgrading Kinkstar Calls. Back at 4:00 am."
       }
     }
   },

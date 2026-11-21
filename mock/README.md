@@ -165,7 +165,7 @@ The only app config. Prices stay in `wallet.json`. This file points at pack ids 
 | features.vip | `true` means VIP plans can be shown. It is not Rahul's VIP state. |
 | features.chatPaidMessages | `true`. The price after free messages is still `user_profile.freeMessages.priceAfter`. |
 | features.forceUpdate.minVersion | `1.2.0`. U54's heading is `What's new in 1.2.0`. The same object holds that screen's title, body, what's-new lines, button, and soft-update note. |
-| features.maintenance | `on` is `false` (U55's primary screen is no internet). `message.en` is `We're upgrading Kinkstar Calls. Back at 4:00 am.` The other language codes keep their previous sentences; U55 does not translate them. |
+| features.maintenance | `on` is `false` (U55's primary screen is no internet). `message.en` is `We're upgrading Kinkstar Calls. Back at 4:00 am.` U55 has no other translation, so every language code uses that English sentence. Never null. |
 | limits.freeMatchesPerDay | `3` |
 | limits.freeMessagesPerHost | `3` |
 | limits.lowBalanceWarningSec | `60` |

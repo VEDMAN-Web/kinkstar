@@ -914,10 +914,14 @@ def check_config(config, codes: set[str], packs: dict) -> None:
                 fail("config.features.maintenance.on must be false")
             message = maintenance.get("message")
             _check_lang_map(message, codes, "config.features.maintenance.message")
-            if isinstance(message, dict) and message.get("en") != (
-                "We're upgrading Kinkstar Calls. Back at 4:00 am."
-            ):
-                fail("config.features.maintenance.message.en must match U55")
+            english = "We're upgrading Kinkstar Calls. Back at 4:00 am."
+            if isinstance(message, dict):
+                for code in codes:
+                    if message.get(code) != english:
+                        fail(
+                            f"config.features.maintenance.message.{code}: "
+                            "U55 has no translation, so fall back to the English copy"
+                        )
 
     limits = config.get("limits")
     require_keys(
