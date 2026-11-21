@@ -504,14 +504,14 @@ class _AiProfileScreenState extends State<AiProfileScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Row(
+                    Row(
                       children: [
-                        KsIconButton(
+                        const KsIconButton(
                           icon: KsIcons.chevronLeft,
                           background: UserColors.overlay40,
                         ),
-                        Spacer(),
-                        _AiBadge(),
+                        const Spacer(),
+                        _AiBadge(data.ariaLabel),
                       ],
                     ),
                     Column(
@@ -554,6 +554,7 @@ class _AiProfileScreenState extends State<AiProfileScreen> {
                     runSpacing: 8,
                     children: [
                       _RateChip('${data.ariaVideo}/min video', gold: true),
+                      // hosts.json voiceRatePerMin is 15. The artboard says 8.
                       const _RateChip('8/min voice'),
                       const _RateChip('Text free', icon: false),
                     ],
@@ -1321,7 +1322,9 @@ class _Companion extends StatelessWidget {
 }
 
 class _AiBadge extends StatelessWidget {
-  const _AiBadge();
+  const _AiBadge(this.label);
+
+  final String label;
 
   @override
   Widget build(BuildContext context) {
@@ -1338,7 +1341,7 @@ class _AiBadge extends StatelessWidget {
             const KsIcon(KsIcons.bot, color: UserColors.infoInk),
             const SizedBox(width: 4),
             Text(
-              'AI companion',
+              label,
               style: UserText.badge.copyWith(
                 color: UserColors.infoInk,
                 height: _normal,

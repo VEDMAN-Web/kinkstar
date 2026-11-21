@@ -54,7 +54,7 @@ Reference PNGs are 820×1728. That is the 390×844 phone plus a 10px bezel (`box
 | U40 | Events & leaderboard | 09 Me & engagement | `/me/events` | Me & engagement | done | Event banner is server-driven. |
 | U41 | Refer & earn | 09 Me & engagement | `/me/refer` | Me & engagement | done | Invite code uses letter-spacing 2px. |
 | U42 | Notifications centre | 05 Messages | `/notifications` | Messages | todo | |
-| U43 | AI companion profile (labelled AI) | 09 Me & engagement | `/ai/:hostId` | Me & engagement | done | Must stay labelled AI. |
+| U43 | AI companion profile (labelled AI) | 09 Me & engagement | `/ai/:hostId` | Me & engagement | done | The badge reads `hosts.json` label "AI companion". The voice chip stays "8/min voice"; JSON `voiceRatePerMin` is 15. The subtitle line stays the artboard sentence; JSON subtitle is only "Always available". |
 | U45 | Settings | 10 Settings A | `/settings` | Settings | todo | |
 | U46 | Edit profile | 10 Settings A | `/settings/profile` | Settings | todo | |
 | U47 | Blocked users | 10 Settings A | `/settings/blocked` | Settings | todo | |

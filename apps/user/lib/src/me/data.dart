@@ -15,6 +15,7 @@ class MeData {
     required this.percent,
     required this.vip,
     required this.ariaName,
+    required this.ariaLabel,
     required this.ariaLanguages,
     required this.ariaVideo,
   });
@@ -29,6 +30,7 @@ class MeData {
     percent: 64,
     vip: false,
     ariaName: 'Aria',
+    ariaLabel: 'AI companion',
     ariaLanguages: 'Hindi, English',
     ariaVideo: 15,
   );
@@ -42,6 +44,7 @@ class MeData {
   final int percent;
   final bool vip;
   final String ariaName;
+  final String ariaLabel;
   final String ariaLanguages;
   final int ariaVideo;
 }
@@ -75,6 +78,7 @@ Future<MeData> loadMe() async {
     percent: progress['percent'] as int,
     vip: (profile['vip'] as Map<String, dynamic>)['active'] as bool,
     ariaName: aria['name'] as String,
+    ariaLabel: aria['label'] as String? ?? 'AI companion',
     ariaLanguages: codes.map((code) => names[code] ?? code).join(', '),
     ariaVideo: aria['videoRatePerMin'] as int,
   );
