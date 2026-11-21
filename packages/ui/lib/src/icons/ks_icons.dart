@@ -49,8 +49,8 @@ abstract final class KsIcons {
   static const KsGlyph ban = KsFontGlyph(
     IconData(57425, fontFamily: family, fontPackage: package),
   );
-  static const KsGlyph check = KsFontGlyph(
-    IconData(57452, fontFamily: family, fontPackage: package),
+  static const KsGlyph check = KsDrawGlyph(
+    KsDrawing([KsSvgPath('M20 6L9 17l-5-5')]),
   );
   static const KsGlyph clock4 = KsFontGlyph(
     IconData(57937, fontFamily: family, fontPackage: package),
@@ -64,8 +64,11 @@ abstract final class KsIcons {
       KsSvgPath('M2 9h20M12 21L8 9l4-6 4 6z'),
     ]),
   );
-  static const KsGlyph video = KsFontGlyph(
-    IconData(57765, fontFamily: family, fontPackage: package),
+  static const KsGlyph video = KsDrawGlyph(
+    KsDrawing([
+      KsSvgRect(x: 2, y: 6, width: 14, height: 12, rx: 2),
+      KsSvgPath('M16 10l6-3v10l-6-3z'),
+    ]),
   );
   static const KsGlyph camera = KsDrawGlyph(
     KsDrawing([
@@ -97,8 +100,11 @@ abstract final class KsIcons {
   static const KsGlyph shield = KsDrawGlyph(
     KsDrawing([KsSvgPath('M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z')]),
   );
-  static const KsGlyph bot = KsFontGlyph(
-    IconData(57787, fontFamily: family, fontPackage: package),
+  static const KsGlyph bot = KsDrawGlyph(
+    KsDrawing([
+      KsSvgRect(x: 4, y: 8, width: 16, height: 12, rx: 3),
+      KsSvgPath('M12 4v4M9 13h.01M15 13h.01M9 17h6'),
+    ]),
   );
   static const KsGlyph info = KsFontGlyph(
     IconData(57593, fontFamily: family, fontPackage: package),
@@ -133,20 +139,26 @@ abstract final class KsIcons {
       KsSvgPath('M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z'),
     ]),
   );
-  static const KsGlyph crown = KsFontGlyph(
-    IconData(57814, fontFamily: family, fontPackage: package),
+  static const KsGlyph crown = KsDrawGlyph(
+    KsDrawing([KsSvgPath('M2 18h20l-2-11-5 5-3-7-3 7-5-5z')]),
   );
-  static const KsGlyph x = KsFontGlyph(
-    IconData(57778, fontFamily: family, fontPackage: package),
+  static const KsGlyph x = KsDrawGlyph(
+    KsDrawing([KsSvgPath('M18 6L6 18M6 6l12 12')]),
   );
-  static const KsGlyph creditCard = KsFontGlyph(
-    IconData(57514, fontFamily: family, fontPackage: package),
+  static const KsGlyph creditCard = KsDrawGlyph(
+    KsDrawing([
+      KsSvgRect(x: 2, y: 5, width: 20, height: 14, rx: 2),
+      KsSvgPath('M2 10h20'),
+    ]),
   );
   static const KsGlyph zap = KsDrawGlyph(
     KsDrawing([KsSvgPath('M13 2L3 14h9l-1 8 10-12h-9z')]),
   );
-  static const KsGlyph calendar = KsFontGlyph(
-    IconData(57443, fontFamily: family, fontPackage: package),
+  static const KsGlyph calendar = KsDrawGlyph(
+    KsDrawing([
+      KsSvgRect(x: 3, y: 4, width: 18, height: 18, rx: 2),
+      KsSvgPath('M16 2v4M8 2v4M3 10h18'),
+    ]),
   );
   static const KsGlyph expand = KsDrawGlyph(
     KsDrawing([KsSvgPath('M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5')]),
