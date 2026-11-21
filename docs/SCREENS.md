@@ -34,15 +34,15 @@ Reference PNGs are 820×1728. That is the 390×844 phone plus a 10px bezel (`box
 | U20 | Chat conversation | 05 Messages | `/messages/:threadId` | Messages | todo | |
 | U21 | Chat gift sheet | 05 Messages | `/messages/:threadId/gifts` | Messages | todo | |
 | U22 | Me tab | 09 Me & engagement | `/me` | Me & engagement | todo | |
-| U23 | Pre-call confirm sheet | 06 Calls A | `/call/confirm` | Calls | todo | |
-| U24 | Outgoing call (connecting) | 06 Calls A | `/call/outgoing` | Calls | todo | Pulsing rings: 12px and 26px crimson shadows. |
-| U25 | Incoming call from a real host | 06 Calls A | `/call/incoming` | Calls | todo | |
-| U26 | In video call | 07 Calls B | `/call/video` | Calls | todo | Full-bleed video, self PIP, glass chips, interactive row, five round controls. |
-| U27 | In-call gift panel | 07 Calls B | `/call/video/gifts` | Calls | todo | Gift sheet over the live call. Four-up grid and combo row. Does not end the call. |
-| U28 | Low balance – top up without ending call | 07 Calls B | `/call/top-up` | Calls | todo | Pay sheet over the live call. |
-| U29 | Voice call | 07 Calls B | `/call/voice` | Calls | todo | |
-| U30 | Call summary & rate host | 07 Calls B | `/call/summary` | Calls | todo | |
-| U31 | All hosts busy (real queue) | 06 Calls A | `/call/queue` | Calls | todo | |
+| U23 | Pre-call confirm sheet | 06 Calls A | `/call/confirm` | Calls | done | Priya's rates and the diamond balance come from JSON. Talk time is balance divided by the video rate. |
+| U24 | Outgoing call (connecting) | 06 Calls A | `/call/outgoing` | Calls | done | Pulsing rings: 12px and 26px crimson shadows. |
+| U25 | Incoming call from a real host | 06 Calls A | `/call/incoming` | Calls | done | |
+| U26 | In video call | 07 Calls B | `/call/video` | Calls | done | Full-bleed video, self PIP, glass chips, interactive row, five round controls. |
+| U27 | In-call gift panel | 07 Calls B | `/call/video/gifts` | Calls | done | Gift sheet over the live call. Rose, Sing for me, Wave, and Dance prices come from `gifts.json`. |
+| U28 | Low balance – top up without ending call | 07 Calls B | `/call/top-up` | Calls | done | Pay sheet over the live call. The three packs are the artboard; `wallet.json` has a different set. |
+| U29 | Voice call | 07 Calls B | `/call/voice` | Calls | done | Anjali is not in `hosts.json`. |
+| U30 | Call summary & rate host | 07 Calls B | `/call/summary` | Calls | done | Duration, diamonds, and gifts come from `call_priya_842`. |
+| U31 | All hosts busy (real queue) | 06 Calls A | `/call/queue` | Calls | done | Aria's name and rate come from `hosts.json`. |
 | U32 | Diamond store | 08 Wallet | `/wallet` | Wallet | todo | Pack prices stay in `wallet.json` (PR #1). Config only lists pack ids. |
 | U33 | Payment method chooser | 08 Wallet | `/wallet/pay` | Wallet | todo | |
 | U34 | Recharge success | 08 Wallet | `/wallet/success` | Wallet | todo | |

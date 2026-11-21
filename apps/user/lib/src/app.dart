@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kinkstar_ui/kinkstar_ui.dart';
 
+import 'calls/screens.dart';
 import 'onboarding/screens.dart';
 
 class UserApp extends StatefulWidget {
@@ -70,6 +71,51 @@ class _UserAppState extends State<UserApp> {
         path: '/onboarding/guide',
         name: 'guide',
         builder: (context, state) => const GuideScreen(),
+      ),
+      GoRoute(
+        path: '/call/confirm',
+        name: 'callConfirm',
+        builder: (context, state) => const ConfirmCallScreen(),
+      ),
+      GoRoute(
+        path: '/call/outgoing',
+        name: 'callOutgoing',
+        builder: (context, state) => const OutgoingCallScreen(),
+      ),
+      GoRoute(
+        path: '/call/incoming',
+        name: 'callIncoming',
+        builder: (context, state) => const IncomingCallScreen(),
+      ),
+      GoRoute(
+        path: '/call/video',
+        name: 'callVideo',
+        builder: (context, state) => const VideoCallScreen(),
+      ),
+      GoRoute(
+        path: '/call/video/gifts',
+        name: 'callGifts',
+        builder: (context, state) => const GiftPanelScreen(),
+      ),
+      GoRoute(
+        path: '/call/top-up',
+        name: 'callTopUp',
+        builder: (context, state) => const TopUpScreen(),
+      ),
+      GoRoute(
+        path: '/call/voice',
+        name: 'callVoice',
+        builder: (context, state) => const VoiceCallScreen(),
+      ),
+      GoRoute(
+        path: '/call/summary',
+        name: 'callSummary',
+        builder: (context, state) => const CallSummaryScreen(),
+      ),
+      GoRoute(
+        path: '/call/queue',
+        name: 'callQueue',
+        builder: (context, state) => const QueueScreen(),
       ),
     ],
   );
