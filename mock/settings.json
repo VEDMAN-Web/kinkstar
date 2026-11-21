@@ -1,0 +1,151 @@
+{
+  "U45": {
+    "title": "Settings",
+    "sections": [
+      {
+        "label": "CALLS",
+        "rows": [
+          {"label": "Camera on when call starts", "on": true, "trailing": null},
+          {"label": "Microphone on when call starts", "on": true, "trailing": null},
+          {"label": "Allow host call-backs", "on": true, "trailing": null},
+          {"label": "Confirm price before calls", "on": true, "trailing": null}
+        ]
+      },
+      {
+        "label": "NOTIFICATIONS",
+        "rows": [
+          {"label": "Followed hosts online", "on": true, "trailing": null},
+          {"label": "Offers and events", "on": false, "trailing": null}
+        ]
+      },
+      {
+        "label": "ACCOUNT",
+        "rows": [
+          {"label": "App language", "on": null, "trailing": "English"},
+          {"label": "Privacy & data", "on": null, "trailing": null},
+          {"label": "About", "on": null, "trailing": "v1.0.0"},
+          {"label": "Sign out", "on": null, "trailing": null},
+          {"label": "Delete account", "on": null, "trailing": null}
+        ]
+      }
+    ]
+  },
+  "U46": {
+    "title": "Edit profile",
+    "save": "Save",
+    "nicknameLabel": "Nickname",
+    "dateOfBirthLabel": "Date of birth",
+    "aboutLabel": "About me (optional)",
+    "languagesLabel": "Languages",
+    "add": "+ Add",
+    "photoNote": "Photos are checked automatically. Nudity or contact details in profiles lead to a ban."
+  },
+  "U47": {
+    "title": "Blocked users",
+    "warning": "Blocked hosts can't call, message or see that you're online.",
+    "action": "Unblock",
+    "emptyState": "Empty state: \"No blocked users\"",
+    "users": [
+      {"id": "blocked_disha", "hostId": null, "name": "Disha", "initial": "D"},
+      {"id": "blocked_mona", "hostId": null, "name": "Mona", "initial": "M"}
+    ]
+  },
+  "U48": {
+    "title": "App language",
+    "autoTranslate": "Auto-translate chat messages",
+    "autoTranslateOn": true,
+    "rows": [
+      {"label": "Same as phone", "code": null, "selected": false},
+      {"label": "English", "code": "en", "selected": true},
+      {"label": "हिन्दी", "code": "hi", "selected": false},
+      {"label": "বাংলা", "code": "bn", "selected": false},
+      {"label": "தமிழ்", "code": "ta", "selected": false},
+      {"label": "తెలుగు", "code": "te", "selected": false},
+      {"label": "मराठी", "code": "mr", "selected": false},
+      {"label": "ಕನ್ನಡ", "code": "kn", "selected": false}
+    ]
+  },
+  "U49": {
+    "title": "Help & feedback",
+    "searchLabel": "Search help",
+    "searchPlaceholder": "e.g. Diamonds not received",
+    "topics": [
+      "Diamonds not received after paying",
+      "How call billing works",
+      "Request a refund",
+      "Calls not connecting",
+      "Report a host",
+      "Delete my account"
+    ],
+    "stillNeedHelp": "Still need help?",
+    "replyTime": "Average reply time: 2 hours",
+    "chat": "Chat with support",
+    "email": "Email",
+    "grievance": "Grievance Officer: [NAME], [EMAIL] · IT Rules 2021"
+  },
+  "U50": {
+    "hostId": "host_priya",
+    "title": "Report Priya",
+    "privacy": "Your report is private. The last 30 seconds of the call are reviewed by our safety team.",
+    "reasons": [
+      {"label": "Nudity or sexual content", "checked": false},
+      {"label": "Camera off / not showing face", "checked": true},
+      {"label": "Asked for money or contact details", "checked": false},
+      {"label": "Fake profile photos", "checked": false},
+      {"label": "Rude or abusive", "checked": false},
+      {"label": "Looks under 18", "checked": false}
+    ],
+    "detailsLabel": "Details (optional)",
+    "details": null,
+    "alsoBlock": "Also block Priya",
+    "alsoBlockOn": true,
+    "submit": "Submit report"
+  },
+  "U51": {
+    "backdropTitle": "Discover",
+    "tiles": ["Host", "Host"],
+    "title": "Rate Kinkstar Calls",
+    "subtitle": "Google Play · public review",
+    "starCount": 5,
+    "rating": null,
+    "body": "Google Play's own In-App Review card, shown to every eligible user with no question before it. Quota controlled by Google."
+  },
+  "U52": {
+    "title": "About",
+    "appName": "Kinkstar Calls",
+    "versionLabel": "Version 1.0.0 (100)",
+    "links": [
+      "Terms of Service",
+      "Privacy Policy",
+      "Community Rules",
+      "Refund Policy",
+      "Grievance Redressal",
+      "Open-source licences"
+    ],
+    "operator": "Operated by SparkBeta Tech, Cyber City, Utran, Surat, Gujarat, India"
+  },
+  "U53": {
+    "title": "Delete account",
+    "whatHappensTitle": "What happens",
+    "whatHappens": "Your profile, chats and call history are deleted within 30 days. Payment records are kept as required by law.",
+    "balanceLine": "You have 120 Diamonds.",
+    "refund": "Request a refund of unused Diamonds",
+    "refundTail": "before deleting.",
+    "why": "Why are you leaving? (optional)",
+    "reasons": [
+      {"label": "Too expensive", "checked": false},
+      {"label": "Not enough hosts", "checked": false},
+      {"label": "Privacy concerns", "checked": false},
+      {"label": "Other", "checked": false}
+    ],
+    "delete": "Delete my account",
+    "keep": "Keep my account"
+  },
+  "U55": {
+    "title": "No internet",
+    "body": "Check your connection. Your balance and chats are safe.",
+    "retry": "Try again",
+    "maintenanceTitle": "Maintenance variant",
+    "maintenanceNote": "\"We're upgrading Kinkstar Calls. Back at 4:00 am.\" Message and time come from Remote Config."
+  }
+}

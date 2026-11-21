@@ -43,7 +43,7 @@ void main() {
     expect(config.features.aiCompanion, isTrue);
     expect(config.features.vip, isTrue);
     expect(config.features.chatPaidMessages, isTrue);
-    expect(config.features.forceUpdateMinVersion, '1.0.0');
+    expect(config.features.forceUpdateMinVersion, '1.2.0');
     expect(config.features.maintenanceOn, isFalse);
     expect(config.limits.freeMatchesPerDay, 3);
     expect(config.limits.freeMessagesPerHost, 3);

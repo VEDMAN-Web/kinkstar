@@ -1,9 +1,9 @@
 [
-  {"code": "hi", "name": "Hindi"},
-  {"code": "en", "name": "English"},
-  {"code": "bn", "name": "Bengali"},
-  {"code": "ta", "name": "Tamil"},
-  {"code": "te", "name": "Telugu"},
-  {"code": "mr", "name": "Marathi"},
-  {"code": "kn", "name": "Kannada"}
+  {"code": "hi", "name": "Hindi", "nativeName": "हिन्दी"},
+  {"code": "en", "name": "English", "nativeName": "English"},
+  {"code": "bn", "name": "Bengali", "nativeName": "বাংলা"},
+  {"code": "ta", "name": "Tamil", "nativeName": "தமிழ்"},
+  {"code": "te", "name": "Telugu", "nativeName": "తెలుగు"},
+  {"code": "mr", "name": "Marathi", "nativeName": "मराठी"},
+  {"code": "kn", "name": "Kannada", "nativeName": "ಕನ್ನಡ"}
 ]

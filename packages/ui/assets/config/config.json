@@ -1,5 +1,6 @@
 {
   "version": "1.0.0",
+  "build": "100",
   "assetBaseUrl": "https://cdn.example.com/kinkstar/",
   "strings": {
     "U01_title": {
@@ -75,7 +76,7 @@
     }
   ],
   "tabs": [
-    {"id": "discover", "label": "Discover", "enabled": true},
+    {"id": "discover", "label": "Home", "enabled": true},
     {"id": "match", "label": "Match", "enabled": true},
     {"id": "live", "label": "Live", "enabled": true},
     {"id": "messages", "label": "Messages", "enabled": true},
@@ -87,12 +88,24 @@
     "aiCompanion": true,
     "vip": true,
     "chatPaidMessages": true,
-    "forceUpdate": {"minVersion": "1.0.0"},
+    "forceUpdate": {
+      "minVersion": "1.2.0",
+      "title": "Update required",
+      "body": "This version is no longer supported. Update for faster calls and new gifts.",
+      "whatsNewTitle": "What's new in 1.2.0",
+      "whatsNew": [
+        "· HD video on slow networks",
+        "· Festival gifts",
+        "· Bug fixes"
+      ],
+      "updateButton": "Update on Google Play",
+      "softUpdateNote": "Soft-update variant shows \"Later\" as well"
+    },
     "maintenance": {
       "on": false,
       "message": {
         "hi": "हम जल्द वापस आएंगे।",
-        "en": "We'll be back soon.",
+        "en": "We're upgrading Kinkstar Calls. Back at 4:00 am.",
         "bn": "আমরা শীঘ্রই ফিরে আসব।",
         "ta": "நாங்கள் விரைவில் திரும்புவோம்.",
         "te": "మేము త్వరలో తిరిగి వస్తాము.",

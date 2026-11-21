@@ -1,6 +1,8 @@
 {
   "id": "user_rahul",
   "username": "Rahul_K",
+  "dateOfBirth": "14 Mar 1996",
+  "about": "Movie buff from Delhi",
   "avatar": "placeholder/avatars/rahul.png",
   "languages": ["hi", "en"],
   "level": 2,

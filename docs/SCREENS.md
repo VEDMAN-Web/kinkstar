@@ -119,4 +119,4 @@ User PR order: Onboarding (U01–U10), Discover (U11–U14), Calls (U23–U31), 
 
 Host PR order follows the artboards: Partner onboarding, Partner application, Partner approval, Going online, Partner calls, Partner messages, Partner earnings, Partner performance, Partner profile & support.
 
-The sample `config.json` tabs are the user app's (Discover, Match, Live, Messages, Me). Host tab labels are not in that file yet.
+The sample `config.json` tabs are the user app's (Home, Match, Live, Messages, Me). The first tab id is still `discover`. Host tab labels are not in that file yet.
