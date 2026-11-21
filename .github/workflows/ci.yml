@@ -1,0 +1,352 @@
+# User app and packages/ui only. apps/host is on hold and is not built.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+# Default token stays read-only. The size job widens this so it can comment.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # apps/user/.metadata stable revision ae9b586f34a8443573f82ef57c3bf914a908cbf7.
+  FLUTTER_VERSION: "3.50.1"
+
+jobs:
+  user:
+    name: Analyze, test, debug APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          # AGP 9.3.1 lint calls List.removeLast(), which JDK 17 does not have
+          # (fixed in AGP 9.3.2). Gradle runs on 21. The app still targets 17.
+          java-version: "21"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+          pub-cache: true
+
+      - name: Flutter version
+        run: flutter --version
+
+      - name: Pub get (packages/ui)
+        working-directory: packages/ui
+        run: flutter pub get
+
+      - name: Analyze (packages/ui)
+        working-directory: packages/ui
+        run: flutter analyze
+
+      - name: Test (packages/ui)
+        working-directory: packages/ui
+        run: |
+          if [ -d test ]; then
+            flutter test
+          else
+            echo "No test/ directory; skipping."
+          fi
+
+      - name: Pub get (apps/user)
+        working-directory: apps/user
+        run: flutter pub get
+
+      - name: Analyze (apps/user)
+        working-directory: apps/user
+        run: flutter analyze
+
+      - name: Test (apps/user)
+        working-directory: apps/user
+        run: |
+          if [ -d test ]; then
+            flutter test
+          else
+            echo "No test/ directory; skipping."
+          fi
+
+      - name: Build debug APK
+        working-directory: apps/user
+        run: flutter build apk --debug
+
+  size:
+    name: Play download size
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # Timeline comments on a pull request use this scope with GITHUB_TOKEN.
+      pull-requests: write
+      issues: read
+    env:
+      SIZE_LIMIT_MB: "15"
+      BUNDLETOOL_VERSION: "1.18.3"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+          pub-cache: true
+
+      - name: Pub get (packages/ui)
+        working-directory: packages/ui
+        run: flutter pub get
+
+      - name: Pub get (apps/user)
+        working-directory: apps/user
+        run: flutter pub get
+
+      - name: Build release App Bundle
+        working-directory: apps/user
+        run: flutter build appbundle --release
+
+      - name: Download bundletool
+        run: |
+          set -euo pipefail
+          curl -fsSL -o "${RUNNER_TEMP}/bundletool.jar" \
+            "https://github.com/google/bundletool/releases/download/${BUNDLETOOL_VERSION}/bundletool-all-${BUNDLETOOL_VERSION}.jar"
+
+      - name: Measure download size
+        id: measure
+        env:
+          SPEC_ARM64: .github/ci/device-spec-arm64-v8a.json
+          SPEC_V7A: .github/ci/device-spec-armeabi-v7a.json
+        run: |
+          set -euo pipefail
+          jar="${RUNNER_TEMP}/bundletool.jar"
+          aab="apps/user/build/app/outputs/bundle/release/app-release.aab"
+          apks="${RUNNER_TEMP}/app-release.apks"
+          test -f "$aab"
+          # Release signing in apps/user is the Android debug keystore
+          # (store password "android", alias androiddebugkey). bundletool
+          # prompts for a password when that keystore exists and --ks-pass is
+          # omitted, which would hang CI. These are the public debug
+          # credentials, not a secret.
+          ks="${HOME}/.android/debug.keystore"
+          if [ ! -f "$ks" ]; then
+            mkdir -p "${HOME}/.android"
+            keytool -genkeypair -keystore "$ks" \
+              -storepass android -alias androiddebugkey -keypass android \
+              -keyalg RSA -keysize 2048 -validity 10000 \
+              -dname "CN=Android Debug,O=Android,C=US"
+          fi
+          java -jar "$jar" build-apks \
+            --bundle="$aab" \
+            --output="$apks" \
+            --mode=default \
+            --overwrite \
+            --ks="$ks" \
+            --ks-pass=pass:android \
+            --ks-key-alias=androiddebugkey \
+            --key-pass=pass:android
+
+          measure() {
+            local name="$1"
+            local spec="$2"
+            local output max count
+            output=$(java -jar "$jar" get-size total --apks="$apks" --device-spec="$spec" 2>&1) || {
+              printf '%s\n' "$output" >&2
+              echo "bundletool get-size failed for ${name}" >&2
+              exit 1
+            }
+            echo "bundletool get-size total (${name}):" >&2
+            printf '%s\n' "$output" >&2
+            max=$(printf '%s\n' "$output" | awk -F, '
+              {
+                for (i = 1; i <= NF; i++) gsub(/^[ \t\r]+|[ \t\r]+$/, "", $i)
+                if (NF >= 2 && $(NF-1) ~ /^[0-9]+$/ && $NF ~ /^[0-9]+$/) print $NF
+              }
+            ')
+            count=$(printf '%s\n' "$max" | grep -c '^[0-9][0-9]*$' || true)
+            if [ "$count" -ne 1 ]; then
+              echo "Expected one MAX download size for ${name}, found ${count}." >&2
+              exit 1
+            fi
+            printf '%s\n' "$max"
+          }
+
+          to_mb() {
+            awk -v bytes="$1" 'BEGIN { printf "%.2f", bytes / 1000000 }'
+          }
+
+          result_for() {
+            local bytes="$1"
+            local limit_bytes="$2"
+            if [ "$bytes" -gt "$limit_bytes" ]; then
+              printf 'fail\n'
+            else
+              printf 'pass\n'
+            fi
+          }
+
+          arm64_bytes=$(measure "arm64-v8a" "$SPEC_ARM64")
+          v7a_bytes=$(measure "armeabi-v7a" "$SPEC_V7A")
+          limit_bytes=$((SIZE_LIMIT_MB * 1000000))
+          arm64_mb=$(to_mb "$arm64_bytes")
+          v7a_mb=$(to_mb "$v7a_bytes")
+          arm64_result=$(result_for "$arm64_bytes" "$limit_bytes")
+          v7a_result=$(result_for "$v7a_bytes" "$limit_bytes")
+
+          {
+            echo "## Play download size (apps/user)"
+            echo
+            echo "Download size is the MAX value from \`bundletool get-size total\`."
+            echo "1 MB = 1,000,000 bytes. Limit: ${SIZE_LIMIT_MB} MB (${limit_bytes} bytes)."
+            echo
+            echo "| ABI | Download size (MB) | Bytes | Limit (MB) | Result |"
+            echo "| --- | ---: | ---: | ---: | --- |"
+            echo "| arm64-v8a | ${arm64_mb} | ${arm64_bytes} | ${SIZE_LIMIT_MB} | ${arm64_result} |"
+            echo "| armeabi-v7a | ${v7a_mb} | ${v7a_bytes} | ${SIZE_LIMIT_MB} | ${v7a_result} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          {
+            echo "arm64_bytes=${arm64_bytes}"
+            echo "arm64_mb=${arm64_mb}"
+            echo "arm64_result=${arm64_result}"
+            echo "v7a_bytes=${v7a_bytes}"
+            echo "v7a_mb=${v7a_mb}"
+            echo "v7a_result=${v7a_result}"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "arm64-v8a ${arm64_mb} MB (${arm64_bytes} bytes) ${arm64_result}"
+          echo "armeabi-v7a ${v7a_mb} MB (${v7a_bytes} bytes) ${v7a_result}"
+          echo "limit ${SIZE_LIMIT_MB} MB (${limit_bytes} bytes); 1 MB = 1,000,000 bytes"
+
+      - name: Enforce download size limit
+        env:
+          ARM64_BYTES: ${{ steps.measure.outputs.arm64_bytes }}
+          ARM64_MB: ${{ steps.measure.outputs.arm64_mb }}
+          ARM64_RESULT: ${{ steps.measure.outputs.arm64_result }}
+          V7A_BYTES: ${{ steps.measure.outputs.v7a_bytes }}
+          V7A_MB: ${{ steps.measure.outputs.v7a_mb }}
+          V7A_RESULT: ${{ steps.measure.outputs.v7a_result }}
+        run: |
+          set -euo pipefail
+          limit_bytes=$((SIZE_LIMIT_MB * 1000000))
+          if [ -z "${ARM64_BYTES}" ] || [ -z "${V7A_BYTES}" ]; then
+            echo "Measured download sizes are missing."
+            exit 1
+          fi
+          echo "arm64-v8a ${ARM64_MB} MB (${ARM64_BYTES} bytes) is ${ARM64_RESULT} against ${SIZE_LIMIT_MB} MB"
+          echo "armeabi-v7a ${V7A_MB} MB (${V7A_BYTES} bytes) is ${V7A_RESULT} against ${SIZE_LIMIT_MB} MB"
+          if [ "$ARM64_BYTES" -gt "$limit_bytes" ] || [ "$V7A_BYTES" -gt "$limit_bytes" ]; then
+            echo "Download size is over ${SIZE_LIMIT_MB} MB (${limit_bytes} bytes, 1 MB = 1,000,000 bytes)."
+            exit 1
+          fi
+          echo "Both ABIs are within ${SIZE_LIMIT_MB} MB."
+
+      - name: Update pull request comment
+        if: >-
+          always() &&
+          github.event_name == 'pull_request' &&
+          github.event.pull_request.head.repo.fork == false &&
+          steps.measure.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          FORK: ${{ github.event.pull_request.head.repo.fork }}
+          ARM64_BYTES: ${{ steps.measure.outputs.arm64_bytes }}
+          ARM64_MB: ${{ steps.measure.outputs.arm64_mb }}
+          ARM64_RESULT: ${{ steps.measure.outputs.arm64_result }}
+          V7A_BYTES: ${{ steps.measure.outputs.v7a_bytes }}
+          V7A_MB: ${{ steps.measure.outputs.v7a_mb }}
+          V7A_RESULT: ${{ steps.measure.outputs.v7a_result }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+        run: |
+          set -euo pipefail
+          skip_readonly() {
+            if [ "$FORK" = "true" ] || [ "$HEAD_REPO" != "$GITHUB_REPOSITORY" ]; then
+              echo "Fork pull request; skipping the size comment."
+              exit 0
+            fi
+            return 1
+          }
+          if [ "$FORK" = "true" ] || [ "$HEAD_REPO" != "$GITHUB_REPOSITORY" ]; then
+            echo "Fork pull request; skipping the size comment."
+            exit 0
+          fi
+
+          marker="<!-- kinkstar-download-size -->"
+          body_file="${RUNNER_TEMP}/size-comment.md"
+          cat > "$body_file" <<EOF
+          ${marker}
+          ### User app Play download size
+
+          | ABI | Download size (MB) | Limit (MB) | Result |
+          | --- | ---: | ---: | --- |
+          | arm64-v8a | ${ARM64_MB} | ${SIZE_LIMIT_MB} | ${ARM64_RESULT} |
+          | armeabi-v7a | ${V7A_MB} | ${SIZE_LIMIT_MB} | ${V7A_RESULT} |
+
+          1 MB = 1,000,000 bytes. Download size is the MAX from \`bundletool get-size total\` (arm64-v8a ${ARM64_BYTES} bytes, armeabi-v7a ${V7A_BYTES} bytes).
+          EOF
+
+          readonly_token() {
+            printf '%s\n' "$1" | grep -q 'Resource not accessible by integration'
+          }
+
+          post() {
+            local method="$1"
+            local path="$2"
+            local response status
+            set +e
+            response=$(jq -n --rawfile body "$body_file" '{body:$body}' | gh api --method "$method" "$path" --input - 2>&1)
+            status=$?
+            set -e
+            if [ "$status" -ne 0 ]; then
+              printf '%s\n' "$response" >&2
+              if readonly_token "$response"; then
+                skip_readonly || exit "$status"
+              fi
+              exit "$status"
+            fi
+          }
+
+          set +e
+          all_ids=$(gh api --paginate "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" \
+            --jq '.[] | select(.body | contains("<!-- kinkstar-download-size -->")) | .id' 2>"${RUNNER_TEMP}/comment-list.err")
+          list_status=$?
+          set -e
+          if [ "$list_status" -ne 0 ]; then
+            cat "${RUNNER_TEMP}/comment-list.err" >&2
+            if readonly_token "$(cat "${RUNNER_TEMP}/comment-list.err")"; then
+              skip_readonly || exit "$list_status"
+            fi
+            exit "$list_status"
+          fi
+          comment_id=$(printf '%s\n' "$all_ids" | head -n 1)
+
+          if [ -n "$comment_id" ]; then
+            echo "Updating comment ${comment_id}"
+            post PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${comment_id}"
+            printf '%s\n' "$all_ids" | tail -n +2 | while read -r extra; do
+              [ -z "$extra" ] && continue
+              echo "Removing extra size comment ${extra}"
+              gh api --method DELETE "repos/${GITHUB_REPOSITORY}/issues/comments/${extra}" >/dev/null || true
+            done
+          else
+            echo "Creating size comment on PR ${PR_NUMBER}"
+            post POST "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments"
+          fi
