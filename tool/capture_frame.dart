@@ -74,6 +74,10 @@ Future<void> _loadPackageFonts() async {
   // Indic letters are not in Inter. Load the host's Noto fonts so captures
   // show the same glyphs a phone would fall back to. They are not app assets.
   await _loadFileFont(
+    'DejaVu Sans',
+    '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
+  );
+  await _loadFileFont(
     'Noto Sans Devanagari',
     '/usr/share/fonts/truetype/noto/NotoSansDevanagari-Regular.ttf',
   );

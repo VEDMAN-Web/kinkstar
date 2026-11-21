@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 // SDK Material, not package:material_ui. That package also pulls intl.
 // ignore: deprecated_member_use
 import 'package:flutter/material.dart';
@@ -330,12 +332,20 @@ class _HatchPainter extends CustomPainter {
     canvas.drawRect(Offset.zero & size, Paint()..color = UserColors.media);
     final paint = Paint()..color = UserColors.hatch;
     const period = UserHatch.periodPx;
+    final radians = UserHatch.angleDeg * math.pi / 180;
+    final dx = math.sin(radians);
+    final dy = -math.cos(radians);
+    final length = size.width * dx.abs() + size.height * dy.abs();
     canvas.save();
     canvas.clipRect(Offset.zero & size);
     canvas.translate(size.width / 2, size.height / 2);
-    canvas.rotate(UserHatch.angleDeg * 3.141592653589793 / 180);
+    canvas.rotate(math.atan2(dy, dx));
     final span = size.longestSide * 2;
-    for (double x = -span; x < span; x += period) {
+    var x = -length / 2;
+    while (x > -span) {
+      x -= period;
+    }
+    for (; x < span; x += period) {
       canvas.drawRect(
         Rect.fromLTWH(x, -span, UserHatch.stripePx, span * 2),
         paint,

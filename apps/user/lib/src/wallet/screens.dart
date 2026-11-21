@@ -1,0 +1,1601 @@
+import 'dart:math' as math;
+
+// SDK Material, not package:material_ui. That package also pulls intl.
+// ignore: deprecated_member_use
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:kinkstar_ui/kinkstar_ui.dart';
+
+import '../onboarding/chrome.dart';
+import 'data.dart';
+
+/// Artboard copy that `wallet.json` and `ledger.json` do not contain, or that
+/// contradicts them. Listed in the group PR.
+const _offerLeft = '23:41:10';
+const _credited = 1200;
+const _creditedBase = 600;
+const _creditedBonus = 600;
+const _storePacks = [
+  _PackData(60, '+60 bonus', 29),
+  _PackData(220, '+220 bonus', 99),
+  _PackData(600, '+600 bonus', 249, tag: 'MOST POPULAR', selected: true),
+  _PackData(1300, '+10%', 499),
+  _PackData(2800, '+15%', 999, tag: 'BEST VALUE'),
+  _PackData(6000, '+20%', 1999),
+];
+
+class _PackData {
+  const _PackData(
+    this.diamonds,
+    this.bonus,
+    this.price, {
+    this.tag,
+    this.selected = false,
+  });
+
+  final int diamonds;
+  final String bonus;
+  final int price;
+  final String? tag;
+  final bool selected;
+}
+
+class _OfferPack {
+  const _OfferPack(
+    this.diamonds,
+    this.payFor,
+    this.price, {
+    this.tag,
+    this.selected = false,
+  });
+
+  final int diamonds;
+  final int payFor;
+  final int price;
+  final String? tag;
+  final bool selected;
+}
+
+class DiamondStoreScreen extends StatelessWidget {
+  const DiamondStoreScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return _WalletStage(
+      builder: (data) {
+        final diamonds = data?.diamonds ?? 120;
+        final minutes = data?.callMinutes ?? 3;
+        final packs = data == null
+            ? _storePacks
+            : [
+                for (final pack in data.packs)
+                  _PackData(
+                    pack.diamonds,
+                    pack.bonusLabel,
+                    pack.priceINR,
+                    tag: pack.tag,
+                    selected: pack.selected,
+                  ),
+              ];
+        return Column(
+          children: [
+            const SizedBox(height: UserSpace.statusBar),
+            KsTopBar(
+              leading: const KsIconButton(icon: KsIcons.chevronLeft),
+              title: data?.storeTitle ?? 'Diamonds',
+              trailing: Text(
+                data?.historyLabel ?? 'History',
+                style: UserText.small.copyWith(
+                  color: UserColors.primarySoft,
+                  decoration: TextDecoration.underline,
+                  decorationColor: UserColors.primarySoft,
+                ),
+              ),
+            ),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
+                children: [
+                  _BalanceCard(
+                    diamonds: diamonds,
+                    label: data?.balanceLabel ?? 'Your balance',
+                    talkTime: data?.talkTime ?? '≈ $minutes min of calls',
+                  ),
+                  const SizedBox(height: 14),
+                  _OfferBanner(
+                    badge: data?.storeBadge ?? 'NEW USER',
+                    promo: data?.promo ?? 'First recharge: +100% Diamonds',
+                    countdown: data?.countdown ?? _offerLeft,
+                  ),
+                  // The balance card is 3px taller, so these gaps give the
+                  // packs +1.5px and leave the VIP row where the artboard has it.
+                  const SizedBox(height: 13.5),
+                  _PackGrid(packs),
+                  const SizedBox(height: 12.5),
+                  _VipRow(
+                    title: data?.vipTitle ?? 'VIP: calls 15% cheaper',
+                    detail:
+                        data?.vipDetail ??
+                        '+ 30 Diamonds daily · ₹${data?.plans.where((plan) => plan.duration == '1 month').firstOrNull?.priceINR ?? 399}/month',
+                    view: data?.vipView ?? 'View',
+                  ),
+                  const SizedBox(height: 14),
+                  Text.rich(
+                    TextSpan(
+                      style: UserText.xs.copyWith(fontWeight: FontWeight.w400),
+                      children: [
+                        TextSpan(
+                          text:
+                              '${data?.gst ?? 'Prices include GST. Diamonds never expire.'} ',
+                        ),
+                        TextSpan(
+                          text: data?.refund ?? 'Refund policy',
+                          style: TextStyle(
+                            color: UserColors.primarySoft,
+                            decoration: TextDecoration.underline,
+                            decorationColor: UserColors.primarySoft,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+              child: KsButton(
+                label: data?.buy ?? 'Buy 1,200 Diamonds · ₹249',
+                background: UserColors.gold,
+                foreground: UserColors.goldInk,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class PayMethodScreen extends StatelessWidget {
+  const PayMethodScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return _WalletStage(
+      builder: (data) {
+        final methods = data?.methods;
+        final google = methods
+            ?.where((item) => item.id == 'google_play')
+            .firstOrNull;
+        final upi = methods
+            ?.where((item) => item.id != 'google_play')
+            .firstOrNull;
+        return Stack(
+          children: [
+            const Positioned.fill(child: KsMediaBox(label: '', radius: 0)),
+            const Positioned.fill(child: ColoredBox(color: UserColors.dim)),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: _Sheet(
+                children: [
+                  const Center(child: _Grabber()),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          data?.payTitle ?? 'Choose how to pay',
+                          style: UserText.h2,
+                        ),
+                      ),
+                      const KsIconButton(icon: KsIcons.x),
+                    ],
+                  ),
+                  _Card(
+                    child: Row(
+                      children: [
+                        // The gem's line box hangs below the 22px glyph.
+                        const SizedBox(
+                          height: 27.5,
+                          child: Align(
+                            alignment: Alignment.topCenter,
+                            child: KsIcon(KsIcons.gem, color: UserColors.gold),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            data?.payDiamonds ?? '1,200 Diamonds',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
+                              color: UserColors.text,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          data?.payPrice ?? '₹249',
+                          style: UserText.body.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  _Card(
+                    border: UserColors.gold,
+                    child: Row(
+                      children: [
+                        const KsIconButton(
+                          icon: KsIcons.creditCard,
+                          background: UserColors.white,
+                          color: UserColors.surface1,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                google?.label ?? 'Google Play',
+                                style: UserText.small.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: UserColors.text,
+                                ),
+                              ),
+                              Text(
+                                google?.subtitle ?? 'Cards, UPI, Play balance',
+                                style: UserText.xs.copyWith(
+                                  fontWeight: FontWeight.w400,
+                                  color: UserColors.muted,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const KsCheck(on: true),
+                      ],
+                    ),
+                  ),
+                  _Card(
+                    child: Row(
+                      children: [
+                        const KsIconButton(
+                          icon: KsIcons.zap,
+                          background: UserColors.white,
+                          color: UserColors.surface1,
+                        ),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                upi?.label ?? 'UPI via Razorpay',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 13,
+                                  color: UserColors.text,
+                                ),
+                              ),
+                              Text(
+                                upi?.subtitle ?? "Google's alternative billing (India) · PhonePe, GPay, Paytm",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 12,
+                                  color: UserColors.muted,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        KsCheck(on: false),
+                      ],
+                    ),
+                  ),
+                  Text(
+                    data?.payNote ?? 'Both options credit Diamonds instantly. Payment is processed securely by the provider you choose.',
+                    style: UserText.xs.copyWith(fontWeight: FontWeight.w400),
+                  ),
+                  KsButton(
+                    label: data?.payCta ?? 'Continue · ₹249',
+                    background: UserColors.gold,
+                    foreground: UserColors.goldInk,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class RechargeSuccessScreen extends StatelessWidget {
+  const RechargeSuccessScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return _WalletStage(
+      builder: (data) {
+        final balance =
+            data?.newBalance ?? ((data?.diamonds ?? 120) + _credited);
+        final levelLabel =
+            data?.levelLabel ??
+            'Lv ${data?.level ?? 2} → ${data?.nextLevel ?? 3}';
+        return Stack(
+          children: [
+            const Positioned.fill(
+              child: ColoredBox(color: UserColors.dimStrong),
+            ),
+            Positioned(
+              top: 180,
+              left: 24,
+              right: 24,
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(20, 28, 20, 28),
+                decoration: BoxDecoration(
+                  color: UserColors.surface1,
+                  borderRadius: BorderRadius.circular(UserRadii.sheet),
+                  border: Border.all(color: UserColors.chipGoldBorder),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 88,
+                      height: 88,
+                      alignment: Alignment.center,
+                      decoration: const BoxDecoration(
+                        color: UserColors.chipGoldBg,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const KsIcon(KsIcons.gem, color: UserColors.gold),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      data?.creditLabel ?? '+${grouped(_credited)}',
+                      style: UserText.h1.copyWith(color: UserColors.gold),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      data?.successTitle ?? 'Recharge successful',
+                      style: UserText.h2,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      data?.successLine ??
+                          '$_creditedBase Diamonds + $_creditedBonus first-recharge bonus',
+                      textAlign: TextAlign.center,
+                      style: UserText.small,
+                    ),
+                    const SizedBox(height: 12),
+                    _Card(
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              data?.newBalanceLabel ?? 'New balance',
+                              style: UserText.small,
+                            ),
+                          ),
+                          Text(
+                            grouped(balance),
+                            style: UserText.body.copyWith(
+                              fontWeight: FontWeight.w700,
+                              color: UserColors.gold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _Card(
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              data?.progressLabel ?? 'Level progress',
+                              style: UserText.small.copyWith(
+                                color: UserColors.text,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            levelLabel,
+                            style: UserText.xs.copyWith(
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    KsButton(
+                      label:
+                          data?.callLabel ??
+                          'Call ${data?.priyaName ?? 'Priya'} now',
+                      icon: KsIcons.video,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      data?.backLabel ?? 'Back to Discover',
+                      style: UserText.small,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class FirstOfferScreen extends StatelessWidget {
+  const FirstOfferScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return _WalletStage(
+      builder: (data) {
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            const Align(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(16, UserSpace.statusBar, 16, 0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: KsMediaBox(label: 'Host', height: 236)),
+                    SizedBox(width: 12),
+                    Expanded(child: KsMediaBox(label: 'Host', height: 236)),
+                  ],
+                ),
+              ),
+            ),
+            const Positioned.fill(
+              child: ColoredBox(color: UserColors.dimQueue),
+            ),
+            Positioned(
+              top: 150,
+              left: 20,
+              right: 20,
+              child: _OfferDialog(data),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _OfferDialog extends StatelessWidget {
+  const _OfferDialog(this.data);
+
+  final WalletData? data;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      // CSS padding is 24, and the close control's margin-top is -8,
+      // so the control starts 16px below the border.
+      padding: const EdgeInsets.fromLTRB(18, 16, 18, 24),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [UserColors.offerStart, UserColors.surface1],
+        ),
+        borderRadius: BorderRadius.circular(UserRadii.sheet),
+        border: Border.all(color: UserColors.primary),
+      ),
+      child: Column(
+        children: [
+          const Align(
+            alignment: Alignment.centerRight,
+            child: KsIconButton(icon: KsIcons.x),
+          ),
+          const SizedBox(height: 12),
+          _Pill(data?.offerBadge ?? 'NEW USER OFFER'),
+          const SizedBox(height: 12),
+          Text(
+            data?.offerTitle ?? 'Double Diamonds\non your first recharge',
+            textAlign: TextAlign.center,
+            style: UserText.h1,
+          ),
+          const SizedBox(height: 12),
+          Text.rich(
+            TextSpan(
+              style: UserText.small,
+              children: [
+                TextSpan(
+                  text: (data?.offerValid ?? 'Valid once · ends in $_offerLeft')
+                      .replaceFirst(data?.offerCountdown ?? _offerLeft, ''),
+                ),
+                TextSpan(
+                  text: data?.offerCountdown ?? _offerLeft,
+                  style: UserText.small.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: UserColors.text,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              for (var i = 0; i < (data?.offerPacks.length ?? 2); i++) ...[
+                if (i > 0) const SizedBox(width: 12),
+                _OfferTile(
+                  data == null
+                      ? (i == 0
+                            ? const _OfferPack(220, 110, 49)
+                            : const _OfferPack(
+                                1200,
+                                600,
+                                249,
+                                tag: 'POPULAR',
+                                selected: true,
+                              ))
+                      : _OfferPack(
+                          data!.offerPacks[i].diamonds,
+                          data!.offerPacks[i].payFor,
+                          data!.offerPacks[i].priceINR,
+                          tag: data!.offerPacks[i].tag,
+                          selected: data!.offerPacks[i].selected,
+                        ),
+                ),
+              ],
+            ],
+          ),
+          const SizedBox(height: 12),
+          KsButton(
+            label: data?.offerCta ?? 'Claim offer',
+            background: UserColors.gold,
+            foreground: UserColors.goldInk,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            data?.offerNote ??
+                'Bonus Diamonds are credited instantly and never expire.',
+            textAlign: TextAlign.center,
+            style: UserText.xs.copyWith(fontWeight: FontWeight.w400),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class VipScreen extends StatelessWidget {
+  const VipScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return _WalletStage(
+      builder: (data) {
+        final plans =
+            data?.plans ??
+            const [
+              WalletPlan(duration: '1 week', priceINR: 129),
+              WalletPlan(duration: '1 month', priceINR: 399),
+              WalletPlan(duration: '3 months', priceINR: 999),
+            ];
+        final month = plans
+            .where((plan) => plan.duration == '1 month')
+            .firstOrNull;
+        return Column(
+          children: [
+            const SizedBox(height: UserSpace.statusBar),
+            KsTopBar(
+              leading: const KsIconButton(icon: KsIcons.chevronLeft),
+              title: data?.vipPageTitle ?? 'Kinkstar VIP',
+            ),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                children: [
+                  _VipHero(
+                    name: data?.vipName ?? 'VIP Gold',
+                    cancel: data?.vipCancel ?? 'Cancel anytime in Google Play',
+                  ),
+                  const SizedBox(height: 16.5),
+                  for (final perk
+                      in data?.perks ??
+                          const [
+                            '15% off every call minute',
+                            '30 free Diamonds every day',
+                            'Priority in Quick Match and queues',
+                            'Unlimited free messages',
+                            'VIP badge, entry effect, exclusive gifts',
+                          ])
+                    _Perk(perk),
+                  const SizedBox(height: 11.5),
+                  Row(
+                    children: [
+                      for (var i = 0; i < plans.length; i++) ...[
+                        if (i > 0) const SizedBox(width: 10),
+                        _PlanTile(
+                          plans[i],
+                          selected:
+                              plans[i].selected ||
+                              (data == null && plans[i].duration == '1 month'),
+                          tag:
+                              plans[i].tag ??
+                              (data == null && plans[i].duration == '1 month'
+                                  ? 'SAVE 30%'
+                                  : null),
+                        ),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  Text(
+                    data?.vipRenewal ?? 'Auto-renews until cancelled. Renewal price shown before you pay.',
+                    style: UserText.xs.copyWith(fontWeight: FontWeight.w400),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+              child: KsButton(
+                label:
+                    data?.vipCta ??
+                    'Start VIP · ₹${month?.priceINR ?? 399}/month',
+                background: UserColors.gold,
+                foreground: UserColors.goldInk,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class WalletHistoryScreen extends StatelessWidget {
+  const WalletHistoryScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return _WalletStage(
+      builder: (data) {
+        final priya = data?.priyaName ?? 'Priya';
+        final aria = data?.ariaName ?? 'Aria';
+        final rows = data?.historyRows;
+        String cell(
+          int index,
+          String fallback,
+          String Function(HistoryRow) pick,
+        ) {
+          if (rows == null || index >= rows.length) return fallback;
+          return pick(rows[index]);
+        }
+
+        return Column(
+          children: [
+            const SizedBox(height: UserSpace.statusBar),
+            KsTopBar(
+              leading: const KsIconButton(icon: KsIcons.chevronLeft),
+              title: data?.historyTitle ?? 'Wallet history',
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+              child: _Segments(
+                data?.historyTabs ?? const ['Spending', 'Recharges', 'VIP'],
+              ),
+            ),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                children: [
+                  _LedgerRow(
+                    leading: _Letter(priya),
+                    title: cell(0, 'Video call · $priya', (row) => row.title),
+                    subtitle: cell(
+                      0,
+                      'Today 9:51 pm · 8:42',
+                      (row) => row.subtitle,
+                    ),
+                    amount: cell(0, '−349', (row) => row.amount),
+                  ),
+                  _LedgerRow(
+                    leading: const _Letter('P'),
+                    title: cell(1, 'Gift · Rose x10', (row) => row.title),
+                    subtitle: cell(1, 'Today 9:44 pm', (row) => row.subtitle),
+                    amount: cell(1, '−100', (row) => row.amount),
+                  ),
+                  _LedgerRow(
+                    leading: const _Letter('A'),
+                    title: cell(2, 'Messages · Anjali', (row) => row.title),
+                    subtitle: cell(
+                      2,
+                      'Today 9:10 pm · 4 msgs',
+                      (row) => row.subtitle,
+                    ),
+                    amount: cell(2, '−20', (row) => row.amount),
+                  ),
+                  _LedgerRow(
+                    leading: const KsIconButton(
+                      icon: KsIcons.calendar,
+                      color: UserColors.gold,
+                    ),
+                    title: cell(3, 'Daily check-in', (row) => row.title),
+                    subtitle: cell(3, 'Today 8:00 pm', (row) => row.subtitle),
+                    amount: cell(3, '+15', (row) => row.amount),
+                    positive: rows == null || rows[3].positive,
+                  ),
+                  _LedgerRow(
+                    leading: const _Letter(
+                      '',
+                      icon: KsIcons.bot,
+                      background: UserColors.aiAvatar,
+                    ),
+                    title: cell(4, 'AI call · $aria', (row) => row.title),
+                    subtitle: cell(
+                      4,
+                      'Yesterday · 6:10',
+                      (row) => row.subtitle,
+                    ),
+                    amount: cell(4, '−93', (row) => row.amount),
+                  ),
+                  _LedgerRow(
+                    leading: const KsIconButton(icon: KsIcons.expand),
+                    title: cell(5, 'Quick Match', (row) => row.title),
+                    subtitle: cell(5, 'Yesterday', (row) => row.subtitle),
+                    amount: cell(5, '−10', (row) => row.amount),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    child: Text(
+                      data?.historyHelp ??
+                          'Need help with a charge? Report a problem',
+                      style: UserText.small.copyWith(
+                        color: UserColors.primarySoft,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _WalletStage extends StatefulWidget {
+  const _WalletStage({required this.builder});
+
+  final Widget Function(WalletData? data) builder;
+
+  @override
+  State<_WalletStage> createState() => _WalletStageState();
+}
+
+class _WalletStageState extends State<_WalletStage> {
+  WalletData? _data;
+
+  @override
+  void initState() {
+    super.initState();
+    loadWallet().then((data) {
+      if (mounted) setState(() => _data = data);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: UserColors.bg,
+      body: widget.builder(_data),
+    );
+  }
+}
+
+class _BalanceCard extends StatelessWidget {
+  const _BalanceCard({
+    required this.diamonds,
+    required this.label,
+    required this.talkTime,
+  });
+
+  final int diamonds;
+  final String label;
+  final String talkTime;
+
+  @override
+  Widget build(BuildContext context) {
+    return _CssCard(
+      angle: 120,
+      colors: const [UserColors.chipGoldBg, UserColors.surface1],
+      border: UserColors.chipGoldBorder,
+      child: Padding(
+        // 3px extra at the bottom matches the artboard card height.
+        // The row itself stays put.
+        padding: const EdgeInsets.fromLTRB(14, 14, 14, 17),
+        child: Row(
+          children: [
+            const KsIcon(KsIcons.gem, color: UserColors.gold),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: UserText.xs.copyWith(fontWeight: FontWeight.w400),
+                  ),
+                  // CSS `font: 700 26px Poppins` resets line-height to the
+                  // font's normal 1.5. An explicit shorter height lifts the
+                  // whole store below this card.
+                  Text('$diamonds', style: UserText.balance),
+                ],
+              ),
+            ),
+            Text(
+              talkTime,
+              style: UserText.xs.copyWith(fontWeight: FontWeight.w400),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _OfferBanner extends StatelessWidget {
+  const _OfferBanner({
+    required this.badge,
+    required this.promo,
+    required this.countdown,
+  });
+
+  final String badge;
+  final String promo;
+  final String countdown;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: UserColors.surface1,
+        borderRadius: BorderRadius.circular(UserRadii.card),
+        border: Border.all(color: UserColors.primary),
+      ),
+      child: Row(
+        children: [
+          _Pill(badge),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text.rich(
+              TextSpan(
+                style: UserText.small.copyWith(color: UserColors.text),
+                children: [
+                  TextSpan(
+                    text: promo.contains(': ')
+                        ? '${promo.split(': ').first}: '
+                        : promo,
+                  ),
+                  if (promo.contains(': '))
+                    TextSpan(
+                      text: promo.split(': ').last,
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                ],
+              ),
+            ),
+          ),
+          Text(
+            countdown,
+            style: UserText.xs.copyWith(fontWeight: FontWeight.w400),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PackGrid extends StatelessWidget {
+  const _PackGrid(this.packs);
+
+  final List<_PackData> packs;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        for (var row = 0; row < packs.length; row += 3) ...[
+          if (row > 0) const SizedBox(height: 9),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (var i = 0; i < 3; i++) ...[
+                if (i > 0) const SizedBox(width: 10),
+                Expanded(child: _StoreTile(packs[row + i])),
+              ],
+            ],
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _StoreTile extends StatelessWidget {
+  const _StoreTile(this.pack);
+
+  final _PackData pack;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: pack.selected
+                ? UserColors.packSelected
+                : UserColors.surface2,
+            borderRadius: BorderRadius.circular(UserRadii.chip),
+            border: Border.all(
+              color: pack.selected ? UserColors.gold : UserColors.line,
+              width: 1.5,
+            ),
+          ),
+          child: Column(
+            children: [
+              // `<b>` holds a 22px gem on the text baseline, so the line box
+              // hangs ~6.5px below the glyph. The count stays at the top.
+              SizedBox(
+                height: 28.5,
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: _GemLine(grouped(pack.diamonds), bold: true, size: 15),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                pack.bonus,
+                style: UserText.xs.copyWith(
+                  color: UserColors.ok,
+                  fontWeight: FontWeight.w400,
+                  height: 1.45,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '₹${grouped(pack.price)}',
+                style: UserText.small.copyWith(
+                  color: UserColors.text,
+                  height: 1.45,
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (pack.tag != null)
+          Positioned(
+            top: -10,
+            left: 0,
+            right: 0,
+            child: Center(child: _Tag(pack.tag!)),
+          ),
+      ],
+    );
+  }
+}
+
+class _VipRow extends StatelessWidget {
+  const _VipRow({
+    required this.title,
+    required this.detail,
+    required this.view,
+  });
+
+  final String title;
+  final String detail;
+  final String view;
+
+  @override
+  Widget build(BuildContext context) {
+    return _Card(
+      child: Row(
+        children: [
+          const KsIcon(KsIcons.crown, color: UserColors.gold),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: UserText.small.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: UserColors.text,
+                  ),
+                ),
+                Text(
+                  detail,
+                  style: UserText.xs.copyWith(fontWeight: FontWeight.w400),
+                ),
+              ],
+            ),
+          ),
+          KsButton(
+            label: view,
+            minHeight: UserSpace.buttonSm,
+            textStyle: UserText.buttonSm,
+            background: UserColors.gold,
+            foreground: UserColors.goldInk,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _OfferTile extends StatelessWidget {
+  const _OfferTile(this.pack);
+
+  final _OfferPack pack;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: pack.selected
+                  ? UserColors.packSelected
+                  : UserColors.surface2,
+              borderRadius: BorderRadius.circular(UserRadii.chip),
+              border: Border.all(
+                color: pack.selected ? UserColors.gold : UserColors.line,
+                width: 1.5,
+              ),
+            ),
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 27.5,
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: _GemLine(
+                      grouped(pack.diamonds),
+                      bold: true,
+                      size: 15,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'pay for ${grouped(pack.payFor)}',
+                  style: UserText.xs.copyWith(
+                    fontWeight: FontWeight.w400,
+                    height: 1.45,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '₹${pack.price}',
+                  style: UserText.small.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: UserColors.text,
+                    height: 1.45,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (pack.tag != null)
+            Positioned(
+              top: -10,
+              left: 0,
+              right: 0,
+              child: Center(child: _Tag(pack.tag!)),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _VipHero extends StatelessWidget {
+  const _VipHero({required this.name, required this.cancel});
+
+  final String name;
+  final String cancel;
+
+  @override
+  Widget build(BuildContext context) {
+    return _CssCard(
+      angle: 135,
+      colors: const [UserColors.chipGoldBg, UserColors.voiceTop],
+      border: UserColors.chipGoldBorder,
+      child: SizedBox(
+        width: double.infinity,
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            children: [
+              // The crown sits in a line box: the 22px glyph, then the
+              // descender of the inherited 15px/1.45 strut (~6.5px).
+              const SizedBox(
+                height: 28.5,
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: KsIcon(KsIcons.crown, color: UserColors.gold),
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                name,
+                style: UserText.h2.copyWith(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                  color: UserColors.gold,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(cancel, style: UserText.small),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _Perk extends StatelessWidget {
+  const _Perk(this.label);
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(minHeight: 56),
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: UserColors.line)),
+      ),
+      child: Row(
+        children: [
+          const KsIcon(KsIcons.check, color: UserColors.ok),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              label,
+              style: UserText.small.copyWith(color: UserColors.text),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PlanTile extends StatelessWidget {
+  const _PlanTile(this.plan, {required this.selected, this.tag});
+
+  final WalletPlan plan;
+  final bool selected;
+  final String? tag;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: selected ? UserColors.packSelected : UserColors.surface2,
+              borderRadius: BorderRadius.circular(UserRadii.chip),
+              border: Border.all(
+                color: selected ? UserColors.gold : UserColors.line,
+                width: 1.5,
+              ),
+            ),
+            child: Column(
+              children: [
+                Text(
+                  plan.duration,
+                  style: UserText.body.copyWith(fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '₹${plan.priceINR}',
+                  style: UserText.small.copyWith(color: UserColors.text),
+                ),
+              ],
+            ),
+          ),
+          if (tag != null)
+            Positioned(
+              top: -10,
+              left: 0,
+              right: 0,
+              child: Center(child: _Tag(tag!)),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LedgerRow extends StatelessWidget {
+  const _LedgerRow({
+    required this.leading,
+    required this.title,
+    required this.subtitle,
+    required this.amount,
+    this.positive = false,
+  });
+
+  final Widget leading;
+  final String title;
+  final String subtitle;
+  final String amount;
+  final bool positive;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(minHeight: 56),
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: UserColors.line)),
+      ),
+      child: Row(
+        children: [
+          leading,
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: UserText.small.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: UserColors.text,
+                  ),
+                ),
+                Text(
+                  subtitle,
+                  style: UserText.xs.copyWith(fontWeight: FontWeight.w400),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            amount,
+            style: UserText.body.copyWith(
+              fontWeight: FontWeight.w700,
+              color: positive ? UserColors.ok : UserColors.primarySoft,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Letter extends StatelessWidget {
+  const _Letter(this.name, {this.icon, this.background = UserColors.avatar});
+
+  final String name;
+  final KsGlyph? icon;
+  final Color background;
+
+  @override
+  Widget build(BuildContext context) {
+    final letter = name.isEmpty ? '' : name.characters.first;
+    return Container(
+      width: 48,
+      height: 48,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(color: background, shape: BoxShape.circle),
+      child: icon != null
+          ? KsIcon(icon!, color: UserColors.white)
+          : Text(letter, style: UserText.avatar),
+    );
+  }
+}
+
+class _Segments extends StatelessWidget {
+  const _Segments(this.labels);
+
+  final List<String> labels;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: UserColors.surface2,
+        borderRadius: BorderRadius.circular(UserRadii.glass),
+      ),
+      child: Row(
+        children: [
+          for (var i = 0; i < labels.length; i++) ...[
+            if (i > 0) const SizedBox(width: 4),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: i == 0 ? UserColors.primary : Colors.transparent,
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: Text(
+                  labels[i],
+                  style: UserText.chip.copyWith(
+                    color: i == 0 ? UserColors.white : UserColors.muted,
+                    // `.seg span` uses `font: 500 13px`, which resets
+                    // line-height to the font's normal 1.21.
+                    height: 1.21,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _Grabber extends StatelessWidget {
+  const _Grabber();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 40,
+      height: 4,
+      decoration: BoxDecoration(
+        color: UserColors.line,
+        borderRadius: BorderRadius.circular(UserRadii.hairline),
+      ),
+    );
+  }
+}
+
+class _Sheet extends StatelessWidget {
+  const _Sheet({required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+      decoration: const BoxDecoration(
+        color: UserColors.surface1,
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(UserRadii.sheet),
+        ),
+        border: Border(top: BorderSide(color: UserColors.line)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (var i = 0; i < children.length; i++) ...[
+            if (i > 0) const SizedBox(height: 14),
+            children[i],
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _Card extends StatelessWidget {
+  const _Card({required this.child, this.border = UserColors.line});
+
+  final Widget child;
+  final Color border;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: UserColors.surface1,
+        borderRadius: BorderRadius.circular(UserRadii.card),
+        border: Border.all(color: border),
+      ),
+      child: child,
+    );
+  }
+}
+
+class _GemLine extends StatelessWidget {
+  const _GemLine(this.text, {this.bold = false, this.size = 13});
+
+  final String text;
+  final bool bold;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    // Centered in the row, the 15px count paints ~7px above the artboard,
+    // where it shares the gem's baseline. Nudge it down without growing
+    // the card.
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const KsIcon(KsIcons.gem, color: UserColors.text),
+        const SizedBox(width: 4),
+        Transform.translate(
+          offset: const Offset(0, 7),
+          child: Text(
+            text,
+            style: UserText.small.copyWith(
+              fontSize: size,
+              fontWeight: bold ? FontWeight.w700 : FontWeight.w400,
+              color: UserColors.text,
+              height: 1.45,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _Pill extends StatelessWidget {
+  const _Pill(this.label);
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: UserColors.primary,
+        borderRadius: BorderRadius.circular(UserRadii.badge),
+      ),
+      child: Text(label, style: UserText.badge.copyWith(height: 1.21)),
+    );
+  }
+}
+
+/// CSS `linear-gradient(<angle>deg, c0, c1)` sized to the child.
+///
+/// Flutter's [Alignment.topLeft] to [Alignment.bottomRight] follows the
+/// box diagonal. A CSS angle keeps a square direction, so on a wide card
+/// the end color arrives sooner along the short side.
+class _CssCard extends SingleChildRenderObjectWidget {
+  const _CssCard({
+    required this.angle,
+    required this.colors,
+    required this.border,
+    required super.child,
+  });
+
+  final double angle;
+  final List<Color> colors;
+  final Color border;
+
+  @override
+  RenderObject createRenderObject(BuildContext context) {
+    return _RenderCssCard(angle: angle, colors: colors, border: border);
+  }
+
+  @override
+  void updateRenderObject(BuildContext context, _RenderCssCard renderObject) {
+    renderObject
+      ..angle = angle
+      ..colors = colors
+      ..border = border;
+  }
+}
+
+class _RenderCssCard extends RenderProxyBox {
+  _RenderCssCard({
+    required this._angle,
+    required this._colors,
+    required this._border,
+  });
+
+  double _angle;
+  List<Color> _colors;
+  Color _border;
+
+  double get angle => _angle;
+  set angle(double value) {
+    if (value == _angle) return;
+    _angle = value;
+    markNeedsPaint();
+  }
+
+  List<Color> get colors => _colors;
+  set colors(List<Color> value) {
+    if (value == _colors) return;
+    _colors = value;
+    markNeedsPaint();
+  }
+
+  Color get border => _border;
+  set border(Color value) {
+    if (value == _border) return;
+    _border = value;
+    markNeedsPaint();
+  }
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    final rect = offset & size;
+    final width = size.width;
+    final height = size.height;
+    final theta = _angle * math.pi / 180;
+    final dx = math.sin(theta);
+    final dy = -math.cos(theta);
+    final length = (width * dx).abs() + (height * dy).abs();
+    final center = Offset(width / 2, height / 2);
+    final half = Offset(dx, dy) * (length / 2);
+    Alignment align(Offset point) => Alignment(
+      width == 0 ? 0 : point.dx / width * 2 - 1,
+      height == 0 ? 0 : point.dy / height * 2 - 1,
+    );
+    final shader = LinearGradient(
+      begin: align(center - half),
+      end: align(center + half),
+      colors: _colors,
+    ).createShader(rect);
+    final radius = Radius.circular(UserRadii.card);
+    final card = RRect.fromRectAndRadius(rect, radius);
+    context.canvas.drawRRect(card, Paint()..shader = shader);
+    context.canvas.drawRRect(
+      card.deflate(0.5),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1
+        ..color = _border,
+    );
+    super.paint(context, offset);
+  }
+}
+
+class _Tag extends StatelessWidget {
+  const _Tag(this.label);
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: UserColors.gold,
+        borderRadius: BorderRadius.circular(UserRadii.tag),
+      ),
+      child: Text(label, style: UserText.tag),
+    );
+  }
+}

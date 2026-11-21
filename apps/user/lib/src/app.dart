@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:kinkstar_ui/kinkstar_ui.dart';
 
 import 'onboarding/screens.dart';
+import 'wallet/screens.dart';
 
 class UserApp extends StatefulWidget {
   const UserApp({super.key});
@@ -70,6 +71,36 @@ class _UserAppState extends State<UserApp> {
         path: '/onboarding/guide',
         name: 'guide',
         builder: (context, state) => const GuideScreen(),
+      ),
+      GoRoute(
+        path: '/wallet',
+        name: 'wallet',
+        builder: (context, state) => const DiamondStoreScreen(),
+      ),
+      GoRoute(
+        path: '/wallet/pay',
+        name: 'walletPay',
+        builder: (context, state) => const PayMethodScreen(),
+      ),
+      GoRoute(
+        path: '/wallet/success',
+        name: 'walletSuccess',
+        builder: (context, state) => const RechargeSuccessScreen(),
+      ),
+      GoRoute(
+        path: '/wallet/offer',
+        name: 'walletOffer',
+        builder: (context, state) => const FirstOfferScreen(),
+      ),
+      GoRoute(
+        path: '/wallet/vip',
+        name: 'walletVip',
+        builder: (context, state) => const VipScreen(),
+      ),
+      GoRoute(
+        path: '/wallet/history',
+        name: 'walletHistory',
+        builder: (context, state) => const WalletHistoryScreen(),
       ),
     ],
   );

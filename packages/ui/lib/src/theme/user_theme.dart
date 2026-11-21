@@ -209,6 +209,7 @@ const String _pkg = 'kinkstar_ui';
 
 /// Platform fonts for letters Inter does not contain. Not bundled.
 const _scriptFallback = [
+  'DejaVu Sans',
   'Noto Sans Devanagari',
   'Noto Sans Bengali',
   'Noto Sans Tamil',
