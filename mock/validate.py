@@ -686,6 +686,166 @@ def check_earnings(earnings, calls: dict, gifts_total_by_call: dict[str, int]) -
         fail("host_earnings: duplicate callId")
 
 
+def check_config(config, codes: set[str], packs: dict) -> None:
+    """App config. Pack ids must exist in wallet.json. Copy uses languages.json codes."""
+    require_keys(
+        config,
+        {
+            "version",
+            "assetBaseUrl",
+            "strings",
+            "rechargePackIds",
+            "homeBanners",
+            "tabs",
+            "features",
+            "limits",
+        },
+        "config",
+    )
+    if not isinstance(config, dict):
+        return
+    version = config.get("version")
+    if not isinstance(version, str) or not version:
+        fail("config.version: expected a non-empty version string")
+    base = config.get("assetBaseUrl")
+    if not isinstance(base, str) or not base.startswith("https://") or not base.endswith("/"):
+        fail("config.assetBaseUrl: expected an https CDN placeholder ending in /")
+
+    sample_keys = {"U01_title", "U01_subtitle", "U32_title", "U32_subtitle", "U48_lowBalance"}
+    strings = config.get("strings")
+    if not isinstance(strings, dict) or set(strings) != sample_keys:
+        fail(f"config.strings: expected sample keys {sorted(sample_keys)}")
+        strings = {}
+    for key, value in strings.items():
+        _check_lang_map(value, codes, f"config.strings.{key}")
+
+    pack_ids = config.get("rechargePackIds")
+    if not isinstance(pack_ids, list) or not pack_ids:
+        fail("config.rechargePackIds: expected a non-empty list of pack ids")
+        pack_ids = []
+    seen_packs = set()
+    for i, pack_id in enumerate(pack_ids):
+        if not isinstance(pack_id, str):
+            fail(f"config.rechargePackIds[{i}]: must be a pack id, not a price object")
+            continue
+        if pack_id not in packs:
+            fail(f"config.rechargePackIds[{i}]: unknown pack {pack_id!r}")
+        if pack_id in seen_packs:
+            fail(f"config.rechargePackIds: duplicate {pack_id!r}")
+        seen_packs.add(pack_id)
+
+    banners = config.get("homeBanners")
+    if not isinstance(banners, list) or not banners:
+        fail("config.homeBanners: expected a non-empty list")
+        banners = []
+    banner_ids = set()
+    banner_keys = {"id", "imageUrl", "deeplink", "startAt", "endAt", "serverDriven"}
+    for i, banner in enumerate(banners):
+        label = f"config.homeBanners[{i}]"
+        require_keys(banner, banner_keys, label)
+        if not isinstance(banner, dict):
+            continue
+        banner_id = banner.get("id")
+        if not isinstance(banner_id, str) or not banner_id:
+            fail(f"{label}.id: expected a non-empty string")
+        elif banner_id in banner_ids:
+            fail(f"{label}: duplicate banner id {banner_id!r}")
+        banner_ids.add(banner_id)
+        image = banner.get("imageUrl")
+        if not isinstance(image, str) or (isinstance(base, str) and not image.startswith(base)):
+            fail(f"{label}.imageUrl: expected a URL under assetBaseUrl")
+        if not isinstance(banner.get("deeplink"), str) or not banner.get("deeplink"):
+            fail(f"{label}.deeplink: expected a non-empty string")
+        if banner.get("serverDriven") is not True:
+            fail(f"{label}.serverDriven must be true")
+        start = parse_time(banner.get("startAt"), f"{label}.startAt")
+        end = parse_time(banner.get("endAt"), f"{label}.endAt")
+        if start is not None and end is not None and end <= start:
+            fail(f"{label}: endAt must be after startAt")
+
+    tabs = config.get("tabs")
+    expected_tabs = [
+        ("discover", "Discover"),
+        ("match", "Match"),
+        ("live", "Live"),
+        ("messages", "Messages"),
+        ("me", "Me"),
+    ]
+    if not isinstance(tabs, list) or len(tabs) != len(expected_tabs):
+        fail("config.tabs: expected Discover, Match, Live, Messages, Me")
+        tabs = []
+    for i, (tab_id, label_text) in enumerate(expected_tabs):
+        if i >= len(tabs):
+            break
+        tab = tabs[i]
+        require_keys(tab, {"id", "label", "enabled"}, f"config.tabs[{i}]")
+        if not isinstance(tab, dict):
+            continue
+        if tab.get("id") != tab_id or tab.get("label") != label_text:
+            fail(f"config.tabs[{i}]: expected {tab_id} / {label_text}")
+        if not isinstance(tab.get("enabled"), bool):
+            fail(f"config.tabs[{i}].enabled: expected a boolean")
+
+    features = config.get("features")
+    require_keys(
+        features,
+        {
+            "quickMatch",
+            "liveRooms",
+            "aiCompanion",
+            "vip",
+            "chatPaidMessages",
+            "forceUpdate",
+            "maintenance",
+        },
+        "config.features",
+    )
+    if isinstance(features, dict):
+        for key in ("quickMatch", "liveRooms", "aiCompanion", "vip", "chatPaidMessages"):
+            if not isinstance(features.get(key), bool):
+                fail(f"config.features.{key}: expected a boolean")
+        force = features.get("forceUpdate")
+        require_keys(force, {"minVersion"}, "config.features.forceUpdate")
+        if isinstance(force, dict):
+            min_version = force.get("minVersion")
+            if not isinstance(min_version, str) or not min_version:
+                fail("config.features.forceUpdate.minVersion: expected a version string")
+        maintenance = features.get("maintenance")
+        require_keys(maintenance, {"on", "message"}, "config.features.maintenance")
+        if isinstance(maintenance, dict):
+            if maintenance.get("on") is not False:
+                fail("config.features.maintenance.on must be false")
+            _check_lang_map(maintenance.get("message"), codes, "config.features.maintenance.message")
+
+    limits = config.get("limits")
+    require_keys(
+        limits,
+        {"freeMatchesPerDay", "freeMessagesPerHost", "lowBalanceWarningSec"},
+        "config.limits",
+    )
+    if isinstance(limits, dict) and (
+        limits.get("freeMatchesPerDay") != 3
+        or limits.get("freeMessagesPerHost") != 3
+        or limits.get("lowBalanceWarningSec") != 60
+    ):
+        fail("config.limits: expected freeMatchesPerDay 3, freeMessagesPerHost 3, lowBalanceWarningSec 60")
+
+
+def _check_lang_map(value, codes: set[str], label: str) -> None:
+    if not isinstance(value, dict):
+        fail(f"{label}: expected an object keyed by language code")
+        return
+    unknown = sorted(set(value) - codes)
+    missing = sorted(codes - set(value))
+    if unknown:
+        fail(f"{label}: unknown language code(s) {unknown}")
+    if missing:
+        fail(f"{label}: missing language code(s) {missing}")
+    for code, text in value.items():
+        if not isinstance(text, str) or not text.strip():
+            fail(f"{label}.{code}: expected a non-empty string")
+
+
 def gift_totals(ledger) -> dict[str, int]:
     totals: dict[str, int] = {}
     if not isinstance(ledger, list):
@@ -709,7 +869,11 @@ def main() -> int:
     gifts = load("gifts.json")
     levels = load("levels.json")
     earnings = load("host_earnings.json")
-    if any(doc is None for doc in (languages, user, hosts, wallet, ledger, calls, gifts, levels, earnings)):
+    config = load("config.json")
+    if any(
+        doc is None
+        for doc in (languages, user, hosts, wallet, ledger, calls, gifts, levels, earnings, config)
+    ):
         _report()
         return 1
 
@@ -758,16 +922,19 @@ def main() -> int:
         "gifts": gifts,
         "levels": levels,
         "host_earnings": earnings,
+        "config": config,
     }
     for name, doc in documents.items():
         walk_languages(doc, codes, name)
         walk_refs(doc, ids, name)
-        if name not in {"user_profile", "levels"}:
+        # config.features.vip is a feature switch, not the user's VIP state.
+        if name not in {"user_profile", "levels", "config"}:
             walk_single_profile(doc, name)
 
     balance = user.get("diamondBalance") if isinstance(user, dict) else None
     check_ledger(ledger, packs, call_index, gift_index, balance if is_int(balance) else -1)
     check_earnings(earnings, call_index, gift_totals(ledger))
+    check_config(config, codes, packs)
 
     _report()
     return 1 if errors else 0
