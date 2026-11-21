@@ -1270,19 +1270,10 @@ class _Avatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final letter = name.isEmpty ? '' : name.characters.first;
-    return Container(
+    final disc = Container(
       width: size,
       height: size,
-      decoration: BoxDecoration(
-        color: background,
-        shape: BoxShape.circle,
-        boxShadow: rings
-            ? const [
-                BoxShadow(color: UserColors.callPulseOuter, spreadRadius: 26),
-                BoxShadow(color: UserColors.callPulseInner, spreadRadius: 12),
-              ]
-            : null,
-      ),
+      decoration: BoxDecoration(color: background, shape: BoxShape.circle),
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -1307,7 +1298,40 @@ class _Avatar extends StatelessWidget {
         ],
       ),
     );
+    if (!rings) return disc;
+    // CSS box-shadow: 0 0 0 12px rgba(225,29,72,.18), 0 0 0 26px rgba(225,29,72,.08).
+    // Drawn as discs so the shadow blur filter cannot feather or widen them.
+    return CustomPaint(painter: const _CallRings(), child: disc);
   }
+}
+
+class _CallRings extends CustomPainter {
+  const _CallRings();
+
+  static const _color = Color(0xFFE11D48);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.shortestSide / 2;
+    canvas.drawCircle(
+      center,
+      radius + 26,
+      Paint()
+        ..color = _color.withValues(alpha: 0.08)
+        ..isAntiAlias = true,
+    );
+    canvas.drawCircle(
+      center,
+      radius + 12,
+      Paint()
+        ..color = _color.withValues(alpha: 0.18)
+        ..isAntiAlias = true,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _CallRings oldDelegate) => false;
 }
 
 class _RoundControl extends StatelessWidget {
