@@ -71,6 +71,32 @@ Future<void> _loadPackageFonts() async {
   await _loadFamily('$_fontPackage/Lucide', const [
     '$_fontAsset/Lucide.ttf',
   ]);
+  // Indic letters are not in Inter. Load the host's Noto fonts so captures
+  // show the same glyphs a phone would fall back to. They are not app assets.
+  await _loadFileFont(
+    'Noto Sans Devanagari',
+    '/usr/share/fonts/truetype/noto/NotoSansDevanagari-Regular.ttf',
+  );
+  await _loadFileFont(
+    'Noto Sans Bengali',
+    '/usr/share/fonts/truetype/noto/NotoSansBengali-Regular.ttf',
+  );
+  await _loadFileFont(
+    'Noto Sans Tamil',
+    '/usr/share/fonts/truetype/noto/NotoSansTamil-Regular.ttf',
+  );
+  await _loadFileFont(
+    'Noto Sans Telugu',
+    '/usr/share/fonts/truetype/noto/NotoSansTelugu-Regular.ttf',
+  );
+}
+
+Future<void> _loadFileFont(String family, String path) async {
+  final file = File(path);
+  if (!file.existsSync()) return;
+  final data = ByteData.sublistView(file.readAsBytesSync());
+  final loader = FontLoader(family)..addFont(Future<ByteData>.value(data));
+  await loader.load();
 }
 
 Future<void> _loadFamily(String family, List<String> assets) async {

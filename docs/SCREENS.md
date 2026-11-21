@@ -1,6 +1,6 @@
 # Screen checklist
 
-Status is `todo` until a later PR builds the screen. Routes are planned only. The apps currently expose `/` as a themed placeholder.
+Status is `todo` until the screen is built. Routes are planned until then. `/` is still the themed placeholder. Onboarding routes are live.
 
 U44 does not exist. The user set is U01–U43 and U45–U55 (54 screens). The host set is P01–P43 (43 screens).
 
@@ -12,16 +12,16 @@ Reference PNGs are 820×1728. That is the 390×844 phone plus a 10px bezel (`box
 
 | ID | Name | Artboard | Route | PR group | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| U01 | Splash | 01 Onboarding A | `/splash` | Onboarding | todo | Radial splash behind the mark. |
-| U02 | Choose language (first run) | 01 Onboarding A | `/onboarding/language` | Onboarding | todo | |
-| U03 | Welcome / Login | 01 Onboarding A | `/welcome` | Onboarding | todo | Hero image is a network asset, not bundled. |
-| U04 | Phone number | 01 Onboarding A | `/onboarding/phone` | Onboarding | todo | |
-| U05 | OTP verification | 01 Onboarding A | `/onboarding/otp` | Onboarding | todo | Six-cell code. |
-| U06 | Country code picker | 02 Onboarding B | `/onboarding/country` | Onboarding | todo | |
-| U07 | Age check & consent | 02 Onboarding B | `/onboarding/age` | Onboarding | todo | |
-| U08 | Profile setup | 02 Onboarding B | `/onboarding/profile` | Onboarding | todo | |
-| U09 | Permissions primer | 02 Onboarding B | `/onboarding/permissions` | Onboarding | todo | |
-| U10 | First-run guide (coach marks) | 02 Onboarding B | `/onboarding/guide` | Onboarding | todo | Coach marks over Discover. |
+| U01 | Splash | 01 Onboarding A | `/splash` | Onboarding | done | Radial splash behind the mark. |
+| U02 | Choose language (first run) | 01 Onboarding A | `/onboarding/language` | Onboarding | done | Languages come from `languages.json`. Kannada is in that file and not on this picker. |
+| U03 | Welcome / Login | 01 Onboarding A | `/welcome` | Onboarding | done | Hero image is a network asset, not bundled. The capture shows the design placeholder. |
+| U04 | Phone number | 01 Onboarding A | `/onboarding/phone` | Onboarding | done | |
+| U05 | OTP verification | 01 Onboarding A | `/onboarding/otp` | Onboarding | done | Six-cell code. |
+| U06 | Country code picker | 02 Onboarding B | `/onboarding/country` | Onboarding | done | Country rows are the artboard list. They are not in `mock/`. |
+| U07 | Age check & consent | 02 Onboarding B | `/onboarding/age` | Onboarding | done | |
+| U08 | Profile setup | 02 Onboarding B | `/onboarding/profile` | Onboarding | done | Nickname and spoken languages come from `user_profile.json`. Interest chips are the artboard set. |
+| U09 | Permissions primer | 02 Onboarding B | `/onboarding/permissions` | Onboarding | done | |
+| U10 | First-run guide (coach marks) | 02 Onboarding B | `/onboarding/guide` | Onboarding | done | Coach marks over Discover. The first tab reads "Home" on the artboard. Config's discover label is the page title. |
 | U11 | Home (Discover) | 03 Discover | `/discover` | Discover | todo | Host photos load from the network. |
 | U12 | Filter sheet | 03 Discover | `/discover/filters` | Discover | todo | |
 | U13 | Host profile | 03 Discover | `/hosts/:hostId` | Discover | todo | |

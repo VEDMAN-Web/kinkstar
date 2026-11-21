@@ -207,6 +207,15 @@ abstract final class UserIconSize {
 
 const String _pkg = 'kinkstar_ui';
 
+/// Platform fonts for letters Inter does not contain. Not bundled.
+const _scriptFallback = [
+  'Noto Sans Devanagari',
+  'Noto Sans Bengali',
+  'Noto Sans Tamil',
+  'Noto Sans Telugu',
+  'Noto Sans Kannada',
+];
+
 TextStyle _inter(
   double size,
   FontWeight weight, {
@@ -215,13 +224,15 @@ TextStyle _inter(
   Color? color,
 }) {
   return TextStyle(
-    fontFamily: 'Inter',
-    package: _pkg,
+    // Full family name, not `package:`. A package font skips script fallbacks
+    // in widget tests, so Hindi and the other picker labels paint as boxes.
+    fontFamily: 'packages/$_pkg/Inter',
     fontSize: size,
     fontWeight: weight,
     height: height,
     letterSpacing: letterSpacing,
     color: color,
+    fontFamilyFallback: _scriptFallback,
   );
 }
 
@@ -233,13 +244,13 @@ TextStyle _poppins(
   Color? color,
 }) {
   return TextStyle(
-    fontFamily: 'Poppins',
-    package: _pkg,
+    fontFamily: 'packages/$_pkg/Poppins',
     fontSize: size,
     fontWeight: weight,
     height: height,
     letterSpacing: letterSpacing,
     color: color,
+    fontFamilyFallback: _scriptFallback,
   );
 }
 

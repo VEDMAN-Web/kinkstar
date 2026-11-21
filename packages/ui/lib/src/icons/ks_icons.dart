@@ -27,6 +27,11 @@ abstract final class KsIcons {
   static const String family = 'Lucide';
   static const String package = 'kinkstar_ui';
 
+  static const IconData chevronDown = IconData(
+    57453,
+    fontFamily: family,
+    fontPackage: package,
+  );
   static const IconData chevronLeft = IconData(
     57454,
     fontFamily: family,

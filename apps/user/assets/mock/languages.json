@@ -1,0 +1,9 @@
+[
+  {"code": "hi", "name": "Hindi"},
+  {"code": "en", "name": "English"},
+  {"code": "bn", "name": "Bengali"},
+  {"code": "ta", "name": "Tamil"},
+  {"code": "te", "name": "Telugu"},
+  {"code": "mr", "name": "Marathi"},
+  {"code": "kn", "name": "Kannada"}
+]
