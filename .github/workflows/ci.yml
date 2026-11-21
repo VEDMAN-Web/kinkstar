@@ -103,12 +103,12 @@ jobs:
             summary "Skipped: \`tool/compare_screen.py\` is not in this checkout."
             exit 0
           fi
-          if ! grep -q -- '--tolerance' tool/compare_screen.py; then
-            echo "::warning::compare_screen.py has no --tolerance flag; skipping pixel compare."
-            summary "## Pixel compare (apps/user)"
-            summary ""
-            summary "Skipped: \`tool/compare_screen.py\` has no \`--tolerance\` flag."
-            exit 0
+          # PR #5's script has no --tolerance and counts any channel difference.
+          # When the flag exists, pass 2. Otherwise run that CLI and score
+          # tolerance 2 from the same crop (20px bezel, peak channel).
+          use_script_tolerance=0
+          if grep -q -- '--tolerance' tool/compare_screen.py; then
+            use_script_tolerance=1
           fi
           # Same mechanism as the screen PRs: headless flutter test of
           # apps/user/test/*capture*.dart via tool/capture_user_screens.sh.
@@ -132,7 +132,7 @@ jobs:
           )
           summary "## Pixel compare (apps/user)"
           summary ""
-          summary "Match % is 100 minus the percentage of pixels \`tool/compare_screen.py --tolerance 2\` reports as different. Warning below ${PIXEL_MATCH_WARN_PCT}%. This step does not fail the job. Screen ids come from \`design/screens/user\`."
+          summary "Match % is 100 minus the percentage of pixels that differ at tolerance 2 (a per-channel gap of 2 or less still matches). Warning below ${PIXEL_MATCH_WARN_PCT}%. This step does not fail the job. Screen ids come from \`design/screens/user\`. Captures are \`flutter test\` of \`apps/user/test/*capture*.dart\` at 390×844, devicePixelRatio 2."
           summary ""
           if [ "${#ids[@]}" -eq 0 ]; then
             echo "No user reference images under design/screens/user."
@@ -144,7 +144,7 @@ jobs:
             echo "<!-- kinkstar-pixel-compare -->"
             echo "### User app pixel compare"
             echo ""
-            echo "Tolerance 2. Match % is 100 minus the percentage of pixels that differ. A match under ${PIXEL_MATCH_WARN_PCT}% is a warning and does not fail CI. Build PNGs come from \`flutter test\` on \`apps/user/test/*capture*.dart\`. n/a means no capture test wrote that screen."
+            echo "Tolerance 2. Match % is 100 minus the percentage of pixels that differ. A per-channel gap of 2 or less still matches. A match under ${PIXEL_MATCH_WARN_PCT}% is a warning and does not fail CI. Build PNGs come from \`flutter test\` on \`apps/user/test/*capture*.dart\` (390×844 at devicePixelRatio 2, with the app fonts and fonts-noto-core for fallback). n/a means no capture test wrote that screen."
             echo ""
             echo "| Screen | Match % at tolerance 2 |"
             echo "| --- | ---: |"
@@ -157,8 +157,43 @@ jobs:
             log="${RUNNER_TEMP}/compare-${id}.out"
             err="${RUNNER_TEMP}/compare-${id}.err"
             status=0
-            python3 tool/compare_screen.py --tolerance 2 "$id" >"$log" 2>"$err" || status=$?
-            differ=$(sed -nE "s/^${id} ([0-9]+([.][0-9]+)?)%.*/\1/p" "$log" | head -n 1)
+            if [ "$use_script_tolerance" -eq 1 ]; then
+              python3 tool/compare_screen.py --tolerance 2 "$id" >"$log" 2>"$err" || status=$?
+              differ=$(sed -nE "s/^${id} ([0-9]+([.][0-9]+)?)%.*/\1/p" "$log" | head -n 1)
+            else
+              python3 tool/compare_screen.py "$id" >"$log" 2>"$err" || status=$?
+              differ=$(python3 - "$id" <<'PY'
+          import sys
+          from pathlib import Path
+
+          from PIL import Image, ImageChops
+
+          screen_id = sys.argv[1]
+          tolerance = 2
+          root = Path(".").resolve()
+          build_path = root / "design" / "compare" / f"{screen_id}_build.png"
+          matches = sorted((root / "design" / "screens" / "user").glob(f"{screen_id}_*.png"))
+          if not build_path.exists() or not matches:
+              sys.exit(0)
+          reference = Image.open(matches[0]).convert("RGB")
+          build = Image.open(build_path).convert("RGB")
+          if reference.size != (820, 1728):
+              sys.exit(0)
+          cropped = reference.crop((20, 20, reference.width - 20, reference.height - 20))
+          if cropped.size != build.size:
+              sys.exit(0)
+          diff = ImageChops.difference(cropped, build)
+          bands = diff.split()
+          peak = bands[0]
+          for band in bands[1:]:
+              peak = ImageChops.lighter(peak, band)
+          changed = sum(peak.histogram()[tolerance + 1 :])
+          total = cropped.width * cropped.height
+          percent = 100 * changed / total if total else 0
+          print(f"{percent:.2f}")
+          PY
+              )
+            fi
             if [ -n "$differ" ]; then
               match=$(awk -v d="$differ" 'BEGIN { printf "%.2f", 100 - d }')
               echo "${id} differ ${differ}% match ${match}% (exit ${status})"
