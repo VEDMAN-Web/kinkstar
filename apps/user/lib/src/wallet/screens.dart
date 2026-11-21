@@ -149,6 +149,7 @@ class PayMethodScreen extends StatelessWidget {
               alignment: Alignment.bottomCenter,
               child: _Sheet(
                 children: [
+                  const Center(child: _Grabber()),
                   Row(
                     children: [
                       Expanded(
@@ -160,7 +161,14 @@ class PayMethodScreen extends StatelessWidget {
                   _Card(
                     child: Row(
                       children: [
-                        const KsIcon(KsIcons.gem, color: UserColors.gold),
+                        // The gem's line box hangs below the 22px glyph.
+                        const SizedBox(
+                          height: 27.5,
+                          child: Align(
+                            alignment: Alignment.topCenter,
+                            child: KsIcon(KsIcons.gem, color: UserColors.gold),
+                          ),
+                        ),
                         const SizedBox(width: 12),
                         const Expanded(
                           child: Text(
@@ -415,7 +423,9 @@ class _OfferDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(18, 24, 18, 24),
+      // CSS padding is 24, and the close control's margin-top is -8,
+      // so the control starts 16px below the border.
+      padding: const EdgeInsets.fromLTRB(18, 16, 18, 24),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           begin: Alignment.topCenter,
@@ -431,6 +441,7 @@ class _OfferDialog extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: KsIconButton(icon: KsIcons.x),
           ),
+          const SizedBox(height: 12),
           const _Pill('NEW USER OFFER'),
           const SizedBox(height: 12),
           Text(
@@ -688,29 +699,29 @@ class _BalanceCard extends StatelessWidget {
         // The row itself stays put.
         padding: const EdgeInsets.fromLTRB(14, 14, 14, 17),
         child: Row(
-        children: [
-          const KsIcon(KsIcons.gem, color: UserColors.gold),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Your balance',
-                  style: UserText.xs.copyWith(fontWeight: FontWeight.w400),
-                ),
-                // CSS `font: 700 26px Poppins` resets line-height to the
-                // font's normal 1.5. An explicit shorter height lifts the
-                // whole store below this card.
-                Text('$diamonds', style: UserText.balance),
-              ],
+          children: [
+            const KsIcon(KsIcons.gem, color: UserColors.gold),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Your balance',
+                    style: UserText.xs.copyWith(fontWeight: FontWeight.w400),
+                  ),
+                  // CSS `font: 700 26px Poppins` resets line-height to the
+                  // font's normal 1.5. An explicit shorter height lifts the
+                  // whole store below this card.
+                  Text('$diamonds', style: UserText.balance),
+                ],
+              ),
             ),
-          ),
-          Text(
-            '≈ $minutes min of calls',
-            style: UserText.xs.copyWith(fontWeight: FontWeight.w400),
-          ),
-        ],
+            Text(
+              '≈ $minutes min of calls',
+              style: UserText.xs.copyWith(fontWeight: FontWeight.w400),
+            ),
+          ],
         ),
       ),
     );
@@ -806,7 +817,7 @@ class _StoreTile extends StatelessWidget {
               width: 1.5,
             ),
           ),
-            child: Column(
+          child: Column(
             children: [
               // `<b>` holds a 22px gem on the text baseline, so the line box
               // hangs ~6.5px below the glyph. The count stays at the top.
@@ -918,7 +929,17 @@ class _OfferTile extends StatelessWidget {
             ),
             child: Column(
               children: [
-                _GemLine(grouped(pack.diamonds), bold: true, size: 15),
+                SizedBox(
+                  height: 27.5,
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: _GemLine(
+                      grouped(pack.diamonds),
+                      bold: true,
+                      size: 15,
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 4),
                 Text(
                   'pay for ${grouped(pack.payFor)}',
@@ -1184,12 +1205,31 @@ class _Segments extends StatelessWidget {
                   labels[i],
                   style: UserText.chip.copyWith(
                     color: i == 0 ? UserColors.white : UserColors.muted,
+                    // `.seg span` uses `font: 500 13px`, which resets
+                    // line-height to the font's normal 1.21.
+                    height: 1.21,
                   ),
                 ),
               ),
             ),
           ],
         ],
+      ),
+    );
+  }
+}
+
+class _Grabber extends StatelessWidget {
+  const _Grabber();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 40,
+      height: 4,
+      decoration: BoxDecoration(
+        color: UserColors.line,
+        borderRadius: BorderRadius.circular(UserRadii.hairline),
       ),
     );
   }
@@ -1294,7 +1334,7 @@ class _Pill extends StatelessWidget {
         color: UserColors.primary,
         borderRadius: BorderRadius.circular(UserRadii.badge),
       ),
-      child: Text(label, style: UserText.badge),
+      child: Text(label, style: UserText.badge.copyWith(height: 1.21)),
     );
   }
 }
