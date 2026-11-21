@@ -1,0 +1,786 @@
+#!/usr/bin/env python3
+"""Check that the mock JSON files agree with each other. Standard library only.
+
+Run from the repo root or from mock/:
+
+    python3 mock/validate.py
+"""
+
+from __future__ import annotations
+
+import json
+import sys
+from datetime import datetime, timedelta
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+
+LANGS = [
+    ("hi", "Hindi"),
+    ("en", "English"),
+    ("bn", "Bengali"),
+    ("ta", "Tamil"),
+    ("te", "Telugu"),
+    ("mr", "Marathi"),
+    ("kn", "Kannada"),
+]
+
+# Tier B is the specified rate. A and C are the mock display ladder.
+TIER_RATES = {"A": (60, 30), "B": (40, 20), "C": (20, 10)}
+
+LEDGER_TYPES = {"recharge", "call", "gift", "message", "vip", "bonus", "refund"}
+POSITIVE_TYPES = {"recharge", "bonus", "refund"}
+NEGATIVE_TYPES = {"call", "gift", "message", "vip"}
+REF_KEYS = {"hostId", "userId", "refId", "callId", "giftId"}
+CALL_STATUSES = {"completed", "missed", "dropped", "refunded"}
+GIFT_CATEGORIES = {"popular", "interactive", "luxury", "event"}
+
+errors: list[str] = []
+
+
+def fail(message: str) -> None:
+    errors.append(message)
+
+
+def load(name: str):
+    path = ROOT / name
+    try:
+        with path.open(encoding="utf-8") as handle:
+            return json.load(handle)
+    except (OSError, json.JSONDecodeError) as exc:
+        fail(f"{name}: {exc}")
+        return None
+
+
+def is_int(value) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool)
+
+
+def parse_time(value, label: str):
+    if not isinstance(value, str) or not value.endswith("Z"):
+        fail(f"{label}: expected a UTC timestamp ending in Z")
+        return None
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        fail(f"{label}: bad timestamp {value!r}")
+        return None
+
+
+def require_keys(obj, keys: set[str], label: str) -> None:
+    if not isinstance(obj, dict):
+        fail(f"{label}: expected an object")
+        return
+    actual = set(obj)
+    missing = keys - actual
+    extra = actual - keys
+    if missing:
+        fail(f"{label}: missing {sorted(missing)}")
+    if extra:
+        fail(f"{label}: unexpected {sorted(extra)}")
+
+
+def register(index: dict[str, str], value, source: str) -> None:
+    if not isinstance(value, str) or not value:
+        fail(f"{source}: id must be a non-empty string")
+        return
+    if value in index:
+        fail(f"duplicate id {value!r} ({source} and {index[value]})")
+    else:
+        index[value] = source
+
+
+def walk_refs(node, index: dict[str, str], path: str) -> None:
+    if isinstance(node, dict):
+        for key, value in node.items():
+            child = f"{path}.{key}"
+            if key in REF_KEYS:
+                if not isinstance(value, str) or value not in index:
+                    fail(f"{child}: {value!r} does not resolve")
+            else:
+                walk_refs(value, index, child)
+    elif isinstance(node, list):
+        for i, item in enumerate(node):
+            walk_refs(item, index, f"{path}[{i}]")
+
+
+def walk_languages(node, codes: set[str], path: str) -> None:
+    if isinstance(node, dict):
+        for key, value in node.items():
+            child = f"{path}.{key}"
+            if key == "languages":
+                if not isinstance(value, list) or not value:
+                    fail(f"{child}: expected a non-empty list of language codes")
+                    continue
+                for code in value:
+                    if code not in codes:
+                        fail(f"{child}: unknown language code {code!r}")
+            else:
+                walk_languages(value, codes, child)
+    elif isinstance(node, list):
+        for i, item in enumerate(node):
+            walk_languages(item, codes, f"{path}[{i}]")
+
+
+def walk_single_profile(node, path: str) -> None:
+    """Level, VIP, and balance live only on user_profile.json."""
+    banned = {"level", "vip", "diamondBalance", "levelProgress", "username"}
+    if isinstance(node, dict):
+        for key, value in node.items():
+            if key in banned:
+                fail(f"{path}.{key}: duplicates the canonical user profile")
+            else:
+                walk_single_profile(value, f"{path}.{key}")
+    elif isinstance(node, list):
+        for i, item in enumerate(node):
+            walk_single_profile(item, f"{path}[{i}]")
+
+
+def check_languages(languages) -> set[str]:
+    if not isinstance(languages, list):
+        fail("languages.json: expected a list")
+        return set()
+    rows = []
+    for i, row in enumerate(languages):
+        require_keys(row, {"code", "name"}, f"languages[{i}]")
+        if isinstance(row, dict):
+            rows.append((row.get("code"), row.get("name")))
+    if rows != LANGS:
+        fail(f"languages.json: expected {LANGS}, found {rows}")
+    return {code for code, _ in LANGS}
+
+
+def check_user(user, levels) -> None:
+    require_keys(
+        user,
+        {
+            "id",
+            "username",
+            "avatar",
+            "languages",
+            "level",
+            "levelProgress",
+            "vip",
+            "diamondBalance",
+            "followsCount",
+            "freeMatchesLeft",
+            "freeMatchesTotal",
+            "freeMessages",
+        },
+        "user_profile",
+    )
+    if not isinstance(user, dict):
+        return
+    require_keys(
+        user.get("levelProgress"),
+        {"current", "required", "nextLevel", "percent"},
+        "user_profile.levelProgress",
+    )
+    require_keys(user.get("vip"), {"active"}, "user_profile.vip")
+    require_keys(
+        user.get("freeMessages"),
+        {"left", "priceAfter"},
+        "user_profile.freeMessages",
+    )
+    if user.get("id") != "user_rahul" or user.get("username") != "Rahul_K":
+        fail("user_profile: canonical user must be user_rahul / Rahul_K")
+    if user.get("level") != 2:
+        fail("user_profile: level must be 2")
+    if user.get("vip") != {"active": False}:
+        fail("user_profile: vip must be {active: false}")
+    if user.get("diamondBalance") != 120:
+        fail("user_profile: diamondBalance must be 120")
+    if user.get("freeMatchesLeft") != 2 or user.get("freeMatchesTotal") != 3:
+        fail("user_profile: free matches must be 2 of 3")
+    messages = user.get("freeMessages") or {}
+    if messages.get("left") != 3 or messages.get("priceAfter") != 5:
+        fail("user_profile: freeMessages must be left 3, priceAfter 5")
+    progress = user.get("levelProgress") or {}
+    current = progress.get("current")
+    required = progress.get("required")
+    percent = progress.get("percent")
+    if progress.get("nextLevel") != 3 or current != 320 or required != 500 or percent != 64:
+        fail("user_profile: levelProgress must be 320/500 to level 3 (64%)")
+    if is_int(current) and is_int(required) and is_int(percent):
+        if current * 100 != percent * required:
+            fail("user_profile: percent is not current/required")
+    user_levels = levels.get("userLevels") if isinstance(levels, dict) else None
+    if isinstance(user_levels, list) and len(user_levels) >= 3:
+        gap = user_levels[2].get("diamonds", 0) - user_levels[1].get("diamonds", 0)
+        if gap != required:
+            fail(f"level gap from Lv2 to Lv3 is {gap}, profile required is {required}")
+
+
+def check_hosts(hosts) -> dict:
+    if not isinstance(hosts, list):
+        fail("hosts.json: expected a list")
+        return {}
+    by_id = {}
+    humans = 0
+    statuses = set()
+    tiers = set()
+    human_keys = {
+        "id",
+        "name",
+        "age",
+        "city",
+        "languages",
+        "rating",
+        "callsCount",
+        "followers",
+        "charmLevel",
+        "tier",
+        "videoRatePerMin",
+        "voiceRatePerMin",
+        "status",
+        "isAI",
+    }
+    for i, host in enumerate(hosts):
+        label = f"hosts[{i}]"
+        if not isinstance(host, dict):
+            fail(f"{label}: expected an object")
+            continue
+        if host.get("isAI") is True:
+            require_keys(host, human_keys | {"label"}, label)
+        else:
+            require_keys(host, human_keys, label)
+            humans += 1
+        by_id[host.get("id")] = host
+        statuses.add(host.get("status"))
+        if host.get("status") not in {"online", "busy", "offline"}:
+            fail(f"{label}: bad status {host.get('status')!r}")
+        if host.get("isAI") is True:
+            tiers_ok = host.get("tier") is None
+        else:
+            tiers_ok = host.get("tier") in TIER_RATES
+            tiers.add(host.get("tier"))
+        if not tiers_ok:
+            fail(f"{label}: bad tier {host.get('tier')!r}")
+        if host.get("isAI") is False and host.get("tier") in TIER_RATES:
+            video, voice = TIER_RATES[host["tier"]]
+            if (host.get("videoRatePerMin"), host.get("voiceRatePerMin")) != (video, voice):
+                fail(f"{label}: {host.get('tier')} rates must be {video}/{voice}")
+        if not is_int(host.get("callsCount")) or not is_int(host.get("followers")):
+            fail(f"{label}: callsCount and followers must be integers")
+    if humans != 8:
+        fail(f"hosts.json: expected 8 human hosts, found {humans}")
+    aria = by_id.get("host_aria")
+    if not aria or aria.get("name") != "Aria" or aria.get("isAI") is not True:
+        fail("hosts.json: missing AI companion Aria")
+    elif (
+        aria.get("label") != "AI Companion"
+        or aria.get("videoRatePerMin") != 15
+        or aria.get("voiceRatePerMin") != 15
+    ):
+        fail("Aria must be labelled AI Companion at 15/min video and voice")
+    priya = by_id.get("host_priya")
+    if not priya:
+        fail("hosts.json: missing host_priya")
+    else:
+        expected = {
+            "name": "Priya",
+            "age": 24,
+            "city": "Lucknow",
+            "charmLevel": 12,
+            "tier": "B",
+            "videoRatePerMin": 40,
+            "voiceRatePerMin": 20,
+            "isAI": False,
+        }
+        for key, value in expected.items():
+            if priya.get(key) != value:
+                fail(f"host_priya.{key}: expected {value!r}, found {priya.get(key)!r}")
+    if statuses != {"online", "busy", "offline"}:
+        fail(f"hosts.json: statuses should cover online/busy/offline, found {statuses}")
+    if tiers != {"A", "B", "C"}:
+        fail(f"hosts.json: tiers should cover A/B/C, found {tiers}")
+    return by_id
+
+
+def check_wallet(wallet) -> dict:
+    require_keys(
+        wallet,
+        {"packs", "firstRechargeOffer", "paymentMethods", "vipPlans", "vipPerks"},
+        "wallet",
+    )
+    packs = {}
+    if not isinstance(wallet, dict):
+        return packs
+    rows = wallet.get("packs")
+    if not isinstance(rows, list) or not 5 <= len(rows) <= 7:
+        fail("wallet.packs: expected 5 to 7 packs")
+        rows = []
+    tag_seen = {"MOST_POPULAR": 0, "BEST_VALUE": 0}
+    for i, pack in enumerate(rows):
+        require_keys(
+            pack,
+            {"id", "diamonds", "bonus", "priceINR", "tags"},
+            f"wallet.packs[{i}]",
+        )
+        if not isinstance(pack, dict):
+            continue
+        packs[pack.get("id")] = pack
+        for key in ("diamonds", "bonus", "priceINR"):
+            if not is_int(pack.get(key)) or pack.get(key) < 0:
+                fail(f"wallet.packs[{i}].{key}: expected a non-negative integer")
+        tags = pack.get("tags")
+        if not isinstance(tags, list):
+            fail(f"wallet.packs[{i}].tags: expected a list")
+            continue
+        for tag in tags:
+            if tag not in tag_seen:
+                fail(f"wallet.packs[{i}]: unknown tag {tag!r}")
+            else:
+                tag_seen[tag] += 1
+    for tag, count in tag_seen.items():
+        if count != 1:
+            fail(f"wallet.packs: tag {tag} appears {count} times, expected 1")
+    offer = wallet.get("firstRechargeOffer")
+    require_keys(offer, {"expiresAt", "validOnce"}, "wallet.firstRechargeOffer")
+    if isinstance(offer, dict):
+        parse_time(offer.get("expiresAt"), "wallet.firstRechargeOffer.expiresAt")
+        if offer.get("validOnce") is not True:
+            fail("wallet.firstRechargeOffer.validOnce must be true")
+    methods = wallet.get("paymentMethods")
+    method_ids = []
+    if isinstance(methods, list):
+        for i, method in enumerate(methods):
+            require_keys(method, {"id", "label"}, f"wallet.paymentMethods[{i}]")
+            if isinstance(method, dict):
+                method_ids.append(method.get("id"))
+    if method_ids != ["google_play", "upi_razorpay_alt_billing"]:
+        fail(f"wallet.paymentMethods: unexpected ids {method_ids}")
+    plans = wallet.get("vipPlans")
+    plan_ids = {}
+    if isinstance(plans, list):
+        for i, plan in enumerate(plans):
+            require_keys(plan, {"id", "duration", "priceINR"}, f"wallet.vipPlans[{i}]")
+            if isinstance(plan, dict):
+                plan_ids[plan.get("id")] = plan.get("priceINR")
+    if plan_ids != {"vip_1w": 129, "vip_1m": 399, "vip_3m": 999}:
+        fail(f"wallet.vipPlans: unexpected {plan_ids}")
+    perks = wallet.get("vipPerks")
+    if perks != [
+        "15% off calls",
+        "30 free Diamonds/day",
+        "priority match",
+        "unlimited free messages",
+    ]:
+        fail(f"wallet.vipPerks: unexpected {perks}")
+    return packs
+
+
+def check_gifts(gifts) -> dict:
+    if not isinstance(gifts, list):
+        fail("gifts.json: expected a list")
+        return {}
+    by_id = {}
+    categories = set()
+    names = {}
+    for i, gift in enumerate(gifts):
+        require_keys(
+            gift,
+            {"id", "name", "price", "category", "animation"},
+            f"gifts[{i}]",
+        )
+        if not isinstance(gift, dict):
+            continue
+        by_id[gift.get("id")] = gift
+        names[gift.get("name")] = gift.get("price")
+        price = gift.get("price")
+        if not is_int(price) or not 10 <= price <= 999:
+            fail(f"gifts[{i}]: price must be an integer from 10 to 999")
+        if gift.get("category") not in GIFT_CATEGORIES:
+            fail(f"gifts[{i}]: bad category")
+        categories.add(gift.get("category"))
+        if not isinstance(gift.get("animation"), str) or not gift.get("animation"):
+            fail(f"gifts[{i}]: animation placeholder required")
+    expected = {"Rose": 10, "Wave": 20, "Sing for me": 99, "Dance": 199}
+    for name, price in expected.items():
+        if names.get(name) != price:
+            fail(f"gifts: {name} must cost {price}")
+    if categories != GIFT_CATEGORIES:
+        fail(f"gifts: categories should cover {GIFT_CATEGORIES}, found {categories}")
+    return by_id
+
+
+def check_levels(levels) -> None:
+    require_keys(levels, {"userLevels", "hostLevels"}, "levels")
+    if not isinstance(levels, dict):
+        return
+    rows = levels.get("userLevels")
+    if not isinstance(rows, list) or len(rows) != 30:
+        fail("levels.userLevels: expected Lv1-Lv30")
+        return
+    previous = -1
+    for i, row in enumerate(rows):
+        require_keys(row, {"level", "diamonds", "perks"}, f"levels.userLevels[{i}]")
+        if not isinstance(row, dict):
+            continue
+        if row.get("level") != i + 1:
+            fail(f"levels.userLevels[{i}]: expected level {i + 1}")
+        diamonds = row.get("diamonds")
+        if not is_int(diamonds) or diamonds <= previous:
+            fail(f"levels.userLevels[{i}]: diamonds must increase")
+        previous = diamonds if is_int(diamonds) else previous
+        perks = row.get("perks")
+        if row.get("level") == 10 and perks != ["5% call discount"]:
+            fail("Lv10 perk must be 5% call discount")
+        elif row.get("level") == 20 and perks != ["dedicated support"]:
+            fail("Lv20 perk must be dedicated support")
+        elif row.get("level") not in (10, 20) and perks != []:
+            fail(f"Lv{row.get('level')}: no extra perks")
+    if rows[0].get("diamonds") != 0:
+        fail("Lv1 threshold must be 0")
+    if rows[-1].get("diamonds") != 200000:
+        fail("Lv30 threshold must be 200000")
+    bands = levels.get("hostLevels")
+    if not isinstance(bands, list) or len(bands) != 4:
+        fail("levels.hostLevels: expected 4 bands")
+        return
+    expected_bands = [("1-5", 1, 5), ("6-10", 6, 10), ("11-15", 11, 15), ("16+", 16, None)]
+    for i, (band, start, end) in enumerate(expected_bands):
+        row = bands[i]
+        require_keys(
+            row,
+            {"band", "fromLevel", "toLevel", "sharePercent"},
+            f"levels.hostLevels[{i}]",
+        )
+        if not isinstance(row, dict):
+            continue
+        if (
+            row.get("band") != band
+            or row.get("fromLevel") != start
+            or row.get("toLevel") != end
+            or row.get("sharePercent") is not None
+        ):
+            fail(f"levels.hostLevels[{i}]: expected {band} with sharePercent null")
+
+
+def check_calls(calls, hosts: dict) -> dict:
+    if not isinstance(calls, list) or not calls:
+        fail("calls.json: expected a non-empty list")
+        return {}
+    by_id = {}
+    statuses = set()
+    keys = {
+        "id",
+        "hostId",
+        "userId",
+        "type",
+        "startedAt",
+        "durationSec",
+        "ratePerMin",
+        "diamondsCharged",
+        "giftsCount",
+        "status",
+    }
+    for i, call in enumerate(calls):
+        label = f"calls[{i}]"
+        require_keys(call, keys, label)
+        if not isinstance(call, dict):
+            continue
+        by_id[call.get("id")] = call
+        if call.get("userId") != "user_rahul":
+            fail(f"{label}: sample history belongs to user_rahul")
+        if call.get("type") not in {"video", "voice"}:
+            fail(f"{label}: bad type")
+        if call.get("status") not in CALL_STATUSES:
+            fail(f"{label}: bad status")
+        statuses.add(call.get("status"))
+        for key in ("durationSec", "ratePerMin", "diamondsCharged", "giftsCount"):
+            if not is_int(call.get(key)) or call.get(key) < 0:
+                fail(f"{label}.{key}: expected a non-negative integer")
+        host = hosts.get(call.get("hostId"))
+        if isinstance(host, dict) and call.get("type") in {"video", "voice"}:
+            rate_key = "videoRatePerMin" if call["type"] == "video" else "voiceRatePerMin"
+            if call.get("ratePerMin") != host.get(rate_key):
+                fail(f"{label}: ratePerMin does not match host {rate_key}")
+        if call.get("status") == "missed" and (
+            call.get("durationSec") != 0 or call.get("diamondsCharged") != 0
+        ):
+            fail(f"{label}: a missed call has no duration and no charge")
+        # Exact pro-rata, except the specified 8:42 call which is stored as 349.
+        if is_int(call.get("durationSec")) and is_int(call.get("ratePerMin")):
+            raw = call["durationSec"] * call["ratePerMin"]
+            if call.get("id") == "call_priya_842":
+                if raw != 522 * 40 or call.get("diamondsCharged") != 349:
+                    fail("call_priya_842 must be 522s at 40/min, charged 349")
+            elif raw % 60 != 0 or call.get("diamondsCharged") != raw // 60:
+                fail(f"{label}: diamondsCharged is not durationSec * ratePerMin / 60")
+        parse_time(call.get("startedAt"), f"{label}.startedAt")
+    featured = by_id.get("call_priya_842")
+    if not featured:
+        fail("calls.json: missing call_priya_842")
+    elif (
+        featured.get("hostId") != "host_priya"
+        or featured.get("type") != "video"
+        or featured.get("durationSec") != 522
+        or featured.get("giftsCount") != 2
+        or featured.get("status") != "completed"
+    ):
+        fail("call_priya_842 must be Priya's completed 8:42 video call with 2 gifts")
+    if statuses != CALL_STATUSES:
+        fail(f"calls.json: statuses should cover {CALL_STATUSES}, found {statuses}")
+    return by_id
+
+
+def check_ledger(ledger, packs: dict, calls: dict, gifts: dict, balance: int) -> None:
+    if not isinstance(ledger, list) or not ledger:
+        fail("ledger.json: expected a non-empty list")
+        return
+    keys = {"id", "type", "amount", "balanceAfter", "createdAt", "refId", "meta"}
+    previous_balance = 0
+    previous_time = None
+    call_amounts: dict[str, int] = {}
+    gift_counts: dict[str, int] = {}
+    gift_totals: dict[str, int] = {}
+    by_id = {}
+    refunds = []
+    for i, entry in enumerate(ledger):
+        label = f"ledger[{i}]"
+        require_keys(entry, keys, label)
+        if not isinstance(entry, dict):
+            continue
+        by_id[entry.get("id")] = entry
+        kind = entry.get("type")
+        amount = entry.get("amount")
+        after = entry.get("balanceAfter")
+        if kind not in LEDGER_TYPES:
+            fail(f"{label}: bad type {kind!r}")
+        if not is_int(amount) or not is_int(after):
+            fail(f"{label}: amount and balanceAfter must be integers")
+            continue
+        if kind in POSITIVE_TYPES and amount <= 0:
+            fail(f"{label}: {kind} amount must be positive")
+        if kind in NEGATIVE_TYPES and amount >= 0:
+            fail(f"{label}: {kind} amount must be negative")
+        if after != previous_balance + amount:
+            fail(
+                f"{label}: balanceAfter {after} != {previous_balance} + {amount}"
+            )
+        if after < 0:
+            fail(f"{label}: balance went negative")
+        previous_balance = after
+        created = parse_time(entry.get("createdAt"), f"{label}.createdAt")
+        if created is not None and previous_time is not None and created <= previous_time:
+            fail(f"{label}: createdAt must increase")
+        if created is not None:
+            previous_time = created
+        ref = entry.get("refId")
+        meta = entry.get("meta")
+        if not isinstance(meta, dict):
+            fail(f"{label}: meta must be an object")
+            meta = {}
+        if kind in {"recharge", "bonus"}:
+            pack = packs.get(ref)
+            field = "diamonds" if kind == "recharge" else "bonus"
+            if not pack or amount != pack.get(field):
+                fail(f"{label}: {kind} amount must match pack {field}")
+        if kind == "call":
+            call = calls.get(ref)
+            call_amounts[ref] = call_amounts.get(ref, 0) + amount
+            if not call:
+                fail(f"{label}: call ref does not resolve")
+            else:
+                if meta.get("hostId") != call.get("hostId"):
+                    fail(f"{label}: meta.hostId does not match the call")
+                if meta.get("durationSec") != call.get("durationSec"):
+                    fail(f"{label}: meta.durationSec does not match the call")
+                if meta.get("ratePerMin") != call.get("ratePerMin"):
+                    fail(f"{label}: meta.ratePerMin does not match the call")
+                started = parse_time(call.get("startedAt"), f"{label}.call.startedAt")
+                if started and created and is_int(call.get("durationSec")):
+                    end = started + timedelta(seconds=call["durationSec"])
+                    if created != end:
+                        fail(f"{label}: call charge must be timestamped at hangup")
+        if kind == "gift":
+            call = calls.get(ref)
+            gift = gifts.get(meta.get("giftId"))
+            gift_counts[ref] = gift_counts.get(ref, 0) + 1
+            gift_totals[ref] = gift_totals.get(ref, 0) + (-amount)
+            if not gift or amount != -gift.get("price"):
+                fail(f"{label}: gift amount must match the catalog price")
+            if not call:
+                fail(f"{label}: gift refId must be the call it was sent in")
+            else:
+                started = parse_time(call.get("startedAt"), f"{label}.call.startedAt")
+                if started and created and is_int(call.get("durationSec")):
+                    end = started + timedelta(seconds=call["durationSec"])
+                    if not started <= created <= end:
+                        fail(f"{label}: gift was not sent during the call")
+        if kind == "refund":
+            refunds.append(entry)
+    if previous_balance != balance:
+        fail(f"ledger ends at {previous_balance}, profile diamondBalance is {balance}")
+    if len(refunds) != 1:
+        fail(f"ledger: expected one refund entry, found {len(refunds)}")
+    for call_id, call in calls.items():
+        charged = call_amounts.get(call_id, 0)
+        if charged != -call.get("diamondsCharged"):
+            fail(
+                f"{call_id}: ledger call sum {charged} != -{call.get('diamondsCharged')}"
+            )
+        if gift_counts.get(call_id, 0) != call.get("giftsCount"):
+            fail(f"{call_id}: gift ledger rows do not match giftsCount")
+    if len(refunds) == 1:
+        refund = refunds[0]
+        original = by_id.get(refund.get("refId"))
+        if not original or refund.get("amount") != -original.get("amount"):
+            fail("refund must reverse its refId ledger entry in full")
+        elif original.get("type") != "call":
+            fail("the sample refund must reverse a call charge")
+        else:
+            call = calls.get(original.get("refId"))
+            if not call or call.get("status") != "refunded":
+                fail("refunded ledger call must point at a call with status refunded")
+            if refund.get("meta", {}).get("callId") != original.get("refId"):
+                fail("refund meta.callId must be the refunded call")
+    featured_gifts = gift_totals.get("call_priya_842")
+    if featured_gifts != 109:
+        fail(f"call_priya_842 gifts must total 109 Diamonds, found {featured_gifts}")
+
+
+def check_earnings(earnings, calls: dict, gifts_total_by_call: dict[str, int]) -> None:
+    require_keys(earnings, {"hostId", "entries"}, "host_earnings")
+    if not isinstance(earnings, dict):
+        return
+    if earnings.get("hostId") != "host_priya":
+        fail("host_earnings: this file is Priya's view")
+    entries = earnings.get("entries")
+    if not isinstance(entries, list):
+        fail("host_earnings.entries: expected a list")
+        return
+    seen = []
+    keys = {
+        "id",
+        "callId",
+        "userDiamonds",
+        "giftUserDiamonds",
+        "inrAmount",
+        "sharePercent",
+        "tds",
+    }
+    for i, entry in enumerate(entries):
+        label = f"host_earnings.entries[{i}]"
+        require_keys(entry, keys, label)
+        if not isinstance(entry, dict):
+            continue
+        seen.append(entry.get("callId"))
+        call = calls.get(entry.get("callId"))
+        if not call:
+            fail(f"{label}: callId does not resolve")
+            continue
+        if call.get("hostId") != earnings.get("hostId"):
+            fail(f"{label}: earnings call belongs to another host")
+        if entry.get("userDiamonds") != call.get("diamondsCharged"):
+            fail(f"{label}: userDiamonds must match calls.diamondsCharged")
+        if entry.get("giftUserDiamonds") != gifts_total_by_call.get(call["id"], 0):
+            fail(f"{label}: giftUserDiamonds must match gifts sent on that call")
+        for key in ("inrAmount", "sharePercent", "tds"):
+            if entry.get(key) is not None:
+                fail(f"{label}.{key} must be null")
+    if set(seen) != set(calls):
+        fail("host_earnings call ids must be exactly the ids in calls.json")
+    if len(seen) != len(set(seen)):
+        fail("host_earnings: duplicate callId")
+
+
+def gift_totals(ledger) -> dict[str, int]:
+    totals: dict[str, int] = {}
+    if not isinstance(ledger, list):
+        return totals
+    for entry in ledger:
+        if isinstance(entry, dict) and entry.get("type") == "gift":
+            ref = entry.get("refId")
+            amount = entry.get("amount")
+            if is_int(amount):
+                totals[ref] = totals.get(ref, 0) + (-amount)
+    return totals
+
+
+def main() -> int:
+    languages = load("languages.json")
+    user = load("user_profile.json")
+    hosts = load("hosts.json")
+    wallet = load("wallet.json")
+    ledger = load("ledger.json")
+    calls = load("calls.json")
+    gifts = load("gifts.json")
+    levels = load("levels.json")
+    earnings = load("host_earnings.json")
+    if any(doc is None for doc in (languages, user, hosts, wallet, ledger, calls, gifts, levels, earnings)):
+        _report()
+        return 1
+
+    codes = check_languages(languages)
+    check_levels(levels)
+    check_user(user, levels)
+    host_index = check_hosts(hosts)
+    packs = check_wallet(wallet)
+    gift_index = check_gifts(gifts)
+    call_index = check_calls(calls, host_index)
+
+    ids: dict[str, str] = {}
+    if isinstance(user, dict):
+        register(ids, user.get("id"), "user_profile")
+    for host in hosts or []:
+        if isinstance(host, dict):
+            register(ids, host.get("id"), "hosts")
+    for call in calls or []:
+        if isinstance(call, dict):
+            register(ids, call.get("id"), "calls")
+    for gift in gifts or []:
+        if isinstance(gift, dict):
+            register(ids, gift.get("id"), "gifts")
+    for pack in packs.values():
+        register(ids, pack.get("id"), "wallet.packs")
+    for method in wallet.get("paymentMethods") or []:
+        if isinstance(method, dict):
+            register(ids, method.get("id"), "wallet.paymentMethods")
+    for plan in wallet.get("vipPlans") or []:
+        if isinstance(plan, dict):
+            register(ids, plan.get("id"), "wallet.vipPlans")
+    for entry in ledger or []:
+        if isinstance(entry, dict):
+            register(ids, entry.get("id"), "ledger")
+    for entry in (earnings or {}).get("entries") or []:
+        if isinstance(entry, dict):
+            register(ids, entry.get("id"), "host_earnings")
+
+    documents = {
+        "languages": languages,
+        "user_profile": user,
+        "hosts": hosts,
+        "wallet": wallet,
+        "ledger": ledger,
+        "calls": calls,
+        "gifts": gifts,
+        "levels": levels,
+        "host_earnings": earnings,
+    }
+    for name, doc in documents.items():
+        walk_languages(doc, codes, name)
+        walk_refs(doc, ids, name)
+        if name not in {"user_profile", "levels"}:
+            walk_single_profile(doc, name)
+
+    balance = user.get("diamondBalance") if isinstance(user, dict) else None
+    check_ledger(ledger, packs, call_index, gift_index, balance if is_int(balance) else -1)
+    check_earnings(earnings, call_index, gift_totals(ledger))
+
+    _report()
+    return 1 if errors else 0
+
+
+def _report() -> None:
+    if errors:
+        print(f"mock validation failed ({len(errors)}):", file=sys.stderr)
+        for message in errors:
+            print(f"- {message}", file=sys.stderr)
+    else:
+        print("mock validation passed")
+
+
+if __name__ == "__main__":
+    sys.exit(main())

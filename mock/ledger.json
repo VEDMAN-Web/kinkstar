@@ -1,0 +1,83 @@
+[
+  {
+    "id": "led_01",
+    "type": "recharge",
+    "amount": 700,
+    "balanceAfter": 700,
+    "createdAt": "2026-11-10T08:00:00Z",
+    "refId": "pack_700",
+    "meta": {}
+  },
+  {
+    "id": "led_02",
+    "type": "bonus",
+    "amount": 100,
+    "balanceAfter": 800,
+    "createdAt": "2026-11-10T08:00:01Z",
+    "refId": "pack_700",
+    "meta": {}
+  },
+  {
+    "id": "led_03",
+    "type": "call",
+    "amount": -40,
+    "balanceAfter": 760,
+    "createdAt": "2026-11-14T13:01:00Z",
+    "refId": "call_priya_refunded",
+    "meta": {"hostId": "host_priya", "durationSec": 60, "ratePerMin": 40}
+  },
+  {
+    "id": "led_04",
+    "type": "refund",
+    "amount": 40,
+    "balanceAfter": 800,
+    "createdAt": "2026-11-14T15:00:00Z",
+    "refId": "led_03",
+    "meta": {"callId": "call_priya_refunded"}
+  },
+  {
+    "id": "led_05",
+    "type": "call",
+    "amount": -20,
+    "balanceAfter": 780,
+    "createdAt": "2026-11-16T18:05:30Z",
+    "refId": "call_priya_dropped",
+    "meta": {"hostId": "host_priya", "durationSec": 30, "ratePerMin": 40}
+  },
+  {
+    "id": "led_06",
+    "type": "call",
+    "amount": -202,
+    "balanceAfter": 578,
+    "createdAt": "2026-11-17T09:50:06Z",
+    "refId": "call_priya_voice",
+    "meta": {"hostId": "host_priya", "durationSec": 606, "ratePerMin": 20}
+  },
+  {
+    "id": "led_07",
+    "type": "gift",
+    "amount": -10,
+    "balanceAfter": 568,
+    "createdAt": "2026-11-18T14:15:00Z",
+    "refId": "call_priya_842",
+    "meta": {"giftId": "gift_rose", "hostId": "host_priya"}
+  },
+  {
+    "id": "led_08",
+    "type": "gift",
+    "amount": -99,
+    "balanceAfter": 469,
+    "createdAt": "2026-11-18T14:18:10Z",
+    "refId": "call_priya_842",
+    "meta": {"giftId": "gift_sing", "hostId": "host_priya"}
+  },
+  {
+    "id": "led_09",
+    "type": "call",
+    "amount": -349,
+    "balanceAfter": 120,
+    "createdAt": "2026-11-18T14:20:42Z",
+    "refId": "call_priya_842",
+    "meta": {"hostId": "host_priya", "durationSec": 522, "ratePerMin": 40}
+  }
+]
