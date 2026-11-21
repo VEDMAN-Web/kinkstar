@@ -65,17 +65,26 @@ class DiamondStoreScreen extends StatelessWidget {
       builder: (data) {
         final diamonds = data?.diamonds ?? 120;
         final minutes = data?.callMinutes ?? 3;
-        final month = data?.plans
-            .where((plan) => plan.duration == '1 month')
-            .firstOrNull;
+        final packs = data == null
+            ? _storePacks
+            : [
+                for (final pack in data.packs)
+                  _PackData(
+                    pack.diamonds,
+                    pack.bonusLabel,
+                    pack.priceINR,
+                    tag: pack.tag,
+                    selected: pack.selected,
+                  ),
+              ];
         return Column(
           children: [
             const SizedBox(height: UserSpace.statusBar),
             KsTopBar(
               leading: const KsIconButton(icon: KsIcons.chevronLeft),
-              title: 'Diamonds',
+              title: data?.storeTitle ?? 'Diamonds',
               trailing: Text(
-                'History',
+                data?.historyLabel ?? 'History',
                 style: UserText.small.copyWith(
                   color: UserColors.primarySoft,
                   decoration: TextDecoration.underline,
@@ -87,25 +96,40 @@ class DiamondStoreScreen extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
                 children: [
-                  _BalanceCard(diamonds: diamonds, minutes: minutes),
+                  _BalanceCard(
+                    diamonds: diamonds,
+                    label: data?.balanceLabel ?? 'Your balance',
+                    talkTime: data?.talkTime ?? '≈ $minutes min of calls',
+                  ),
                   const SizedBox(height: 14),
-                  const _OfferBanner(),
+                  _OfferBanner(
+                    badge: data?.storeBadge ?? 'NEW USER',
+                    promo: data?.promo ?? 'First recharge: +100% Diamonds',
+                    countdown: data?.countdown ?? _offerLeft,
+                  ),
                   // The balance card is 3px taller, so these gaps give the
                   // packs +1.5px and leave the VIP row where the artboard has it.
                   const SizedBox(height: 13.5),
-                  const _PackGrid(_storePacks),
+                  _PackGrid(packs),
                   const SizedBox(height: 12.5),
-                  _VipRow(price: month?.priceINR ?? 399),
+                  _VipRow(
+                    title: data?.vipTitle ?? 'VIP: calls 15% cheaper',
+                    detail:
+                        data?.vipDetail ??
+                        '+ 30 Diamonds daily · ₹${data?.plans.where((plan) => plan.duration == '1 month').firstOrNull?.priceINR ?? 399}/month',
+                    view: data?.vipView ?? 'View',
+                  ),
                   const SizedBox(height: 14),
                   Text.rich(
                     TextSpan(
                       style: UserText.xs.copyWith(fontWeight: FontWeight.w400),
-                      children: const [
+                      children: [
                         TextSpan(
-                          text: 'Prices include GST. Diamonds never expire. ',
+                          text:
+                              '${data?.gst ?? 'Prices include GST. Diamonds never expire.'} ',
                         ),
                         TextSpan(
-                          text: 'Refund policy',
+                          text: data?.refund ?? 'Refund policy',
                           style: TextStyle(
                             color: UserColors.primarySoft,
                             decoration: TextDecoration.underline,
@@ -118,10 +142,10 @@ class DiamondStoreScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(16, 12, 16, 32),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
               child: KsButton(
-                label: 'Buy 1,200 Diamonds · ₹249',
+                label: data?.buy ?? 'Buy 1,200 Diamonds · ₹249',
                 background: UserColors.gold,
                 foreground: UserColors.goldInk,
               ),
@@ -140,7 +164,13 @@ class PayMethodScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return _WalletStage(
       builder: (data) {
-        final pay = data?.payLabel ?? 'Google Play';
+        final methods = data?.methods;
+        final google = methods
+            ?.where((item) => item.id == 'google_play')
+            .firstOrNull;
+        final upi = methods
+            ?.where((item) => item.id != 'google_play')
+            .firstOrNull;
         return Stack(
           children: [
             const Positioned.fill(child: KsMediaBox(label: '', radius: 0)),
@@ -153,7 +183,10 @@ class PayMethodScreen extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: Text('Choose how to pay', style: UserText.h2),
+                        child: Text(
+                          data?.payTitle ?? 'Choose how to pay',
+                          style: UserText.h2,
+                        ),
                       ),
                       const KsIconButton(icon: KsIcons.x),
                     ],
@@ -170,10 +203,10 @@ class PayMethodScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 12),
-                        const Expanded(
+                        Expanded(
                           child: Text(
-                            '1,200 Diamonds',
-                            style: TextStyle(
+                            data?.payDiamonds ?? '1,200 Diamonds',
+                            style: const TextStyle(
                               fontWeight: FontWeight.w700,
                               fontSize: 15,
                               color: UserColors.text,
@@ -181,7 +214,7 @@ class PayMethodScreen extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          '₹249',
+                          data?.payPrice ?? '₹249',
                           style: UserText.body.copyWith(
                             fontWeight: FontWeight.w700,
                           ),
@@ -204,14 +237,14 @@ class PayMethodScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                pay,
+                                google?.label ?? 'Google Play',
                                 style: UserText.small.copyWith(
                                   fontWeight: FontWeight.w700,
                                   color: UserColors.text,
                                 ),
                               ),
                               Text(
-                                'Cards, UPI, Play balance',
+                                google?.subtitle ?? 'Cards, UPI, Play balance',
                                 style: UserText.xs.copyWith(
                                   fontWeight: FontWeight.w400,
                                   color: UserColors.muted,
@@ -224,10 +257,10 @@ class PayMethodScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const _Card(
+                  _Card(
                     child: Row(
                       children: [
-                        KsIconButton(
+                        const KsIconButton(
                           icon: KsIcons.zap,
                           background: UserColors.white,
                           color: UserColors.surface1,
@@ -238,7 +271,7 @@ class PayMethodScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'UPI via Razorpay',
+                                upi?.label ?? 'UPI via Razorpay',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w700,
                                   fontSize: 13,
@@ -246,7 +279,7 @@ class PayMethodScreen extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                "Google's alternative billing (India) · PhonePe, GPay, Paytm",
+                                upi?.subtitle ?? "Google's alternative billing (India) · PhonePe, GPay, Paytm",
                                 style: TextStyle(
                                   fontWeight: FontWeight.w400,
                                   fontSize: 12,
@@ -262,11 +295,11 @@ class PayMethodScreen extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Both options credit Diamonds instantly. Payment is processed securely by the provider you choose.',
+                    data?.payNote ?? 'Both options credit Diamonds instantly. Payment is processed securely by the provider you choose.',
                     style: UserText.xs.copyWith(fontWeight: FontWeight.w400),
                   ),
-                  const KsButton(
-                    label: 'Continue · ₹249',
+                  KsButton(
+                    label: data?.payCta ?? 'Continue · ₹249',
                     background: UserColors.gold,
                     foreground: UserColors.goldInk,
                   ),
@@ -287,10 +320,11 @@ class RechargeSuccessScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return _WalletStage(
       builder: (data) {
-        final balance = (data?.diamonds ?? 120) + _credited;
-        final level = data?.level ?? 2;
-        final next = data?.nextLevel ?? 3;
-        final name = data?.priyaName ?? 'Priya';
+        final balance =
+            data?.newBalance ?? ((data?.diamonds ?? 120) + _credited);
+        final levelLabel =
+            data?.levelLabel ??
+            'Lv ${data?.level ?? 2} → ${data?.nextLevel ?? 3}';
         return Stack(
           children: [
             const Positioned.fill(
@@ -321,14 +355,18 @@ class RechargeSuccessScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      '+${grouped(_credited)}',
+                      data?.creditLabel ?? '+${grouped(_credited)}',
                       style: UserText.h1.copyWith(color: UserColors.gold),
                     ),
                     const SizedBox(height: 12),
-                    Text('Recharge successful', style: UserText.h2),
+                    Text(
+                      data?.successTitle ?? 'Recharge successful',
+                      style: UserText.h2,
+                    ),
                     const SizedBox(height: 12),
                     Text(
-                      '$_creditedBase Diamonds + $_creditedBonus first-recharge bonus',
+                      data?.successLine ??
+                          '$_creditedBase Diamonds + $_creditedBonus first-recharge bonus',
                       textAlign: TextAlign.center,
                       style: UserText.small,
                     ),
@@ -337,7 +375,10 @@ class RechargeSuccessScreen extends StatelessWidget {
                       child: Row(
                         children: [
                           Expanded(
-                            child: Text('New balance', style: UserText.small),
+                            child: Text(
+                              data?.newBalanceLabel ?? 'New balance',
+                              style: UserText.small,
+                            ),
                           ),
                           Text(
                             grouped(balance),
@@ -355,14 +396,14 @@ class RechargeSuccessScreen extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Text(
-                              'Level progress',
+                              data?.progressLabel ?? 'Level progress',
                               style: UserText.small.copyWith(
                                 color: UserColors.text,
                               ),
                             ),
                           ),
                           Text(
-                            'Lv $level → $next',
+                            levelLabel,
                             style: UserText.xs.copyWith(
                               fontWeight: FontWeight.w400,
                             ),
@@ -371,9 +412,17 @@ class RechargeSuccessScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    KsButton(label: 'Call $name now', icon: KsIcons.video),
+                    KsButton(
+                      label:
+                          data?.callLabel ??
+                          'Call ${data?.priyaName ?? 'Priya'} now',
+                      icon: KsIcons.video,
+                    ),
                     const SizedBox(height: 12),
-                    Text('Back to Discover', style: UserText.small),
+                    Text(
+                      data?.backLabel ?? 'Back to Discover',
+                      style: UserText.small,
+                    ),
                   ],
                 ),
               ),
@@ -390,35 +439,45 @@ class FirstOfferScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: UserColors.bg,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Align(
-            alignment: Alignment.topCenter,
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(16, UserSpace.statusBar, 16, 0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(child: KsMediaBox(label: 'Host', height: 236)),
-                  SizedBox(width: 12),
-                  Expanded(child: KsMediaBox(label: 'Host', height: 236)),
-                ],
+    return _WalletStage(
+      builder: (data) {
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            const Align(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(16, UserSpace.statusBar, 16, 0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: KsMediaBox(label: 'Host', height: 236)),
+                    SizedBox(width: 12),
+                    Expanded(child: KsMediaBox(label: 'Host', height: 236)),
+                  ],
+                ),
               ),
             ),
-          ),
-          Positioned.fill(child: ColoredBox(color: UserColors.dimQueue)),
-          Positioned(top: 150, left: 20, right: 20, child: _OfferDialog()),
-        ],
-      ),
+            const Positioned.fill(
+              child: ColoredBox(color: UserColors.dimQueue),
+            ),
+            Positioned(
+              top: 150,
+              left: 20,
+              right: 20,
+              child: _OfferDialog(data),
+            ),
+          ],
+        );
+      },
     );
   }
 }
 
 class _OfferDialog extends StatelessWidget {
-  const _OfferDialog();
+  const _OfferDialog(this.data);
+
+  final WalletData? data;
 
   @override
   Widget build(BuildContext context) {
@@ -442,10 +501,10 @@ class _OfferDialog extends StatelessWidget {
             child: KsIconButton(icon: KsIcons.x),
           ),
           const SizedBox(height: 12),
-          const _Pill('NEW USER OFFER'),
+          _Pill(data?.offerBadge ?? 'NEW USER OFFER'),
           const SizedBox(height: 12),
           Text(
-            'Double Diamonds\non your first recharge',
+            data?.offerTitle ?? 'Double Diamonds\non your first recharge',
             textAlign: TextAlign.center,
             style: UserText.h1,
           ),
@@ -454,9 +513,12 @@ class _OfferDialog extends StatelessWidget {
             TextSpan(
               style: UserText.small,
               children: [
-                const TextSpan(text: 'Valid once · ends in '),
                 TextSpan(
-                  text: _offerLeft,
+                  text: (data?.offerValid ?? 'Valid once · ends in $_offerLeft')
+                      .replaceFirst(data?.offerCountdown ?? _offerLeft, ''),
+                ),
+                TextSpan(
+                  text: data?.offerCountdown ?? _offerLeft,
                   style: UserText.small.copyWith(
                     fontWeight: FontWeight.w700,
                     color: UserColors.text,
@@ -466,24 +528,42 @@ class _OfferDialog extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          const Row(
+          Row(
             children: [
-              _OfferTile(_OfferPack(220, 110, 49)),
-              SizedBox(width: 12),
-              _OfferTile(
-                _OfferPack(1200, 600, 249, tag: 'POPULAR', selected: true),
-              ),
+              for (var i = 0; i < (data?.offerPacks.length ?? 2); i++) ...[
+                if (i > 0) const SizedBox(width: 12),
+                _OfferTile(
+                  data == null
+                      ? (i == 0
+                            ? const _OfferPack(220, 110, 49)
+                            : const _OfferPack(
+                                1200,
+                                600,
+                                249,
+                                tag: 'POPULAR',
+                                selected: true,
+                              ))
+                      : _OfferPack(
+                          data!.offerPacks[i].diamonds,
+                          data!.offerPacks[i].payFor,
+                          data!.offerPacks[i].priceINR,
+                          tag: data!.offerPacks[i].tag,
+                          selected: data!.offerPacks[i].selected,
+                        ),
+                ),
+              ],
             ],
           ),
           const SizedBox(height: 12),
-          const KsButton(
-            label: 'Claim offer',
+          KsButton(
+            label: data?.offerCta ?? 'Claim offer',
             background: UserColors.gold,
             foreground: UserColors.goldInk,
           ),
           const SizedBox(height: 12),
           Text(
-            'Bonus Diamonds are credited instantly and never expire.',
+            data?.offerNote ??
+                'Bonus Diamonds are credited instantly and never expire.',
             textAlign: TextAlign.center,
             style: UserText.xs.copyWith(fontWeight: FontWeight.w400),
           ),
@@ -513,21 +593,29 @@ class VipScreen extends StatelessWidget {
         return Column(
           children: [
             const SizedBox(height: UserSpace.statusBar),
-            const KsTopBar(
-              leading: KsIconButton(icon: KsIcons.chevronLeft),
-              title: 'Kinkstar VIP',
+            KsTopBar(
+              leading: const KsIconButton(icon: KsIcons.chevronLeft),
+              title: data?.vipPageTitle ?? 'Kinkstar VIP',
             ),
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 children: [
-                  const _VipHero(),
+                  _VipHero(
+                    name: data?.vipName ?? 'VIP Gold',
+                    cancel: data?.vipCancel ?? 'Cancel anytime in Google Play',
+                  ),
                   const SizedBox(height: 16.5),
-                  const _Perk('15% off every call minute'),
-                  const _Perk('30 free Diamonds every day'),
-                  const _Perk('Priority in Quick Match and queues'),
-                  const _Perk('Unlimited free messages'),
-                  const _Perk('VIP badge, entry effect, exclusive gifts'),
+                  for (final perk
+                      in data?.perks ??
+                          const [
+                            '15% off every call minute',
+                            '30 free Diamonds every day',
+                            'Priority in Quick Match and queues',
+                            'Unlimited free messages',
+                            'VIP badge, entry effect, exclusive gifts',
+                          ])
+                    _Perk(perk),
                   const SizedBox(height: 11.5),
                   Row(
                     children: [
@@ -535,17 +623,21 @@ class VipScreen extends StatelessWidget {
                         if (i > 0) const SizedBox(width: 10),
                         _PlanTile(
                           plans[i],
-                          selected: plans[i].duration == '1 month',
-                          tag: plans[i].duration == '1 month'
-                              ? 'SAVE 30%'
-                              : null,
+                          selected:
+                              plans[i].selected ||
+                              (data == null && plans[i].duration == '1 month'),
+                          tag:
+                              plans[i].tag ??
+                              (data == null && plans[i].duration == '1 month'
+                                  ? 'SAVE 30%'
+                                  : null),
                         ),
                       ],
                     ],
                   ),
                   const SizedBox(height: 14),
                   Text(
-                    'Auto-renews until cancelled. Renewal price shown before you pay.',
+                    data?.vipRenewal ?? 'Auto-renews until cancelled. Renewal price shown before you pay.',
                     style: UserText.xs.copyWith(fontWeight: FontWeight.w400),
                   ),
                 ],
@@ -554,7 +646,9 @@ class VipScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
               child: KsButton(
-                label: 'Start VIP · ₹${month?.priceINR ?? 399}/month',
+                label:
+                    data?.vipCta ??
+                    'Start VIP · ₹${month?.priceINR ?? 399}/month',
                 background: UserColors.gold,
                 foreground: UserColors.goldInk,
               ),
@@ -575,16 +669,28 @@ class WalletHistoryScreen extends StatelessWidget {
       builder: (data) {
         final priya = data?.priyaName ?? 'Priya';
         final aria = data?.ariaName ?? 'Aria';
+        final rows = data?.historyRows;
+        String cell(
+          int index,
+          String fallback,
+          String Function(HistoryRow) pick,
+        ) {
+          if (rows == null || index >= rows.length) return fallback;
+          return pick(rows[index]);
+        }
+
         return Column(
           children: [
             const SizedBox(height: UserSpace.statusBar),
-            const KsTopBar(
-              leading: KsIconButton(icon: KsIcons.chevronLeft),
-              title: 'Wallet history',
+            KsTopBar(
+              leading: const KsIconButton(icon: KsIcons.chevronLeft),
+              title: data?.historyTitle ?? 'Wallet history',
             ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(16, 0, 16, 12),
-              child: _Segments(['Spending', 'Recharges', 'VIP']),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+              child: _Segments(
+                data?.historyTabs ?? const ['Spending', 'Recharges', 'VIP'],
+              ),
             ),
             Expanded(
               child: ListView(
@@ -592,31 +698,39 @@ class WalletHistoryScreen extends StatelessWidget {
                 children: [
                   _LedgerRow(
                     leading: _Letter(priya),
-                    title: 'Video call · $priya',
-                    subtitle: 'Today 9:51 pm · 8:42',
-                    amount: '−349',
+                    title: cell(0, 'Video call · $priya', (row) => row.title),
+                    subtitle: cell(
+                      0,
+                      'Today 9:51 pm · 8:42',
+                      (row) => row.subtitle,
+                    ),
+                    amount: cell(0, '−349', (row) => row.amount),
                   ),
-                  const _LedgerRow(
-                    leading: _Letter('P'),
-                    title: 'Gift · Rose x10',
-                    subtitle: 'Today 9:44 pm',
-                    amount: '−100',
+                  _LedgerRow(
+                    leading: const _Letter('P'),
+                    title: cell(1, 'Gift · Rose x10', (row) => row.title),
+                    subtitle: cell(1, 'Today 9:44 pm', (row) => row.subtitle),
+                    amount: cell(1, '−100', (row) => row.amount),
                   ),
-                  const _LedgerRow(
-                    leading: _Letter('A'),
-                    title: 'Messages · Anjali',
-                    subtitle: 'Today 9:10 pm · 4 msgs',
-                    amount: '−20',
+                  _LedgerRow(
+                    leading: const _Letter('A'),
+                    title: cell(2, 'Messages · Anjali', (row) => row.title),
+                    subtitle: cell(
+                      2,
+                      'Today 9:10 pm · 4 msgs',
+                      (row) => row.subtitle,
+                    ),
+                    amount: cell(2, '−20', (row) => row.amount),
                   ),
-                  const _LedgerRow(
-                    leading: KsIconButton(
+                  _LedgerRow(
+                    leading: const KsIconButton(
                       icon: KsIcons.calendar,
                       color: UserColors.gold,
                     ),
-                    title: 'Daily check-in',
-                    subtitle: 'Today 8:00 pm',
-                    amount: '+15',
-                    positive: true,
+                    title: cell(3, 'Daily check-in', (row) => row.title),
+                    subtitle: cell(3, 'Today 8:00 pm', (row) => row.subtitle),
+                    amount: cell(3, '+15', (row) => row.amount),
+                    positive: rows == null || rows[3].positive,
                   ),
                   _LedgerRow(
                     leading: const _Letter(
@@ -624,20 +738,25 @@ class WalletHistoryScreen extends StatelessWidget {
                       icon: KsIcons.bot,
                       background: UserColors.aiAvatar,
                     ),
-                    title: 'AI call · $aria',
-                    subtitle: 'Yesterday · 6:10',
-                    amount: '−93',
+                    title: cell(4, 'AI call · $aria', (row) => row.title),
+                    subtitle: cell(
+                      4,
+                      'Yesterday · 6:10',
+                      (row) => row.subtitle,
+                    ),
+                    amount: cell(4, '−93', (row) => row.amount),
                   ),
-                  const _LedgerRow(
-                    leading: KsIconButton(icon: KsIcons.expand),
-                    title: 'Quick Match',
-                    subtitle: 'Yesterday',
-                    amount: '−10',
+                  _LedgerRow(
+                    leading: const KsIconButton(icon: KsIcons.expand),
+                    title: cell(5, 'Quick Match', (row) => row.title),
+                    subtitle: cell(5, 'Yesterday', (row) => row.subtitle),
+                    amount: cell(5, '−10', (row) => row.amount),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     child: Text(
-                      'Need help with a charge? Report a problem',
+                      data?.historyHelp ??
+                          'Need help with a charge? Report a problem',
                       style: UserText.small.copyWith(
                         color: UserColors.primarySoft,
                       ),
@@ -683,10 +802,15 @@ class _WalletStageState extends State<_WalletStage> {
 }
 
 class _BalanceCard extends StatelessWidget {
-  const _BalanceCard({required this.diamonds, required this.minutes});
+  const _BalanceCard({
+    required this.diamonds,
+    required this.label,
+    required this.talkTime,
+  });
 
   final int diamonds;
-  final int minutes;
+  final String label;
+  final String talkTime;
 
   @override
   Widget build(BuildContext context) {
@@ -707,7 +831,7 @@ class _BalanceCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Your balance',
+                    label,
                     style: UserText.xs.copyWith(fontWeight: FontWeight.w400),
                   ),
                   // CSS `font: 700 26px Poppins` resets line-height to the
@@ -718,7 +842,7 @@ class _BalanceCard extends StatelessWidget {
               ),
             ),
             Text(
-              '≈ $minutes min of calls',
+              talkTime,
               style: UserText.xs.copyWith(fontWeight: FontWeight.w400),
             ),
           ],
@@ -729,7 +853,15 @@ class _BalanceCard extends StatelessWidget {
 }
 
 class _OfferBanner extends StatelessWidget {
-  const _OfferBanner();
+  const _OfferBanner({
+    required this.badge,
+    required this.promo,
+    required this.countdown,
+  });
+
+  final String badge;
+  final String promo;
+  final String countdown;
 
   @override
   Widget build(BuildContext context) {
@@ -742,24 +874,29 @@ class _OfferBanner extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const _Pill('NEW USER'),
+          _Pill(badge),
           const SizedBox(width: 8),
           Expanded(
             child: Text.rich(
               TextSpan(
                 style: UserText.small.copyWith(color: UserColors.text),
-                children: const [
-                  TextSpan(text: 'First recharge: '),
+                children: [
                   TextSpan(
-                    text: '+100% Diamonds',
-                    style: TextStyle(fontWeight: FontWeight.w700),
+                    text: promo.contains(': ')
+                        ? '${promo.split(': ').first}: '
+                        : promo,
                   ),
+                  if (promo.contains(': '))
+                    TextSpan(
+                      text: promo.split(': ').last,
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
                 ],
               ),
             ),
           ),
           Text(
-            _offerLeft,
+            countdown,
             style: UserText.xs.copyWith(fontWeight: FontWeight.w400),
           ),
         ],
@@ -861,9 +998,15 @@ class _StoreTile extends StatelessWidget {
 }
 
 class _VipRow extends StatelessWidget {
-  const _VipRow({required this.price});
+  const _VipRow({
+    required this.title,
+    required this.detail,
+    required this.view,
+  });
 
-  final int price;
+  final String title;
+  final String detail;
+  final String view;
 
   @override
   Widget build(BuildContext context) {
@@ -877,21 +1020,21 @@ class _VipRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'VIP: calls 15% cheaper',
+                  title,
                   style: UserText.small.copyWith(
                     fontWeight: FontWeight.w700,
                     color: UserColors.text,
                   ),
                 ),
                 Text(
-                  '+ 30 Diamonds daily · ₹$price/month',
+                  detail,
                   style: UserText.xs.copyWith(fontWeight: FontWeight.w400),
                 ),
               ],
             ),
           ),
           KsButton(
-            label: 'View',
+            label: view,
             minHeight: UserSpace.buttonSm,
             textStyle: UserText.buttonSm,
             background: UserColors.gold,
@@ -974,7 +1117,10 @@ class _OfferTile extends StatelessWidget {
 }
 
 class _VipHero extends StatelessWidget {
-  const _VipHero();
+  const _VipHero({required this.name, required this.cancel});
+
+  final String name;
+  final String cancel;
 
   @override
   Widget build(BuildContext context) {
@@ -999,7 +1145,7 @@ class _VipHero extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               Text(
-                'VIP Gold',
+                name,
                 style: UserText.h2.copyWith(
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
@@ -1007,7 +1153,7 @@ class _VipHero extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 6),
-              Text('Cancel anytime in Google Play', style: UserText.small),
+              Text(cancel, style: UserText.small),
             ],
           ),
         ),

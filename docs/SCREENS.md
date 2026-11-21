@@ -43,12 +43,12 @@ Reference PNGs are 820×1728. That is the 390×844 phone plus a 10px bezel (`box
 | U29 | Voice call | 07 Calls B | `/call/voice` | Calls | todo | |
 | U30 | Call summary & rate host | 07 Calls B | `/call/summary` | Calls | todo | |
 | U31 | All hosts busy (real queue) | 06 Calls A | `/call/queue` | Calls | todo | |
-| U32 | Diamond store | 08 Wallet | `/wallet` | Wallet | done | Balance, call minutes, and the VIP month price come from JSON. The six pack prices on the artboard contradict `wallet.json`. |
-| U33 | Payment method chooser | 08 Wallet | `/wallet/pay` | Wallet | done | Google Play label comes from JSON. |
-| U34 | Recharge success | 08 Wallet | `/wallet/success` | Wallet | done | New balance is the profile balance plus the artboard 1,200 credit. Level comes from the profile. |
-| U35 | First-recharge offer popup | 08 Wallet | `/wallet/offer` | Wallet | done | |
-| U36 | VIP membership | 08 Wallet | `/wallet/vip` | Wallet | done | Plan durations and prices come from `wallet.json`. |
-| U37 | Wallet history (Recharges / Spending) | 08 Wallet | `/wallet/history` | Wallet | done | The artboard rows are not the `ledger.json` entries. |
+| U32 | Diamond store | 08 Wallet | `/wallet` | Wallet | done | Title, packs, promo, GST line, buy button, and the VIP row come from `wallet.store` and `wallet.packs`. |
+| U33 | Payment method chooser | 08 Wallet | `/wallet/pay` | Wallet | done | Title, amount, both methods, the note, and the continue label come from `wallet.payment` and `paymentMethods`. |
+| U34 | Recharge success | 08 Wallet | `/wallet/success` | Wallet | done | Credit, bonus line, new balance, level, and both actions come from `wallet.success`. |
+| U35 | First-recharge offer popup | 08 Wallet | `/wallet/offer` | Wallet | done | Badge, title, countdown, both packs, and the claim label come from `wallet.firstRechargeOffer`. |
+| U36 | VIP membership | 08 Wallet | `/wallet/vip` | Wallet | done | Page title, perks, plans, and the start button come from `wallet.membership`, `vipPerks`, and `vipPlans`. |
+| U37 | Wallet history (Recharges / Spending) | 08 Wallet | `/wallet/history` | Wallet | done | Tabs and the six spending rows come from `wallet.history`. They are not the `ledger.json` entries. |
 | U38 | My level | 09 Me & engagement | `/me/level` | Me & engagement | todo | |
 | U39 | Daily check-in | 09 Me & engagement | `/me/check-in` | Me & engagement | todo | 7-day grid. Day 7 spans two columns. |
 | U40 | Events & leaderboard | 09 Me & engagement | `/me/events` | Me & engagement | todo | Event banner is server-driven. |
