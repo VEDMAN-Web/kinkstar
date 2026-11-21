@@ -34,7 +34,7 @@ The only language list. Every `languages` array in the other files uses these `c
 | mr | Marathi |
 | kn | Kannada |
 
-Fields: `code`, `name`.
+Fields: `code`, `name`, `nativeName`. `name` is the English name on U46 (Hindi, English). `nativeName` is the U48 label (हिन्दी, English, বাংলা, தமிழ், తెలుగు, मराठी, ಕನ್ನಡ).
 
 ## user_profile.json
 
@@ -44,6 +44,8 @@ The current user for the user app and the host app.
 | --- | --- |
 | id | `user_rahul` |
 | username | `Rahul_K` |
+| dateOfBirth | `14 Mar 1996` (U46). Stored as the artboard text, not an ISO date. |
+| about | `Movie buff from Delhi` (U46) |
 | avatar | `placeholder/avatars/rahul.png` |
 | languages | codes from `languages.json` |
 | level | `2` |
@@ -104,17 +106,24 @@ Rahul's `vip.active` is false. Buying VIP is priced in INR, and no Diamond price
 
 ## gifts.json
 
-Gift catalog. Fields: `id`, `name`, `price` (10–999 Diamonds), `category` (`popular`, `interactive`, `luxury`, `event`), `animation` (placeholder path).
+Gift catalog. Fields: `id`, `name`, `price` (Diamonds), `priceLabel`, `tag`, `category` (`popular`, `interactive`, `luxury`, `event`), `animation` (placeholder path).
 
-| name | price | category |
-| --- | --- | --- |
-| Rose | 10 | popular |
-| Star | 30 | null. U27 shows the name and the price, not a category or an animation. |
-| Wave | 20 | interactive |
-| Sing for me | 99 | interactive. U27 tag `SONG`. U26 chip `Song`. |
-| Dance | 199 | luxury |
-| Diya | 49 | event |
-| Crown | 500 | luxury |
+U21 and U27 both price Crown at 500. U21 badges it HOT; U27 shows no badge. The stored tag is U21's HOT. Sing for me keeps U27's `SONG` tag and U26's chip `Song`. Gifts an artboard shows without a category or animation store null. `priceLabel` is null except Daily heart (`0 (1 left)`).
+
+| name | price | tag | category |
+| --- | --- | --- | --- |
+| Rose | 10 | | popular |
+| Star | 30 | | null. U27 shows the name and the price, not a category or an animation. |
+| Wave | 20 | | interactive |
+| Sing for me | 99 | SONG. Chip `Song` (U26). | interactive |
+| Dance | 199 | | luxury |
+| Diya | 49 | | event |
+| Crown | 500 | HOT (U21) | luxury |
+| Chocolate | 50 | | null |
+| Kiss | 99 | | null |
+| Fireworks | 199 | | null |
+| Diamond ring | 999 | | null |
+| Daily heart | 0, label `0 (1 left)` | FREE | null |
 
 The 8:42 call sends Rose and Sing for me.
 
@@ -162,7 +171,8 @@ The only app config. Prices stay in `wallet.json`. This file points at pack ids 
 
 | field | meaning |
 | --- | --- |
-| version | App version string. Sample is `1.0.0`. |
+| version | Installed app version. U45 shows `v1.0.0` and U52 shows `Version 1.0.0 (100)`, so this stays `1.0.0`. |
+| build | `100`, the parenthetical build on U52. |
 | assetBaseUrl | Placeholder CDN origin (`https://cdn.example.com/kinkstar/`) for host photos and gift animations. The app prefixes this onto those asset paths. |
 | strings | Copy keyed by screen id, then by language code. Sample keys: `U01_title` and `U01_subtitle` (Discover), `U32_title` and `U32_subtitle` (Recharge), `U48_lowBalance` (call screen, tied to the 60s low-balance warning). Every string has all seven codes from `languages.json`. |
 | rechargePackIds | Pack ids in `wallet.json` order: `pack_100`, `pack_300`, `pack_700`, `pack_1500`, `pack_4000`, `pack_9000`. |
@@ -175,8 +185,16 @@ The only app config. Prices stay in `wallet.json`. This file points at pack ids 
 | features.aiCompanion | `true` (Aria) |
 | features.vip | `true` means VIP plans can be shown. It is not Rahul's VIP state. |
 | features.chatPaidMessages | `true`. The price after free messages is still `user_profile.freeMessages.priceAfter`. |
-| features.forceUpdate.minVersion | `1.0.0`. This build is not below it. |
-| features.maintenance | `on` is `false`. `message` is copy for every language code, used only when maintenance is on. |
+| features.forceUpdate.minVersion | `1.2.0`. U54's heading is `What's new in 1.2.0`. The same object holds that screen's title, body, what's-new lines, button, and soft-update note. |
+| features.maintenance | `on` is `false` (U55's primary screen is no internet). `message.en` is `We're upgrading Kinkstar Calls. Back at 4:00 am.` U55 has no other translation, so every language code uses that English sentence. Never null. |
 | limits.freeMatchesPerDay | `3` |
 | limits.freeMessagesPerHost | `3` |
 | limits.lowBalanceWarningSec | `60` |
+
+## messages.json
+
+U19 inbox, U20 chat, U21 gift-sheet state, and U42 notices. Priya and Aria threads point at `hosts.json`. Kinkstar Team, Anjali, Neha, and Sana threads keep `hostId` null. `hosts.json` has Anjali and Neha from U11; the inbox rows do not point at them. Calls and Following panels are null. The U21 grid order is `giftSheet.giftIds`. Rose is selected, quantity is 10, and the button is `Send · 100`.
+
+## settings.json
+
+U45–U53 and U55 copy that is not already on the profile, the language list, or `config.json`. U54 is `config.features.forceUpdate`. U55 quotes `config.features.maintenance.message.en`. Switch `on` is null when the row has no switch. U48 selects `en`. U50 checks `Camera off / not showing face` and `Also block Priya`. U51's five stars have `rating` null.

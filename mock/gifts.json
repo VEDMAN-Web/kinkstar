@@ -3,6 +3,8 @@
     "id": "gift_rose",
     "name": "Rose",
     "price": 10,
+    "priceLabel": null,
+    "tag": null,
     "category": "popular",
     "animation": "placeholder/gifts/rose"
   },
@@ -10,6 +12,8 @@
     "id": "gift_star",
     "name": "Star",
     "price": 30,
+    "priceLabel": null,
+    "tag": null,
     "category": null,
     "animation": null
   },
@@ -17,6 +21,8 @@
     "id": "gift_wave",
     "name": "Wave",
     "price": 20,
+    "priceLabel": null,
+    "tag": null,
     "category": "interactive",
     "animation": "placeholder/gifts/wave"
   },
@@ -24,15 +30,18 @@
     "id": "gift_sing",
     "name": "Sing for me",
     "price": 99,
-    "category": "interactive",
-    "animation": "placeholder/gifts/sing",
+    "priceLabel": null,
     "tag": "SONG",
-    "chipLabel": "Song"
+    "chipLabel": "Song",
+    "category": "interactive",
+    "animation": "placeholder/gifts/sing"
   },
   {
     "id": "gift_dance",
     "name": "Dance",
     "price": 199,
+    "priceLabel": null,
+    "tag": null,
     "category": "luxury",
     "animation": "placeholder/gifts/dance"
   },
@@ -40,6 +49,8 @@
     "id": "gift_diya",
     "name": "Diya",
     "price": 49,
+    "priceLabel": null,
+    "tag": null,
     "category": "event",
     "animation": "placeholder/gifts/diya"
   },
@@ -47,7 +58,54 @@
     "id": "gift_crown",
     "name": "Crown",
     "price": 500,
+    "priceLabel": null,
+    "tag": "HOT",
     "category": "luxury",
     "animation": "placeholder/gifts/crown"
+  },
+  {
+    "id": "gift_chocolate",
+    "name": "Chocolate",
+    "price": 50,
+    "priceLabel": null,
+    "tag": null,
+    "category": null,
+    "animation": null
+  },
+  {
+    "id": "gift_kiss",
+    "name": "Kiss",
+    "price": 99,
+    "priceLabel": null,
+    "tag": null,
+    "category": null,
+    "animation": null
+  },
+  {
+    "id": "gift_fireworks",
+    "name": "Fireworks",
+    "price": 199,
+    "priceLabel": null,
+    "tag": null,
+    "category": null,
+    "animation": null
+  },
+  {
+    "id": "gift_diamond_ring",
+    "name": "Diamond ring",
+    "price": 999,
+    "priceLabel": null,
+    "tag": null,
+    "category": null,
+    "animation": null
+  },
+  {
+    "id": "gift_daily_heart",
+    "name": "Daily heart",
+    "price": 0,
+    "priceLabel": "0 (1 left)",
+    "tag": "FREE",
+    "category": null,
+    "animation": null
   }
 ]

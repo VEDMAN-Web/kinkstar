@@ -1,0 +1,201 @@
+{
+  "inbox": {
+    "title": "Messages",
+    "tabs": ["Chats", "Calls", "Following"],
+    "selectedTab": "Chats",
+    "calls": null,
+    "following": null,
+    "threads": [
+      {
+        "id": "thread_team",
+        "hostId": null,
+        "name": "Kinkstar Team",
+        "badge": "Official",
+        "preview": "Your free call is ready. Tap to start.",
+        "time": "now",
+        "unread": null,
+        "online": null
+      },
+      {
+        "id": "thread_priya",
+        "hostId": "host_priya",
+        "name": "Priya",
+        "badge": null,
+        "preview": "Thanks for the rose! Call me later?",
+        "time": "9:42 pm",
+        "unread": 2,
+        "online": true
+      },
+      {
+        "id": "thread_anjali",
+        "hostId": null,
+        "name": "Anjali",
+        "badge": null,
+        "preview": "[Gift] Chocolate x1",
+        "time": "9:10 pm",
+        "unread": null,
+        "online": true
+      },
+      {
+        "id": "thread_aria",
+        "hostId": "host_aria",
+        "name": "Aria",
+        "badge": "AI",
+        "preview": "Good evening! How was your day?",
+        "time": "8:01 pm",
+        "unread": null,
+        "online": null
+      },
+      {
+        "id": "thread_neha",
+        "hostId": null,
+        "name": "Neha",
+        "badge": null,
+        "preview": "You: Hi Neha",
+        "time": "Yesterday",
+        "unread": null,
+        "online": null
+      },
+      {
+        "id": "thread_sana",
+        "hostId": null,
+        "name": "Sana",
+        "badge": null,
+        "preview": "[Missed call] 2 min ago",
+        "time": "Mon",
+        "unread": null,
+        "online": null
+      }
+    ]
+  },
+  "chat": {
+    "hostId": "host_priya",
+    "status": "Online · replies in ~2 min",
+    "safetyNote": "For your safety, never share phone numbers, UPI IDs or money outside the app.",
+    "dayLabel": "Today 9:30 pm",
+    "lines": [
+      {
+        "id": "chat_1",
+        "kind": "text",
+        "mine": true,
+        "text": "Hi Priya! Loved your intro clip",
+        "giftId": null,
+        "quantity": null
+      },
+      {
+        "id": "chat_2",
+        "kind": "text",
+        "mine": false,
+        "text": "Hi! Thank you. Where are you from?",
+        "giftId": null,
+        "quantity": null
+      },
+      {
+        "id": "chat_3",
+        "kind": "text",
+        "mine": true,
+        "text": "Delhi. Want to video call?",
+        "giftId": null,
+        "quantity": null
+      },
+      {
+        "id": "chat_4",
+        "kind": "gift",
+        "mine": true,
+        "text": "You sent Rose x1",
+        "giftId": "gift_rose",
+        "quantity": 1
+      },
+      {
+        "id": "chat_5",
+        "kind": "text",
+        "mine": false,
+        "text": "Thanks for the rose! Call me later?",
+        "giftId": null,
+        "quantity": null
+      }
+    ],
+    "freeNote": "3 free messages left · then 5 each",
+    "why": "Why?",
+    "placeholder": "Type a message"
+  },
+  "giftSheet": {
+    "title": "Send a gift",
+    "contextLine": "Thanks for the rose!",
+    "categories": ["Popular", "Luxury", "Interactive", "VIP"],
+    "selectedCategory": "Popular",
+    "giftIds": [
+      "gift_rose",
+      "gift_star",
+      "gift_chocolate",
+      "gift_crown",
+      "gift_kiss",
+      "gift_fireworks",
+      "gift_diamond_ring",
+      "gift_daily_heart"
+    ],
+    "selectedGiftId": "gift_rose",
+    "quantities": [1, 10, 99],
+    "selectedQuantity": 10,
+    "topUp": "Top up",
+    "sendLabel": "Send · 100"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "readAll": "Read all",
+    "groups": [
+      {
+        "label": "TODAY",
+        "items": [
+          {
+            "id": "notice_priya_online",
+            "hostId": "host_priya",
+            "title": "Priya is online now",
+            "detail": "You follow her · tap to call",
+            "time": "2m"
+          },
+          {
+            "id": "notice_daily_reward",
+            "hostId": null,
+            "title": "Daily reward ready",
+            "detail": "Day 3 streak · +15 Diamonds",
+            "time": "1h"
+          },
+          {
+            "id": "notice_level",
+            "hostId": null,
+            "title": "You reached Level 3",
+            "detail": "New avatar frame unlocked",
+            "time": "5h"
+          }
+        ]
+      },
+      {
+        "label": "EARLIER",
+        "items": [
+          {
+            "id": "notice_diwali",
+            "hostId": null,
+            "title": "Diwali gift festival starts",
+            "detail": "Limited gifts · 3 days",
+            "time": "2d"
+          },
+          {
+            "id": "notice_report",
+            "hostId": null,
+            "title": "Report update",
+            "detail": "Action taken on your report #4821",
+            "time": "3d"
+          },
+          {
+            "id": "notice_recharge",
+            "hostId": null,
+            "title": "Recharge successful",
+            "detail": "+1,200 Diamonds · ₹249",
+            "time": "4d"
+          }
+        ]
+      }
+    ]
+  }
+}
