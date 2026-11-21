@@ -996,7 +996,7 @@ class GuideScreen extends ConsumerWidget {
     final tabs =
         ref.watch(appConfigProvider).value?.tabs ??
         const [
-          ConfigTab(id: 'discover', label: 'Discover', enabled: true),
+          ConfigTab(id: 'discover', label: 'Home', enabled: true),
           ConfigTab(id: 'match', label: 'Match', enabled: true),
           ConfigTab(id: 'live', label: 'Live', enabled: true),
           ConfigTab(id: 'messages', label: 'Messages', enabled: true),

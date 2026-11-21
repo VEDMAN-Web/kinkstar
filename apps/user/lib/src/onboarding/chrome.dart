@@ -401,8 +401,7 @@ class KsTopBar extends StatelessWidget {
   }
 }
 
-/// Bottom navigation from `.tab`. The artboard prints "Home" on the first
-/// tab. Config's discover label is "Discover", which is the page title.
+/// Bottom navigation from `.tab`. Labels come from config, including Home.
 class UserTabBar extends StatelessWidget {
   const UserTabBar({
     super.key,
@@ -446,7 +445,7 @@ class UserTabBar extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  tab.id == 'discover' ? 'Home' : tab.label,
+                  tab.label,
                   style: UserText.tab.copyWith(
                     color: tab.id == selectedId
                         ? UserColors.primarySoft

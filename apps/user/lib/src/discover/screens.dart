@@ -13,16 +13,6 @@ void _go(BuildContext context, String location) {
   if (GoRouter.maybeOf(context) != null) context.go(location);
 }
 
-/// Artboard promo. `homeBanners` points at an image; this card is what the
-/// artboard draws, and what the capture shows when that image has not loaded.
-/// The countdown and the "+100%" line are not in `config.json` or `wallet.json`.
-const _promoTitle = 'First recharge: +100% Diamonds';
-const _promoDetail = 'Ends in 23:41:10 · new users only';
-
-/// Artboard bio. `hosts.json` has no biography field.
-const _priyaBio =
-    "Hi! I love Bollywood music and long chats about travel. Say hi and let's talk.";
-
 class DiscoverScreen extends ConsumerStatefulWidget {
   const DiscoverScreen({super.key});
 
@@ -67,12 +57,16 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
               ],
             ),
           ),
-          const _FilterChips(),
+          _FilterChips(chips: data?.chips ?? const []),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
             child: KsCachedImage(
               url: banner?.imageUrl ?? '',
-              fallback: const _RechargePromo(),
+              fallback: _RechargePromo(
+                title: data?.promoTitle ?? '',
+                detail: data?.promoDetail ?? '',
+                cta: data?.promoCta ?? '',
+              ),
             ),
           ),
           Expanded(
@@ -92,7 +86,9 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
 }
 
 class _FilterChips extends StatelessWidget {
-  const _FilterChips();
+  const _FilterChips({required this.chips});
+
+  final List<DiscoverChip> chips;
 
   @override
   Widget build(BuildContext context) {
@@ -105,18 +101,19 @@ class _FilterChips extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           child: Row(
             children: [
-              const KsChip(label: 'Hot', on: true),
-              const SizedBox(width: 8),
-              const KsChip(label: 'New'),
-              const SizedBox(width: 8),
-              const KsChip(label: 'Following'),
-              const SizedBox(width: 8),
-              const KsChip(label: 'Hindi'),
-              const SizedBox(width: 8),
-              GestureDetector(
-                onTap: () => _go(context, '/discover/filters'),
-                child: const KsChip(label: 'Filter', icon: KsIcons.filter),
-              ),
+              for (final (index, chip) in chips.indexed) ...[
+                if (index > 0) const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: chip.label == 'Filter'
+                      ? () => _go(context, '/discover/filters')
+                      : null,
+                  child: KsChip(
+                    label: chip.label,
+                    on: chip.selected,
+                    icon: chip.label == 'Filter' ? KsIcons.filter : null,
+                  ),
+                ),
+              ],
             ],
           ),
         ),
@@ -126,7 +123,15 @@ class _FilterChips extends StatelessWidget {
 }
 
 class _RechargePromo extends StatelessWidget {
-  const _RechargePromo();
+  const _RechargePromo({
+    required this.title,
+    required this.detail,
+    required this.cta,
+  });
+
+  final String title;
+  final String detail;
+  final String cta;
 
   @override
   Widget build(BuildContext context) {
@@ -143,12 +148,12 @@ class _RechargePromo extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _promoTitle,
+                  title,
                   style: UserText.body.copyWith(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  _promoDetail,
+                  detail,
                   style: UserText.xs.copyWith(
                     fontWeight: FontWeight.w400,
                     color: UserColors.muted,
@@ -159,7 +164,7 @@ class _RechargePromo extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           KsButton(
-            label: 'Get',
+            label: cta,
             fullWidth: false,
             minHeight: UserSpace.buttonSm,
             background: UserColors.gold,
@@ -172,6 +177,29 @@ class _RechargePromo extends StatelessWidget {
   }
 }
 
+_HostCard _cardFor(BuildContext context, DiscoverData data, MockHost host) {
+  final badges = <Widget>[
+    if (host.isAI)
+      _StatusBadge.ai(host.label ?? '')
+    else if (host.status == 'busy')
+      _StatusBadge.plain(data.badges.inCall)
+    else ...[
+      _StatusBadge.online(data.badges.online),
+      if (host.freeCall) _StatusBadge.plain(data.badges.freeCall),
+    ],
+  ];
+  return _HostCard(
+    hostId: host.id,
+    photoUrl: _photoUrl(context, host.id),
+    name: host.cardName,
+    detail: data.cardDetail(host),
+    rate: '${host.videoRatePerMin}/min',
+    badges: badges,
+    video: host.status != 'busy',
+    onTap: () => _go(context, '/hosts/${host.id}'),
+  );
+}
+
 class _HostGrid extends StatelessWidget {
   const _HostGrid({required this.data});
 
@@ -179,49 +207,8 @@ class _HostGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final priya = data.host('host_priya');
-    final aria = data.host('host_aria');
     final cards = [
-      _HostCard(
-        hostId: priya.id,
-        photoUrl: _photoUrl(context, priya.id),
-        name: '${priya.name}, ${priya.age}',
-        detail: data.languageList(priya.languages),
-        rate: '${priya.videoRatePerMin}/min',
-        badges: const [_StatusBadge.online(), _StatusBadge.plain('Free call')],
-        video: true,
-        onTap: () => _go(context, '/hosts/${priya.id}'),
-      ),
-      // Anjali is the artboard's second card. She is not in hosts.json.
-      _HostCard(
-        hostId: 'host_anjali',
-        photoUrl: _photoUrl(context, 'host_anjali'),
-        name: 'Anjali, 26',
-        detail: 'Hindi · Marathi',
-        rate: '60/min',
-        badges: const [_StatusBadge.online()],
-        video: true,
-      ),
-      // Neha is the artboard's busy card. She is not in hosts.json.
-      _HostCard(
-        hostId: 'host_neha',
-        photoUrl: _photoUrl(context, 'host_neha'),
-        name: 'Neha, 23',
-        detail: 'Tamil · English',
-        rate: '40/min',
-        badges: const [_StatusBadge.plain('● In a call')],
-        video: false,
-      ),
-      _HostCard(
-        hostId: aria.id,
-        photoUrl: _photoUrl(context, aria.id),
-        name: 'Aria (AI)',
-        detail: 'Always available',
-        rate: '${aria.videoRatePerMin}/min',
-        badges: const [_StatusBadge.ai()],
-        video: true,
-        onTap: () => _go(context, '/hosts/${aria.id}'),
-      ),
+      for (final id in data.cardHostIds) _cardFor(context, data, data.host(id)),
     ];
     return Column(
       children: [
@@ -312,11 +299,26 @@ class _HostCard extends StatelessWidget {
   }
 }
 
-class FilterScreen extends ConsumerWidget {
+class FilterScreen extends ConsumerStatefulWidget {
   const FilterScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<FilterScreen> createState() => _FilterScreenState();
+}
+
+class _FilterScreenState extends ConsumerState<FilterScreen> {
+  DiscoverData? _data;
+
+  @override
+  void initState() {
+    super.initState();
+    loadDiscover().then((data) {
+      if (mounted) setState(() => _data = data);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final title =
         ref.watch(appConfigProvider).value?.string('U01_title') ?? 'Discover';
     return Scaffold(
@@ -345,7 +347,10 @@ class FilterScreen extends ConsumerWidget {
             ],
           ),
           const Positioned.fill(child: ColoredBox(color: UserColors.dim)),
-          const Align(alignment: Alignment.bottomCenter, child: _FilterSheet()),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: _FilterSheet(data: _data),
+          ),
         ],
       ),
     );
@@ -353,7 +358,9 @@ class FilterScreen extends ConsumerWidget {
 }
 
 class _FilterSheet extends StatelessWidget {
-  const _FilterSheet();
+  const _FilterSheet({required this.data});
+
+  final DiscoverData? data;
 
   @override
   Widget build(BuildContext context) {
@@ -383,60 +390,29 @@ class _FilterSheet extends StatelessWidget {
           const SizedBox(height: 14),
           Row(
             children: [
-              Expanded(child: Text('Filters', style: UserText.h2)),
+              Expanded(
+                child: Text(data?.filtersTitle ?? '', style: UserText.h2),
+              ),
               Text(
-                'Reset',
+                data?.filtersReset ?? '',
                 style: UserText.small.copyWith(color: UserColors.primarySoft),
               ),
             ],
           ),
           const SizedBox(height: 14),
-          _FilterGroup(
-            label: 'Language',
-            wrap: true,
-            chips: const [
-              ('Hindi', true),
-              ('English', false),
-              ('Tamil', false),
-              ('Telugu', false),
-              ('Bengali', false),
-              ('Marathi', false),
-            ],
-          ),
-          const SizedBox(height: 14),
-          const _FilterGroup(
-            label: 'Price per minute',
-            chips: [
-              ('Any', true),
-              ('Up to 40', false),
-              ('40–80', false),
-              ('80+', false),
-            ],
-          ),
-          const SizedBox(height: 14),
-          const _FilterGroup(
-            label: 'Show',
-            chips: [
-              ('Online now', true),
-              ('Free-call hosts', false),
-              ('AI companions', false),
-            ],
-          ),
-          const SizedBox(height: 14),
-          const _FilterGroup(
-            label: 'Region',
-            wrap: true,
-            chips: [
-              ('All India', true),
-              ('North', false),
-              ('South', false),
-              ('East', false),
-              ('West', false),
-            ],
-          ),
-          const SizedBox(height: 14),
-          // The artboard says 128. hosts.json has nine people.
-          const KsButton(label: 'Show 128 hosts'),
+          for (final group
+              in data?.filterGroups ?? const <DiscoverGroup>[]) ...[
+            _FilterGroup(
+              label: group.label,
+              wrap: group.options.length > 4,
+              chips: [
+                for (final option in group.options)
+                  (option.label, option.selected),
+              ],
+            ),
+            const SizedBox(height: 14),
+          ],
+          KsButton(label: data?.submitLabel ?? ''),
         ],
       ),
     );
@@ -497,15 +473,17 @@ class _HostProfileScreenState extends ConsumerState<HostProfileScreen> {
   Widget build(BuildContext context) {
     final data = _data;
     final host = data?.host(widget.hostId);
-    final name = host == null ? 'Priya, 24' : '${host.name}, ${host.age}';
+    final name = host == null ? '' : host.cardName;
     final meta = host == null
-        ? 'Lucknow · Hindi, English · ★ 4.8 (860 calls)'
-        : '${host.city} · ${data!.languageList(host.languages, separator: ', ')} · ★ ${host.rating} (${compactCount(host.callsCount)} calls)';
-    final video = host?.videoRatePerMin ?? 40;
-    final voice = host?.voiceRatePerMin ?? 20;
-    final level = host?.charmLevel ?? 12;
-    final followers = host?.followers ?? 2400;
-    final gift = data?.giftName ?? 'Rose';
+        ? ''
+        : '${host.city} · ${data!.languageList(host.languages, separator: ', ')} · ★ ${host.rating} (${compactCount(host.callsCount ?? 0)} calls)';
+    final video = host?.videoRatePerMin ?? 0;
+    final voice = host?.voiceRatePerMin ?? 0;
+    final level = host?.charmLevel ?? 0;
+    final followers = host?.followers ?? 0;
+    final gift = data?.giftName(host?.topGiftId) ?? '';
+    final giftCount = host?.topGiftCount ?? 0;
+    final gallery = host?.gallery;
     final photo = _photoUrl(context, host?.id ?? widget.hostId);
     return Scaffold(
       body: Column(
@@ -542,13 +520,20 @@ class _HostProfileScreenState extends ConsumerState<HostProfileScreen> {
                     ],
                   ),
                   const Spacer(),
-                  const Row(
+                  Row(
                     children: [
-                      _StatusBadge.online(),
-                      SizedBox(width: 6),
-                      _StatusBadge.plain('Verified', icon: KsIcons.shield),
-                      SizedBox(width: 6),
-                      _StatusBadge.plain('1 / 6'),
+                      if (data != null) _StatusBadge.online(data.badges.online),
+                      if (host?.verified == true) ...[
+                        const SizedBox(width: 6),
+                        _StatusBadge.plain(
+                          data!.badges.verified,
+                          icon: KsIcons.shield,
+                        ),
+                      ],
+                      if (gallery != null) ...[
+                        const SizedBox(width: 6),
+                        _StatusBadge.plain(gallery.profileLabel),
+                      ],
                     ],
                   ),
                   const SizedBox(height: 6),
@@ -600,18 +585,14 @@ class _HostProfileScreenState extends ConsumerState<HostProfileScreen> {
                   ),
                   const SizedBox(height: 14),
                   Text(
-                    _priyaBio,
+                    host?.bio ?? '',
                     style: UserText.small.copyWith(color: UserColors.text),
                   ),
                   const SizedBox(height: 14),
                   Row(
                     children: [
-                      for (final entry in [
-                        'Photo',
-                        'Photo',
-                        'Intro clip',
-                        '+3',
-                      ].indexed) ...[
+                      for (final entry
+                          in (gallery?.tiles ?? const <String>[]).indexed) ...[
                         if (entry.$1 > 0) const SizedBox(width: 8),
                         GestureDetector(
                           onTap: () => _go(
@@ -636,7 +617,10 @@ class _HostProfileScreenState extends ConsumerState<HostProfileScreen> {
                     children: [
                       const KsIcon(KsIcons.gift, color: UserColors.muted),
                       const SizedBox(width: 12),
-                      Text('Top gift: $gift x120 ·', style: UserText.small),
+                      Text(
+                        'Top gift: $gift x$giftCount ·',
+                        style: UserText.small,
+                      ),
                       const SizedBox(width: 12),
                       const KsIcon(KsIcons.heart, color: UserColors.muted),
                       const SizedBox(width: 12),
@@ -656,10 +640,10 @@ class _HostProfileScreenState extends ConsumerState<HostProfileScreen> {
               children: [
                 const KsIconButton(icon: KsIcons.heart, size: 52),
                 const SizedBox(width: 10),
-                const Expanded(
+                Expanded(
                   flex: 10,
                   child: KsButton(
-                    label: 'Chat',
+                    label: data?.chatLabel ?? '',
                     icon: KsIcons.messageSquare,
                     fullWidth: false,
                     background: Colors.transparent,
@@ -668,10 +652,10 @@ class _HostProfileScreenState extends ConsumerState<HostProfileScreen> {
                   ),
                 ),
                 const SizedBox(width: 10),
-                const Expanded(
+                Expanded(
                   flex: 14,
                   child: KsButton(
-                    label: 'Video call',
+                    label: data?.videoCallLabel ?? '',
                     icon: KsIcons.video,
                     fullWidth: false,
                   ),
@@ -707,9 +691,11 @@ class _HostMediaScreenState extends ConsumerState<HostMediaScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final host = _data?.host(widget.hostId);
-    final name = host?.name ?? 'Priya';
-    final rate = host?.videoRatePerMin ?? 40;
+    final data = _data;
+    final host = data?.host(widget.hostId);
+    final name = host?.name ?? '';
+    final rate = host?.videoRatePerMin ?? 0;
+    final gallery = host?.gallery;
     return Scaffold(
       backgroundColor: UserColors.viewer,
       body: Column(
@@ -734,7 +720,10 @@ class _HostMediaScreenState extends ConsumerState<HostMediaScreen> {
                     color: UserColors.glass,
                     borderRadius: BorderRadius.circular(UserRadii.glass),
                   ),
-                  child: Text('3 / 6', style: UserText.glass),
+                  child: Text(
+                    gallery?.viewerCountLabel ?? '',
+                    style: UserText.glass,
+                  ),
                 ),
               ],
             ),
@@ -746,7 +735,7 @@ class _HostMediaScreenState extends ConsumerState<HostMediaScreen> {
                 url: _photoUrl(context, '${widget.hostId}/intro'),
                 radius: 0,
                 center: true,
-                label: '[Intro clip · 12s · labelled "Recorded intro"]',
+                label: gallery?.viewerLabel ?? '',
               ),
             ),
           ),
@@ -768,7 +757,7 @@ class _HostMediaScreenState extends ConsumerState<HostMediaScreen> {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
             child: KsButton(
-              label: 'Call $name live · $rate/min',
+              label: data?.liveCall(name, rate) ?? '',
               icon: KsIcons.video,
             ),
           ),
@@ -840,19 +829,11 @@ class _NetPhoto extends StatelessWidget {
 class _StatusBadge extends StatelessWidget {
   const _StatusBadge(this.label, {this.background, this.foreground, this.icon});
 
-  const _StatusBadge.online()
-    : this(
-        '● Online',
-        background: UserColors.ok,
-        foreground: UserColors.onlineInk,
-      );
+  const _StatusBadge.online(String label)
+    : this(label, background: UserColors.ok, foreground: UserColors.onlineInk);
 
-  const _StatusBadge.ai()
-    : this(
-        'AI companion',
-        background: UserColors.info,
-        foreground: UserColors.infoInk,
-      );
+  const _StatusBadge.ai(String label)
+    : this(label, background: UserColors.info, foreground: UserColors.infoInk);
 
   const _StatusBadge.plain(String label, {KsGlyph? icon})
     : this(label, icon: icon);
@@ -928,7 +909,7 @@ List<Widget> _spaced(List<Widget> children, double gap) {
 }
 
 const _defaultTabs = [
-  ConfigTab(id: 'discover', label: 'Discover', enabled: true),
+  ConfigTab(id: 'discover', label: 'Home', enabled: true),
   ConfigTab(id: 'match', label: 'Match', enabled: true),
   ConfigTab(id: 'live', label: 'Live', enabled: true),
   ConfigTab(id: 'messages', label: 'Messages', enabled: true),
