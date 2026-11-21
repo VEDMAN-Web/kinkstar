@@ -19,7 +19,7 @@ class KsButton extends StatelessWidget {
   });
 
   final String label;
-  final IconData? icon;
+  final KsGlyph? icon;
   final VoidCallback? onPressed;
   final Color background;
   final Color foreground;
@@ -79,7 +79,7 @@ class KsIconButton extends StatelessWidget {
     this.color = UserColors.text,
   });
 
-  final IconData icon;
+  final KsGlyph icon;
   final VoidCallback? onPressed;
   final double size;
   final Color background;
@@ -158,7 +158,10 @@ class KsField extends StatelessWidget {
                         ),
                       ),
                       if (chevron)
-                        const KsIcon(KsIcons.chevronDown, color: UserColors.muted),
+                        const KsIcon(
+                          KsIcons.chevronDown,
+                          color: UserColors.muted,
+                        ),
                     ],
                   ),
                 ),
@@ -235,7 +238,7 @@ class KsChip extends StatelessWidget {
   final String label;
   final bool on;
   final bool gold;
-  final IconData? icon;
+  final KsGlyph? icon;
 
   @override
   Widget build(BuildContext context) {
@@ -324,10 +327,7 @@ class _HatchPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.drawRect(
-      Offset.zero & size,
-      Paint()..color = UserColors.media,
-    );
+    canvas.drawRect(Offset.zero & size, Paint()..color = UserColors.media);
     final paint = Paint()..color = UserColors.hatch;
     const period = UserHatch.periodPx;
     canvas.save();

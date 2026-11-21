@@ -160,9 +160,7 @@ class _LanguageRow extends StatelessWidget {
           padding: const EdgeInsets.all(14),
           child: Row(
             children: [
-              Expanded(
-                child: Text(label, style: UserText.body),
-              ),
+              Expanded(child: Text(label, style: UserText.body)),
               KsCheck(on: selected),
             ],
           ),
@@ -194,10 +192,7 @@ class WelcomeScreen extends ConsumerWidget {
             SizedBox(
               height: 420,
               width: double.infinity,
-              child: KsCachedImage(
-                url: banner.imageUrl,
-                fallback: fallback,
-              ),
+              child: KsCachedImage(url: banner.imageUrl, fallback: fallback),
             ),
           Expanded(
             child: Padding(
@@ -243,8 +238,7 @@ class WelcomeScreen extends ConsumerWidget {
                       ),
                       children: [
                         const TextSpan(
-                          text:
-                              'By continuing you confirm you are 18+ and agree to the ',
+                          text: 'By continuing you confirm you are 18+ and agree to the ',
                         ),
                         TextSpan(
                           text: 'Terms',
@@ -732,7 +726,10 @@ class _ConsentRow extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Text.rich(
-              TextSpan(style: UserText.small.copyWith(color: UserColors.text), children: [text]),
+              TextSpan(
+                style: UserText.small.copyWith(color: UserColors.text),
+                children: [text],
+              ),
             ),
           ),
         ],
@@ -822,10 +819,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     value: user?.username ?? 'Rahul_K',
                   ),
                   const SizedBox(height: 14),
-                  Text(
-                    'I want to talk in',
-                    style: UserText.small,
-                  ),
+                  Text('I want to talk in', style: UserText.small),
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 8,
@@ -951,7 +945,7 @@ class _PermissionRow extends StatelessWidget {
     required this.on,
   });
 
-  final IconData icon;
+  final KsGlyph icon;
   final String title;
   final String detail;
   final bool on;
@@ -999,7 +993,8 @@ class GuideScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tabs = ref.watch(appConfigProvider).value?.tabs ??
+    final tabs =
+        ref.watch(appConfigProvider).value?.tabs ??
         const [
           ConfigTab(id: 'discover', label: 'Discover', enabled: true),
           ConfigTab(id: 'match', label: 'Match', enabled: true),
@@ -1007,39 +1002,44 @@ class GuideScreen extends ConsumerWidget {
           ConfigTab(id: 'messages', label: 'Messages', enabled: true),
           ConfigTab(id: 'me', label: 'Me', enabled: true),
         ];
-    final title = ref.watch(appConfigProvider).value?.string('U01_title') ?? 'Discover';
+    final title =
+        ref.watch(appConfigProvider).value?.string('U01_title') ?? 'Discover';
     return Scaffold(
       body: Stack(
         children: [
           Positioned.fill(
             child: Column(
-            children: [
-              const SizedBox(height: UserSpace.statusBar),
-              KsTopBar(
-                title: title,
-                trailing: const KsChip(label: '0', gold: true, icon: KsIcons.gem),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: GridView.count(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 12,
-                    crossAxisSpacing: 12,
-                    childAspectRatio: (390 - 32 - 12) / 2 / 230,
-                    physics: const NeverScrollableScrollPhysics(),
-                    children: const [
-                      KsMediaBox(label: 'Host', height: 230),
-                      KsMediaBox(label: 'Host', height: 230),
-                      KsMediaBox(label: 'Host', height: 230),
-                      KsMediaBox(label: 'Host', height: 230),
-                    ],
+              children: [
+                const SizedBox(height: UserSpace.statusBar),
+                KsTopBar(
+                  title: title,
+                  trailing: const KsChip(
+                    label: '0',
+                    gold: true,
+                    icon: KsIcons.gem,
                   ),
                 ),
-              ),
-              _TabBar(tabs: tabs),
-            ],
-          ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: GridView.count(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      childAspectRatio: (390 - 32 - 12) / 2 / 230,
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: const [
+                        KsMediaBox(label: 'Host', height: 230),
+                        KsMediaBox(label: 'Host', height: 230),
+                        KsMediaBox(label: 'Host', height: 230),
+                        KsMediaBox(label: 'Host', height: 230),
+                      ],
+                    ),
+                  ),
+                ),
+                _TabBar(tabs: tabs),
+              ],
+            ),
           ),
           const Positioned.fill(child: ColoredBox(color: UserColors.dim)),
           Positioned(
