@@ -1,7 +1,6 @@
-// Shape of mock/config.json on feature/mock-data (PR #1).
-// This file parses that object. It does not add fields the JSON does not have.
-// Pack prices, hosts, and ledger rows live in the other mock files on that
-// branch and are not loaded here.
+// Shape of mock/config.json on main. This file parses that object.
+// It does not add fields the JSON does not have. Pack prices, hosts, and
+// ledger rows live in the other files under mock/ and are not loaded here.
 
 /// Local stand-in for the remote app config.
 class AppConfig {

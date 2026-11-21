@@ -41,6 +41,16 @@ android {
     //   flutter build apk --release --split-per-abi
     // See tool/build_user_release.sh. Gradle splits are left off so they do not
     // fight the Flutter tool's own split.
+
+    packaging {
+        resources {
+            // Kotlin debug probe and Gradle tooling metadata. Not read at runtime.
+            excludes += setOf(
+                "DebugProbesKt.bin",
+                "kotlin-tooling-metadata.json",
+            )
+        }
+    }
 }
 
 kotlin {

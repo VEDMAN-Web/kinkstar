@@ -10,7 +10,7 @@ This branch is the scaffold only. Feature screens are listed in [docs/SCREENS.md
 - `packages/ui` — tokens and theme, Lucide icon font, config loader, placeholder home.
 - `design/source/user`, `design/source/host` — exported HTML. Not an app asset.
 - `design/screens/user`, `design/screens/host` — 820×1728 reference PNGs. Not an app asset.
-- `packages/ui/assets/config/config.json` — byte-for-byte copy of `mock/config.json` from `feature/mock-data` (PR #1). That branch owns `mock/`. This branch does not modify it.
+- `packages/ui/assets/config/config.json` — byte-for-byte copy of `mock/config.json` on main. The app does not modify `mock/`.
 
 ## Tokens
 
@@ -50,4 +50,13 @@ Measured with `bash tool/build_user_release.sh` (Flutter 3.50.1). Bytes are the 
 | arm64-v8a | 16,354,043 | 16.4MB |
 | x86_64 | 17,671,381 | 17.7MB |
 
-armeabi-v7a is under the 15MB target. arm64-v8a and x86_64 are over it. On arm64 the APK is `libflutter.so` (11,346,352 bytes) plus `libapp.so` (4,457,432 bytes). Bundled fonts, the Lucide font (tree-shaken from 986,208 bytes to 992), config, and the fallback image are about 250KB together. Both native libraries are already stripped, so there is no further debug-info cut available without dropping Material.
+armeabi-v7a is under the 15MB APK-file target. arm64-v8a and x86_64 are over it. On arm64 the APK is `libflutter.so` (11,346,352 bytes) plus `libapp.so` (4,457,432 bytes). Both native libraries are already stripped.
+
+Play download size (`bundletool get-size total` on the release App Bundle) is the 15MB metric:
+
+| ABI | Download size |
+| --- | ---: |
+| arm64-v8a | 7,690,702–7,691,914 bytes (7.69MB) |
+| armeabi-v7a | 7,224,336–7,225,548 bytes (7.22–7.23MB) |
+
+`libapp.so` symbol sizes (decompressed snapshot): `package:flutter` 2,175,889 (widgets 756,118, material 388,697, rendering 297,351, cupertino 107,160), `dart:core` 284,601, `dart:ui` 209,170, `material_color_utilities` 69,522, `go_router` 58,969, `riverpod` 43,019, `kinkstar_ui` 14,677. Compressed `flutter_assets` are 243,086 bytes: NOTICES.Z 99,997, Inter about 27KB compressed each, Poppins about 11KB each, Lucide 661, config.json 1,646, fallback.png 139, MaterialIcons 817, shaders 8,765. The release bundle excludes `DebugProbesKt.bin` and `kotlin-tooling-metadata.json`.

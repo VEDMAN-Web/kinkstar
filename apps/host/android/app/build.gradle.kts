@@ -39,6 +39,15 @@ android {
 
     // Same per-ABI release command as the user app:
     //   flutter build apk --release --split-per-abi
+
+    packaging {
+        resources {
+            excludes += setOf(
+                "DebugProbesKt.bin",
+                "kotlin-tooling-metadata.json",
+            )
+        }
+    }
 }
 
 kotlin {

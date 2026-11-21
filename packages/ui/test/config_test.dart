@@ -5,7 +5,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kinkstar_ui/kinkstar_ui.dart';
 
 void main() {
-  test('bundled config.json matches the feature/mock-data shape', () {
+  test('bundled config.json matches mock/config.json byte for byte', () {
+    final bundled = File('assets/config/config.json').readAsBytesSync();
+    final source = File('../../mock/config.json').readAsBytesSync();
+    expect(bundled, source);
+  });
+
+  test('bundled config.json matches the mock config shape', () {
     final raw = File('assets/config/config.json').readAsStringSync();
     final config = AppConfig.fromJson(jsonDecode(raw) as Map<String, dynamic>);
 
