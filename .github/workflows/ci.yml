@@ -87,6 +87,7 @@ jobs:
 
       - name: Pixel compare
         id: pixels
+        if: success() || failure()
         continue-on-error: true
         run: |
           set -euo pipefail
@@ -108,6 +109,11 @@ jobs:
             summary ""
             summary "Skipped: \`tool/compare_screen.py\` has no \`--tolerance\` flag."
             exit 0
+          fi
+          # Same mechanism as the screen PRs: headless flutter test of
+          # apps/user/test/*capture*.dart via tool/capture_user_screens.sh.
+          if ! bash tool/capture_user_screens.sh; then
+            echo "::warning::User capture tests did not all pass. Comparing whatever build PNGs were written."
           fi
           if ! python3 -c "import PIL.Image" >/dev/null 2>&1; then
             if ! sudo apt-get update -qq || ! sudo apt-get install -y -qq python3-pil; then
@@ -138,7 +144,7 @@ jobs:
             echo "<!-- kinkstar-pixel-compare -->"
             echo "### User app pixel compare"
             echo ""
-            echo "Tolerance 2. Match % is 100 minus the percentage of pixels that differ. A match under ${PIXEL_MATCH_WARN_PCT}% is a warning and does not fail CI. n/a means this checkout had no build capture for that screen."
+            echo "Tolerance 2. Match % is 100 minus the percentage of pixels that differ. A match under ${PIXEL_MATCH_WARN_PCT}% is a warning and does not fail CI. Build PNGs come from \`flutter test\` on \`apps/user/test/*capture*.dart\`. n/a means no capture test wrote that screen."
             echo ""
             echo "| Screen | Match % at tolerance 2 |"
             echo "| --- | ---: |"
@@ -177,11 +183,15 @@ jobs:
           done
           echo "compared=${#ids[@]}" >> "$GITHUB_OUTPUT"
 
-      - name: Upload screen diff images
+      - name: Upload screen compare images
+        if: success() || failure()
         uses: actions/upload-artifact@v7
         with:
-          name: user-screen-diffs
-          path: design/compare/*_diff.png
+          name: user-screen-compare
+          path: |
+            design/compare/*_build.png
+            design/compare/*_diff.png
+            design/compare/*_side_by_side.png
           if-no-files-found: ignore
 
       - name: Build debug APK
