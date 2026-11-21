@@ -9,6 +9,15 @@
     "animation": "placeholder/gifts/rose"
   },
   {
+    "id": "gift_star",
+    "name": "Star",
+    "price": 30,
+    "priceLabel": null,
+    "tag": null,
+    "category": null,
+    "animation": null
+  },
+  {
     "id": "gift_wave",
     "name": "Wave",
     "price": 20,
@@ -23,6 +32,7 @@
     "price": 99,
     "priceLabel": null,
     "tag": "SONG",
+    "chipLabel": "Song",
     "category": "interactive",
     "animation": "placeholder/gifts/sing"
   },
@@ -52,15 +62,6 @@
     "tag": "HOT",
     "category": "luxury",
     "animation": "placeholder/gifts/crown"
-  },
-  {
-    "id": "gift_star",
-    "name": "Star",
-    "price": 30,
-    "priceLabel": null,
-    "tag": null,
-    "category": null,
-    "animation": null
   },
   {
     "id": "gift_chocolate",

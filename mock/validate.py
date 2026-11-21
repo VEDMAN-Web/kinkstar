@@ -39,10 +39,13 @@ NATIVE_NAMES = [
 # Tier B is the specified rate. A and C are the mock display ladder.
 TIER_RATES = {"A": (60, 30), "B": (40, 20), "C": (20, 10)}
 
+# U13/U14 fields. They are on Priya only; other hosts do not show them.
+PRIYA_FIELDS = {"bio", "verified", "freeCall", "topGift", "gallery"}
+
 LEDGER_TYPES = {"recharge", "call", "gift", "message", "vip", "bonus", "refund"}
 POSITIVE_TYPES = {"recharge", "bonus", "refund"}
 NEGATIVE_TYPES = {"call", "gift", "message", "vip"}
-REF_KEYS = {"hostId", "userId", "refId", "callId", "giftId"}
+REF_KEYS = {"hostId", "userId", "refId", "callId", "giftId", "packId"}
 CALL_STATUSES = {"completed", "missed", "dropped", "refunded"}
 GIFT_CATEGORIES = {"popular", "interactive", "luxury", "event"}
 # U21 shows these names and prices, not a catalog category or animation.
@@ -87,13 +90,21 @@ def parse_time(value, label: str):
         return None
 
 
-def require_keys(obj, keys: set[str], label: str) -> None:
+def require_keys(
+    obj,
+    keys: set[str],
+    label: str,
+    optional: set[str] | None = None,
+) -> None:
     if not isinstance(obj, dict):
         fail(f"{label}: expected an object")
         return
     actual = set(obj)
+    allowed = set(keys)
+    if optional:
+        allowed |= optional
     missing = keys - actual
-    extra = actual - keys
+    extra = actual - allowed
     if missing:
         fail(f"{label}: missing {sorted(missing)}")
     if extra:
@@ -241,6 +252,15 @@ def check_user(user, levels) -> None:
             fail(f"level gap from Lv2 to Lv3 is {gap}, profile required is {required}")
 
 
+def _expect_host(host, label: str, expected: dict) -> None:
+    if not isinstance(host, dict):
+        fail(f"hosts.json: missing {label}")
+        return
+    for key, value in expected.items():
+        if host.get(key) != value:
+            fail(f"{label}.{key}: expected {value!r}, found {host.get(key)!r}")
+
+
 def check_hosts(hosts) -> dict:
     if not isinstance(hosts, list):
         fail("hosts.json: expected a list")
@@ -271,9 +291,15 @@ def check_hosts(hosts) -> dict:
             fail(f"{label}: expected an object")
             continue
         if host.get("isAI") is True:
-            require_keys(host, human_keys | {"label"}, label)
+            require_keys(host, human_keys | {"label", "subtitle"}, label)
         else:
-            require_keys(host, human_keys, label)
+            require_keys(host, human_keys, label, optional=PRIYA_FIELDS)
+            extras = set(host) - human_keys
+            expected_extras = PRIYA_FIELDS if host.get("id") == "host_priya" else set()
+            if extras != expected_extras:
+                fail(
+                    f"{label}: artboard fields {sorted(extras)} != {sorted(expected_extras)}"
+                )
             humans += 1
         by_id[host.get("id")] = host
         statuses.add(host.get("status"))
@@ -281,6 +307,9 @@ def check_hosts(hosts) -> dict:
             fail(f"{label}: bad status {host.get('status')!r}")
         if host.get("isAI") is True:
             tiers_ok = host.get("tier") is None
+        elif host.get("tier") is None:
+            # Anjali and Neha show a video rate and no tier letter.
+            tiers_ok = True
         else:
             tiers_ok = host.get("tier") in TIER_RATES
             tiers.add(host.get("tier"))
@@ -290,19 +319,28 @@ def check_hosts(hosts) -> dict:
             video, voice = TIER_RATES[host["tier"]]
             if (host.get("videoRatePerMin"), host.get("voiceRatePerMin")) != (video, voice):
                 fail(f"{label}: {host.get('tier')} rates must be {video}/{voice}")
-        if not is_int(host.get("callsCount")) or not is_int(host.get("followers")):
-            fail(f"{label}: callsCount and followers must be integers")
-    if humans != 8:
-        fail(f"hosts.json: expected 8 human hosts, found {humans}")
+            if not is_int(host.get("callsCount")) or not is_int(host.get("followers")):
+                fail(f"{label}: callsCount and followers must be integers")
+        elif host.get("isAI") is False:
+            voice = host.get("voiceRatePerMin")
+            if voice is not None and (not is_int(voice) or voice < 0):
+                fail(f"{label}: voiceRatePerMin must be null or a non-negative integer")
+            if host.get("callsCount") is not None or host.get("followers") is not None:
+                fail(f"{label}: callsCount and followers stay null until the artboard shows them")
+            if not is_int(host.get("videoRatePerMin")):
+                fail(f"{label}: videoRatePerMin must be an integer")
+    if humans != 10:
+        fail(f"hosts.json: expected 10 human hosts, found {humans}")
     aria = by_id.get("host_aria")
     if not aria or aria.get("name") != "Aria" or aria.get("isAI") is not True:
         fail("hosts.json: missing AI companion Aria")
     elif (
-        aria.get("label") != "AI Companion"
+        aria.get("label") != "AI companion"
+        or aria.get("subtitle") != "Always available"
         or aria.get("videoRatePerMin") != 15
         or aria.get("voiceRatePerMin") != 15
     ):
-        fail("Aria must be labelled AI Companion at 15/min video and voice")
+        fail("Aria must be labelled AI companion, subtitle Always available, at 15/min")
     priya = by_id.get("host_priya")
     if not priya:
         fail("hosts.json: missing host_priya")
@@ -311,15 +349,77 @@ def check_hosts(hosts) -> dict:
             "name": "Priya",
             "age": 24,
             "city": "Lucknow",
+            "languages": ["hi", "en"],
+            "rating": 4.8,
+            "callsCount": 2100,
+            "followers": 8400,
             "charmLevel": 12,
             "tier": "B",
             "videoRatePerMin": 40,
             "voiceRatePerMin": 20,
+            "status": "online",
             "isAI": False,
+            "bio": "Hi! I love Bollywood music and long chats about travel. Say hi and let's talk.",
+            "verified": True,
+            "freeCall": True,
         }
         for key, value in expected.items():
             if priya.get(key) != value:
                 fail(f"host_priya.{key}: expected {value!r}, found {priya.get(key)!r}")
+        if priya.get("topGift") != {"giftId": "gift_rose", "count": 120}:
+            fail(f"host_priya.topGift: expected Rose x120, found {priya.get('topGift')!r}")
+        gallery = {
+            "profileIndex": 1,
+            "viewerIndex": 3,
+            "count": 6,
+            "tiles": [
+                {"label": "Photo"},
+                {"label": "Photo"},
+                {"label": "Intro clip", "durationSec": 12, "caption": "Recorded intro"},
+            ],
+            "moreLabel": "+3",
+            "viewerLabel": '[Intro clip \u00b7 12s \u00b7 labelled "Recorded intro"]',
+        }
+        if priya.get("gallery") != gallery:
+            fail(f"host_priya.gallery: expected the U13/U14 media, found {priya.get('gallery')!r}")
+    _expect_host(
+        by_id.get("host_anjali"),
+        "host_anjali",
+        {
+            "name": "Anjali",
+            "age": 26,
+            "city": None,
+            "languages": ["hi", "mr"],
+            "rating": None,
+            "callsCount": None,
+            "followers": None,
+            "charmLevel": None,
+            "tier": None,
+            "videoRatePerMin": 60,
+            "voiceRatePerMin": 20,
+            "status": "online",
+            "isAI": False,
+        },
+    )
+    _expect_host(
+        by_id.get("host_neha"),
+        "host_neha",
+        {
+            "name": "Neha",
+            "age": 23,
+            "city": None,
+            "languages": ["ta", "en"],
+            "rating": None,
+            "callsCount": None,
+            "followers": None,
+            "charmLevel": None,
+            "tier": None,
+            "videoRatePerMin": 40,
+            "voiceRatePerMin": None,
+            "status": "busy",
+            "isAI": False,
+        },
+    )
     if statuses != {"online", "busy", "offline"}:
         fail(f"hosts.json: statuses should cover online/busy/offline, found {statuses}")
     if tiers != {"A", "B", "C"}:
@@ -327,10 +427,272 @@ def check_hosts(hosts) -> dict:
     return by_id
 
 
+def _expect(actual, expected, label: str) -> None:
+    if actual != expected:
+        fail(f"{label}: does not match the artboard")
+
+
+def _wallet_packs() -> dict:
+    """U32 store rows. U28 labels stay on the two packs that sheet also draws."""
+    return {
+        "pack_100": {
+            "id": "pack_100",
+            "diamonds": 60,
+            "bonus": 60,
+            "bonusLabel": "+60 bonus",
+            "priceINR": 29,
+            "tags": [],
+            "selected": False,
+        },
+        "pack_300": {
+            "id": "pack_300",
+            "diamonds": 220,
+            "bonus": 220,
+            "bonusLabel": "+220 bonus",
+            "priceINR": 99,
+            "tags": [],
+            "selected": False,
+        },
+        "pack_700": {
+            "id": "pack_700",
+            "diamonds": 600,
+            "bonus": 600,
+            "bonusLabel": "+600 bonus",
+            "priceINR": 249,
+            "tags": ["MOST POPULAR"],
+            "selected": True,
+            "screens": {
+                "U28": {"tag": "BEST", "bonus": None, "bonusLabel": "+20% bonus"},
+                "U32": {"tag": "MOST POPULAR", "bonus": 600, "bonusLabel": "+600 bonus"},
+            },
+        },
+        "pack_1500": {
+            "id": "pack_1500",
+            "diamonds": 1300,
+            "bonus": None,
+            "bonusLabel": "+10%",
+            "priceINR": 499,
+            "tags": [],
+            "selected": False,
+            "screens": {
+                "U28": {"tag": None, "bonus": None, "bonusLabel": None},
+                "U32": {"tag": None, "bonus": None, "bonusLabel": "+10%"},
+            },
+        },
+        "pack_4000": {
+            "id": "pack_4000",
+            "diamonds": 2800,
+            "bonus": None,
+            "bonusLabel": "+15%",
+            "priceINR": 999,
+            "tags": ["BEST VALUE"],
+            "selected": False,
+        },
+        "pack_9000": {
+            "id": "pack_9000",
+            "diamonds": 6000,
+            "bonus": None,
+            "bonusLabel": "+20%",
+            "priceINR": 1999,
+            "tags": [],
+            "selected": False,
+        },
+    }
+
+
+def _wallet_offer() -> dict:
+    mid = "\u00b7"
+    return {
+        "expiresAt": None,
+        "validOnce": True,
+        "badge": "NEW USER OFFER",
+        "title": "Double Diamonds\non your first recharge",
+        "validLine": f"Valid once {mid} ends in 23:41:10",
+        "countdown": "23:41:10",
+        "cta": "Claim offer",
+        "note": "Bonus Diamonds are credited instantly and never expire.",
+        "packs": [
+            {
+                "diamonds": 220,
+                "payFor": 110,
+                "payForLabel": "pay for 110",
+                "priceINR": 49,
+                "tag": None,
+                "selected": False,
+            },
+            {
+                "diamonds": 1200,
+                "payFor": 600,
+                "payForLabel": "pay for 600",
+                "priceINR": 249,
+                "tag": "POPULAR",
+                "selected": True,
+            },
+        ],
+    }
+
+
+def _wallet_methods() -> list:
+    return [
+        {
+            "id": "google_play",
+            "label": "Google Play",
+            "subtitle": "Cards, UPI, Play balance",
+            "selected": True,
+        },
+        {
+            "id": "upi_razorpay_alt_billing",
+            "label": "UPI via Razorpay",
+            "subtitle": "Google's alternative billing (India) \u00b7 PhonePe, GPay, Paytm",
+            "selected": False,
+        },
+    ]
+
+
+def _wallet_payment() -> dict:
+    return {
+        "title": "Choose how to pay",
+        "diamondsLabel": "1,200 Diamonds",
+        "diamonds": 1200,
+        "priceLabel": "\u20b9249",
+        "priceINR": 249,
+        "note": "Both options credit Diamonds instantly. Payment is processed securely by the provider you choose.",
+        "cta": "Continue \u00b7 \u20b9249",
+    }
+
+
+def _wallet_store() -> dict:
+    return {
+        "title": "Diamonds",
+        "historyLabel": "History",
+        "balanceLabel": "Your balance",
+        "balance": 120,
+        "talkTime": "\u2248 3 min of calls",
+        "badge": "NEW USER",
+        "promo": "First recharge: +100% Diamonds",
+        "countdown": "23:41:10",
+        "gst": "Prices include GST. Diamonds never expire.",
+        "refund": "Refund policy",
+        "buy": "Buy 1,200 Diamonds \u00b7 \u20b9249",
+        "buyDiamonds": 1200,
+        "vipTitle": "VIP: calls 15% cheaper",
+        "vipDetail": "+ 30 Diamonds daily \u00b7 \u20b9399/month",
+        "vipView": "View",
+    }
+
+
+def _wallet_success() -> dict:
+    return {
+        "creditLabel": "+1,200",
+        "credit": 1200,
+        "title": "Recharge successful",
+        "line": "600 Diamonds + 600 first-recharge bonus",
+        "base": 600,
+        "bonus": 600,
+        "balanceLabel": "New balance",
+        "newBalance": 1320,
+        "progressLabel": "Level progress",
+        "levelLabel": "Lv 2 \u2192 3",
+        "call": "Call Priya now",
+        "back": "Back to Discover",
+    }
+
+
+def _wallet_plans() -> list:
+    return [
+        {"id": "vip_1w", "duration": "1 week", "priceINR": 129, "tag": None, "selected": False},
+        {"id": "vip_1m", "duration": "1 month", "priceINR": 399, "tag": "SAVE 30%", "selected": True},
+        {"id": "vip_3m", "duration": "3 months", "priceINR": 999, "tag": None, "selected": False},
+    ]
+
+
+def _wallet_perks() -> list:
+    return [
+        "15% off every call minute",
+        "30 free Diamonds every day",
+        "Priority in Quick Match and queues",
+        "Unlimited free messages",
+        "VIP badge, entry effect, exclusive gifts",
+    ]
+
+
+def _wallet_membership() -> dict:
+    return {
+        "pageTitle": "Kinkstar VIP",
+        "name": "VIP Gold",
+        "cancel": "Cancel anytime in Google Play",
+        "renewal": "Auto-renews until cancelled. Renewal price shown before you pay.",
+        "cta": "Start VIP \u00b7 \u20b9399/month",
+    }
+
+
+def _wallet_history() -> dict:
+    mid = "\u00b7"
+    minus = "\u2212"
+    return {
+        "title": "Wallet history",
+        "tabs": [
+            {"label": "Spending", "selected": True},
+            {"label": "Recharges", "selected": False},
+            {"label": "VIP", "selected": False},
+        ],
+        "rows": [
+            {
+                "title": f"Video call {mid} Priya",
+                "subtitle": f"Today 9:51 pm {mid} 8:42",
+                "amount": f"{minus}349",
+                "hostId": "host_priya",
+            },
+            {
+                "title": f"Gift {mid} Rose x10",
+                "subtitle": "Today 9:44 pm",
+                "amount": f"{minus}100",
+                "giftId": "gift_rose",
+                "count": 10,
+            },
+            {
+                "title": f"Messages {mid} Anjali",
+                "subtitle": f"Today 9:10 pm {mid} 4 msgs",
+                "amount": f"{minus}20",
+                "hostId": "host_anjali",
+                "messageCount": 4,
+            },
+            {
+                "title": "Daily check-in",
+                "subtitle": "Today 8:00 pm",
+                "amount": "+15",
+            },
+            {
+                "title": f"AI call {mid} Aria",
+                "subtitle": f"Yesterday {mid} 6:10",
+                "amount": f"{minus}93",
+                "hostId": "host_aria",
+            },
+            {
+                "title": "Quick Match",
+                "subtitle": "Yesterday",
+                "amount": f"{minus}10",
+            },
+        ],
+        "help": "Need help with a charge? Report a problem",
+    }
+
+
 def check_wallet(wallet) -> dict:
     require_keys(
         wallet,
-        {"packs", "firstRechargeOffer", "paymentMethods", "vipPlans", "vipPerks"},
+        {
+            "packs",
+            "firstRechargeOffer",
+            "paymentMethods",
+            "payment",
+            "store",
+            "success",
+            "vipPlans",
+            "vipPerks",
+            "membership",
+            "history",
+        },
         "wallet",
     )
     packs = {}
@@ -340,63 +702,25 @@ def check_wallet(wallet) -> dict:
     if not isinstance(rows, list) or not 5 <= len(rows) <= 7:
         fail("wallet.packs: expected 5 to 7 packs")
         rows = []
-    tag_seen = {"MOST_POPULAR": 0, "BEST_VALUE": 0}
+    pack_keys = {"id", "diamonds", "bonus", "bonusLabel", "priceINR", "tags", "selected"}
     for i, pack in enumerate(rows):
-        require_keys(
-            pack,
-            {"id", "diamonds", "bonus", "priceINR", "tags"},
-            f"wallet.packs[{i}]",
-        )
-        if not isinstance(pack, dict):
-            continue
-        packs[pack.get("id")] = pack
-        for key in ("diamonds", "bonus", "priceINR"):
-            if not is_int(pack.get(key)) or pack.get(key) < 0:
-                fail(f"wallet.packs[{i}].{key}: expected a non-negative integer")
-        tags = pack.get("tags")
-        if not isinstance(tags, list):
-            fail(f"wallet.packs[{i}].tags: expected a list")
-            continue
-        for tag in tags:
-            if tag not in tag_seen:
-                fail(f"wallet.packs[{i}]: unknown tag {tag!r}")
-            else:
-                tag_seen[tag] += 1
-    for tag, count in tag_seen.items():
-        if count != 1:
-            fail(f"wallet.packs: tag {tag} appears {count} times, expected 1")
-    offer = wallet.get("firstRechargeOffer")
-    require_keys(offer, {"expiresAt", "validOnce"}, "wallet.firstRechargeOffer")
-    if isinstance(offer, dict):
-        parse_time(offer.get("expiresAt"), "wallet.firstRechargeOffer.expiresAt")
-        if offer.get("validOnce") is not True:
-            fail("wallet.firstRechargeOffer.validOnce must be true")
-    methods = wallet.get("paymentMethods")
-    method_ids = []
-    if isinstance(methods, list):
-        for i, method in enumerate(methods):
-            require_keys(method, {"id", "label"}, f"wallet.paymentMethods[{i}]")
-            if isinstance(method, dict):
-                method_ids.append(method.get("id"))
-    if method_ids != ["google_play", "upi_razorpay_alt_billing"]:
-        fail(f"wallet.paymentMethods: unexpected ids {method_ids}")
-    plans = wallet.get("vipPlans")
-    plan_ids = {}
-    if isinstance(plans, list):
-        for i, plan in enumerate(plans):
-            require_keys(plan, {"id", "duration", "priceINR"}, f"wallet.vipPlans[{i}]")
-            if isinstance(plan, dict):
-                plan_ids[plan.get("id")] = plan.get("priceINR")
-    if plan_ids != {"vip_1w": 129, "vip_1m": 399, "vip_3m": 999}:
-        fail(f"wallet.vipPlans: unexpected {plan_ids}")
-    perks = wallet.get("vipPerks")
-    if perks != [
-        "15% off calls",
-        "30 free Diamonds/day",
-        "priority match",
-        "unlimited free messages",
-    ]:
-        fail(f"wallet.vipPerks: unexpected {perks}")
+        require_keys(pack, pack_keys, f"wallet.packs[{i}]", optional={"screens"})
+        if isinstance(pack, dict):
+            packs[pack.get("id")] = pack
+    if packs != _wallet_packs():
+        fail("wallet.packs: does not match the U32 store, with U28 labels kept per screen")
+        for key in _wallet_packs():
+            if packs.get(key) != _wallet_packs()[key]:
+                fail(f"wallet.packs {key}: mismatch")
+    _expect(wallet.get("firstRechargeOffer"), _wallet_offer(), "wallet.firstRechargeOffer")
+    _expect(wallet.get("paymentMethods"), _wallet_methods(), "wallet.paymentMethods")
+    _expect(wallet.get("payment"), _wallet_payment(), "wallet.payment")
+    _expect(wallet.get("store"), _wallet_store(), "wallet.store")
+    _expect(wallet.get("success"), _wallet_success(), "wallet.success")
+    _expect(wallet.get("vipPlans"), _wallet_plans(), "wallet.vipPlans")
+    _expect(wallet.get("vipPerks"), _wallet_perks(), "wallet.vipPerks")
+    _expect(wallet.get("membership"), _wallet_membership(), "wallet.membership")
+    _expect(wallet.get("history"), _wallet_history(), "wallet.history")
     return packs
 
 
@@ -410,8 +734,9 @@ def check_gifts(gifts) -> dict:
     for i, gift in enumerate(gifts):
         require_keys(
             gift,
-            {"id", "name", "price", "priceLabel", "tag", "category", "animation"},
+            {"id", "name", "price", "category", "animation"},
             f"gifts[{i}]",
+            optional={"priceLabel", "tag", "chipLabel"},
         )
         if not isinstance(gift, dict):
             continue
@@ -424,7 +749,7 @@ def check_gifts(gifts) -> dict:
         if name == "Daily heart":
             if price != 0 or price_label != "0 (1 left)":
                 fail(f"{where}: Daily heart must be price 0 with label '0 (1 left)'")
-        elif not is_int(price) or not 10 <= price <= 999 or price_label is not None:
+        elif not is_int(price) or not 10 <= price <= 999 or price_label not in (None,):
             fail(f"{where}: price must be an integer from 10 to 999 with no priceLabel")
         category = gift.get("category")
         if category is None:
@@ -443,6 +768,11 @@ def check_gifts(gifts) -> dict:
         tag = gift.get("tag")
         if tag is not None and not isinstance(tag, str):
             fail(f"{where}: tag must be a string or null")
+        if name == "Sing for me":
+            if tag != "SONG" or gift.get("chipLabel") != "Song":
+                fail(f"{where}: Sing for me tag is SONG and the U26 chip is Song")
+        elif "chipLabel" in gift:
+            fail(f"{where}: chipLabel is only on Sing for me")
     expected = {
         "Rose": 10,
         "Wave": 20,
@@ -639,9 +969,22 @@ def check_ledger(ledger, packs: dict, calls: dict, gifts: dict, balance: int) ->
             meta = {}
         if kind in {"recharge", "bonus"}:
             pack = packs.get(ref)
-            field = "diamonds" if kind == "recharge" else "bonus"
-            if not pack or amount != pack.get(field):
-                fail(f"{label}: {kind} amount must match pack {field}")
+            if not pack:
+                fail(f"{label}: {kind} ref does not resolve")
+            elif ref == "pack_700" and kind == "recharge":
+                # U32 lists 600 diamonds. This row stays 700 so the sample
+                # still ends at diamondBalance 120, which U23 shows.
+                if amount != 700:
+                    fail(f"{label}: sample recharge credit stays 700")
+            elif ref == "pack_700" and kind == "bonus":
+                # U32 prints +600 bonus. This row stays 100 so the sample
+                # still ends at 120. The +600 is the store label, not this credit.
+                if amount != 100:
+                    fail(f"{label}: sample bonus credit stays 100")
+            else:
+                field = "diamonds" if kind == "recharge" else "bonus"
+                if amount != pack.get(field):
+                    fail(f"{label}: {kind} amount must match pack {field}")
         if kind == "call":
             call = calls.get(ref)
             call_amounts[ref] = call_amounts.get(ref, 0) + amount
@@ -765,6 +1108,8 @@ def check_config(config, codes: set[str], packs: dict) -> None:
             "tabs",
             "features",
             "limits",
+            "discover",
+            "calls",
         },
         "config",
     )
@@ -808,9 +1153,10 @@ def check_config(config, codes: set[str], packs: dict) -> None:
         banners = []
     banner_ids = set()
     banner_keys = {"id", "imageUrl", "deeplink", "startAt", "endAt", "serverDriven"}
+    banner_copy = {"title", "detail", "cta"}
     for i, banner in enumerate(banners):
         label = f"config.homeBanners[{i}]"
-        require_keys(banner, banner_keys, label)
+        require_keys(banner, banner_keys, label, optional=banner_copy)
         if not isinstance(banner, dict):
             continue
         banner_id = banner.get("id")
@@ -830,6 +1176,17 @@ def check_config(config, codes: set[str], packs: dict) -> None:
         end = parse_time(banner.get("endAt"), f"{label}.endAt")
         if start is not None and end is not None and end <= start:
             fail(f"{label}: endAt must be after startAt")
+        copy = {key: banner.get(key) for key in banner_copy if key in banner}
+        if banner_id == "banner_recharge":
+            expected_copy = {
+                "title": "First recharge: +100% Diamonds",
+                "detail": "Ends in 23:41:10 \u00b7 new users only",
+                "cta": "Get",
+            }
+            if copy != expected_copy:
+                fail(f"{label}: promo copy {copy!r} != {expected_copy!r}")
+        elif copy:
+            fail(f"{label}: promo copy is only on banner_recharge, found {sorted(copy)}")
 
     tabs = config.get("tabs")
     expected_tabs = [
@@ -840,7 +1197,7 @@ def check_config(config, codes: set[str], packs: dict) -> None:
         ("me", "Me"),
     ]
     if not isinstance(tabs, list) or len(tabs) != len(expected_tabs):
-        fail("config.tabs: expected Discover, Match, Live, Messages, Me")
+        fail("config.tabs: expected Home, Match, Live, Messages, Me")
         tabs = []
     for i, (tab_id, label_text) in enumerate(expected_tabs):
         if i >= len(tabs):
@@ -935,6 +1292,180 @@ def check_config(config, codes: set[str], packs: dict) -> None:
         or limits.get("lowBalanceWarningSec") != 60
     ):
         fail("config.limits: expected freeMatchesPerDay 3, freeMessagesPerHost 3, lowBalanceWarningSec 60")
+
+    _check_discover(config.get("discover"))
+    _check_calls(config.get("calls"))
+
+
+def _check_discover(discover) -> None:
+    """U11–U12 copy. Strings are the artboard text, including the en dash in 40–80."""
+    mid = "\u00b7"
+    expected = {
+        "cardHostIds": ["host_priya", "host_anjali", "host_neha", "host_aria"],
+        "chips": [
+            {"label": "Hot", "selected": True},
+            {"label": "New", "selected": False},
+            {"label": "Following", "selected": False},
+            {"label": "Hindi", "selected": False},
+            {"label": "Filter", "selected": False},
+        ],
+        "badges": {
+            "online": "\u25cf Online",
+            "inCall": "\u25cf In a call",
+            "freeCall": "Free call",
+            "verified": "Verified",
+        },
+        "filters": {
+            "title": "Filters",
+            "resetLabel": "Reset",
+            "hostCount": 128,
+            "submitLabel": "Show 128 hosts",
+            "groups": [
+                {
+                    "label": "Language",
+                    "options": [
+                        {"label": "Hindi", "selected": True},
+                        {"label": "English", "selected": False},
+                        {"label": "Tamil", "selected": False},
+                        {"label": "Telugu", "selected": False},
+                        {"label": "Bengali", "selected": False},
+                        {"label": "Marathi", "selected": False},
+                    ],
+                },
+                {
+                    "label": "Price per minute",
+                    "options": [
+                        {"label": "Any", "selected": True},
+                        {"label": "Up to 40", "selected": False},
+                        {"label": "40\u201380", "selected": False},
+                        {"label": "80+", "selected": False},
+                    ],
+                },
+                {
+                    "label": "Show",
+                    "options": [
+                        {"label": "Online now", "selected": True},
+                        {"label": "Free-call hosts", "selected": False},
+                        {"label": "AI companions", "selected": False},
+                    ],
+                },
+                {
+                    "label": "Region",
+                    "options": [
+                        {"label": "All India", "selected": True},
+                        {"label": "North", "selected": False},
+                        {"label": "South", "selected": False},
+                        {"label": "East", "selected": False},
+                        {"label": "West", "selected": False},
+                    ],
+                },
+            ],
+        },
+        "profile": {"chatLabel": "Chat", "videoCallLabel": "Video call"},
+        "viewer": {"liveCallLabel": f"Call $name live {mid} $rate/min"},
+    }
+    if discover != expected:
+        fail("config.discover: does not match the U11–U12 artboard copy")
+        if isinstance(discover, dict) and isinstance(expected, dict):
+            for key in sorted(set(discover) | set(expected)):
+                if discover.get(key) != expected.get(key):
+                    fail(f"config.discover.{key}: mismatch")
+
+
+def _check_calls(calls) -> None:
+    """U23–U31 copy. Clocks and balances are the artboard strings, not derived."""
+    mid = "\u00b7"
+    expected = {
+        "confirm": {
+            "statusLine": f"Online {mid} usually answers in 5s",
+            "billing": f"Per second {mid} stops when you hang up",
+            "warning": "We'll warn you 60 seconds before your balance runs out. You can top up without ending the call.",
+            "dontShow": "Don't show this again for calls under 60/min",
+            "talkTime": "about 3 minutes",
+            "balanceLabel": "120 Diamonds",
+            "startLabel": "Start video call",
+            "voiceInstead": f"Voice call instead {mid} 20/min",
+        },
+        "outgoing": {
+            "status": "Calling\u2026",
+            "notice": "You are not charged until she answers",
+        },
+        "incoming": {
+            "badge": f"Verified host {mid} live now",
+            "talked": "You talked yesterday",
+            "rateNote": "40/min if you answer",
+            "turnOff": "Turn off host call-backs",
+        },
+        "video": {
+            "clock": "03:12",
+            "balance": 88,
+            "minutesLeft": f"~2 min left",
+            "caption": "Live video (host camera)",
+            "youLabel": "You",
+            "roseSent": 10,
+            "thanks": "Thank you so much!",
+            "balanceLine": f"88 {mid} ~2 min left",
+        },
+        "gifts": {
+            "clock": "03:40",
+            "balance": 64,
+            "combo": f"Combo x3 active {mid} send again within 3s",
+        },
+        "lowBalance": {
+            "clock": "0:58 left",
+            "seconds": 58,
+            "body": "Your balance runs out in 58 seconds. The call continues while you pay.",
+            "pay": "Pay \u20b9249 with Google Play",
+            "otherMethods": "Other payment methods",
+            "endWhenEmpty": "End call when balance runs out",
+            "packs": [
+                {"diamonds": 100, "priceINR": 49, "tag": None, "bonusLabel": None},
+                {
+                    "diamonds": 600,
+                    "priceINR": 249,
+                    "tag": "BEST",
+                    "bonusLabel": "+20% bonus",
+                    "packId": "pack_700",
+                },
+                {
+                    "diamonds": 1300,
+                    "priceINR": 499,
+                    "tag": None,
+                    "bonusLabel": None,
+                    "packId": "pack_1500",
+                },
+            ],
+        },
+        "voice": {
+            "hostId": "host_anjali",
+            "clock": "07:25",
+            "label": f"Voice call {mid} 20/min",
+        },
+        "summary": {
+            "chips": [
+                {"label": "Friendly", "selected": True},
+                {"label": "Good talk", "selected": False},
+                {"label": "Camera off", "selected": False},
+                {"label": "Rude", "selected": False},
+            ]
+        },
+        "queue": {
+            "place": 3,
+            "wait": "About 2 minutes",
+            "body": "All Hindi-speaking hosts are in calls. We'll connect you to the next free one.",
+            "ariaLine": f"AI companion {mid} 15/min",
+            "voiceHostsAvailable": 12,
+            "dontWait": "Don't want to wait?",
+            "notify": "Notify me when it's my turn",
+            "leave": "Leave queue",
+        },
+    }
+    if calls != expected:
+        fail("config.calls: does not match the U23–U31 artboard copy")
+        if isinstance(calls, dict) and isinstance(expected, dict):
+            for key in sorted(set(calls) | set(expected)):
+                if calls.get(key) != expected.get(key):
+                    fail(f"config.calls.{key}: mismatch")
 
 
 def _check_lang_map(value, codes: set[str], label: str) -> None:

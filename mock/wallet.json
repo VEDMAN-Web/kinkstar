@@ -1,29 +1,214 @@
 {
   "packs": [
-    {"id": "pack_100", "diamonds": 100, "bonus": 0, "priceINR": 49, "tags": []},
-    {"id": "pack_300", "diamonds": 300, "bonus": 30, "priceINR": 129, "tags": []},
-    {"id": "pack_700", "diamonds": 700, "bonus": 100, "priceINR": 249, "tags": ["MOST_POPULAR"]},
-    {"id": "pack_1500", "diamonds": 1500, "bonus": 250, "priceINR": 499, "tags": []},
-    {"id": "pack_4000", "diamonds": 4000, "bonus": 800, "priceINR": 999, "tags": []},
-    {"id": "pack_9000", "diamonds": 9000, "bonus": 3000, "priceINR": 1999, "tags": ["BEST_VALUE"]}
+    {
+      "id": "pack_100",
+      "diamonds": 60,
+      "bonus": 60,
+      "bonusLabel": "+60 bonus",
+      "priceINR": 29,
+      "tags": [],
+      "selected": false
+    },
+    {
+      "id": "pack_300",
+      "diamonds": 220,
+      "bonus": 220,
+      "bonusLabel": "+220 bonus",
+      "priceINR": 99,
+      "tags": [],
+      "selected": false
+    },
+    {
+      "id": "pack_700",
+      "diamonds": 600,
+      "bonus": 600,
+      "bonusLabel": "+600 bonus",
+      "priceINR": 249,
+      "tags": ["MOST POPULAR"],
+      "selected": true,
+      "screens": {
+        "U28": {"tag": "BEST", "bonus": null, "bonusLabel": "+20% bonus"},
+        "U32": {"tag": "MOST POPULAR", "bonus": 600, "bonusLabel": "+600 bonus"}
+      }
+    },
+    {
+      "id": "pack_1500",
+      "diamonds": 1300,
+      "bonus": null,
+      "bonusLabel": "+10%",
+      "priceINR": 499,
+      "tags": [],
+      "selected": false,
+      "screens": {
+        "U28": {"tag": null, "bonus": null, "bonusLabel": null},
+        "U32": {"tag": null, "bonus": null, "bonusLabel": "+10%"}
+      }
+    },
+    {
+      "id": "pack_4000",
+      "diamonds": 2800,
+      "bonus": null,
+      "bonusLabel": "+15%",
+      "priceINR": 999,
+      "tags": ["BEST VALUE"],
+      "selected": false
+    },
+    {
+      "id": "pack_9000",
+      "diamonds": 6000,
+      "bonus": null,
+      "bonusLabel": "+20%",
+      "priceINR": 1999,
+      "tags": [],
+      "selected": false
+    }
   ],
   "firstRechargeOffer": {
-    "expiresAt": "2026-12-31T23:59:59Z",
-    "validOnce": true
+    "expiresAt": null,
+    "validOnce": true,
+    "badge": "NEW USER OFFER",
+    "title": "Double Diamonds\non your first recharge",
+    "validLine": "Valid once · ends in 23:41:10",
+    "countdown": "23:41:10",
+    "cta": "Claim offer",
+    "note": "Bonus Diamonds are credited instantly and never expire.",
+    "packs": [
+      {
+        "diamonds": 220,
+        "payFor": 110,
+        "payForLabel": "pay for 110",
+        "priceINR": 49,
+        "tag": null,
+        "selected": false
+      },
+      {
+        "diamonds": 1200,
+        "payFor": 600,
+        "payForLabel": "pay for 600",
+        "priceINR": 249,
+        "tag": "POPULAR",
+        "selected": true
+      }
+    ]
   },
   "paymentMethods": [
-    {"id": "google_play", "label": "Google Play"},
-    {"id": "upi_razorpay_alt_billing", "label": "UPI (Razorpay alternate billing)"}
+    {
+      "id": "google_play",
+      "label": "Google Play",
+      "subtitle": "Cards, UPI, Play balance",
+      "selected": true
+    },
+    {
+      "id": "upi_razorpay_alt_billing",
+      "label": "UPI via Razorpay",
+      "subtitle": "Google's alternative billing (India) · PhonePe, GPay, Paytm",
+      "selected": false
+    }
   ],
+  "payment": {
+    "title": "Choose how to pay",
+    "diamondsLabel": "1,200 Diamonds",
+    "diamonds": 1200,
+    "priceLabel": "₹249",
+    "priceINR": 249,
+    "note": "Both options credit Diamonds instantly. Payment is processed securely by the provider you choose.",
+    "cta": "Continue · ₹249"
+  },
+  "store": {
+    "title": "Diamonds",
+    "historyLabel": "History",
+    "balanceLabel": "Your balance",
+    "balance": 120,
+    "talkTime": "≈ 3 min of calls",
+    "badge": "NEW USER",
+    "promo": "First recharge: +100% Diamonds",
+    "countdown": "23:41:10",
+    "gst": "Prices include GST. Diamonds never expire.",
+    "refund": "Refund policy",
+    "buy": "Buy 1,200 Diamonds · ₹249",
+    "buyDiamonds": 1200,
+    "vipTitle": "VIP: calls 15% cheaper",
+    "vipDetail": "+ 30 Diamonds daily · ₹399/month",
+    "vipView": "View"
+  },
+  "success": {
+    "creditLabel": "+1,200",
+    "credit": 1200,
+    "title": "Recharge successful",
+    "line": "600 Diamonds + 600 first-recharge bonus",
+    "base": 600,
+    "bonus": 600,
+    "balanceLabel": "New balance",
+    "newBalance": 1320,
+    "progressLabel": "Level progress",
+    "levelLabel": "Lv 2 → 3",
+    "call": "Call Priya now",
+    "back": "Back to Discover"
+  },
   "vipPlans": [
-    {"id": "vip_1w", "duration": "1 week", "priceINR": 129},
-    {"id": "vip_1m", "duration": "1 month", "priceINR": 399},
-    {"id": "vip_3m", "duration": "3 months", "priceINR": 999}
+    {"id": "vip_1w", "duration": "1 week", "priceINR": 129, "tag": null, "selected": false},
+    {"id": "vip_1m", "duration": "1 month", "priceINR": 399, "tag": "SAVE 30%", "selected": true},
+    {"id": "vip_3m", "duration": "3 months", "priceINR": 999, "tag": null, "selected": false}
   ],
   "vipPerks": [
-    "15% off calls",
-    "30 free Diamonds/day",
-    "priority match",
-    "unlimited free messages"
-  ]
+    "15% off every call minute",
+    "30 free Diamonds every day",
+    "Priority in Quick Match and queues",
+    "Unlimited free messages",
+    "VIP badge, entry effect, exclusive gifts"
+  ],
+  "membership": {
+    "pageTitle": "Kinkstar VIP",
+    "name": "VIP Gold",
+    "cancel": "Cancel anytime in Google Play",
+    "renewal": "Auto-renews until cancelled. Renewal price shown before you pay.",
+    "cta": "Start VIP · ₹399/month"
+  },
+  "history": {
+    "title": "Wallet history",
+    "tabs": [
+      {"label": "Spending", "selected": true},
+      {"label": "Recharges", "selected": false},
+      {"label": "VIP", "selected": false}
+    ],
+    "rows": [
+      {
+        "title": "Video call · Priya",
+        "subtitle": "Today 9:51 pm · 8:42",
+        "amount": "−349",
+        "hostId": "host_priya"
+      },
+      {
+        "title": "Gift · Rose x10",
+        "subtitle": "Today 9:44 pm",
+        "amount": "−100",
+        "giftId": "gift_rose",
+        "count": 10
+      },
+      {
+        "title": "Messages · Anjali",
+        "subtitle": "Today 9:10 pm · 4 msgs",
+        "amount": "−20",
+        "hostId": "host_anjali",
+        "messageCount": 4
+      },
+      {
+        "title": "Daily check-in",
+        "subtitle": "Today 8:00 pm",
+        "amount": "+15"
+      },
+      {
+        "title": "AI call · Aria",
+        "subtitle": "Yesterday · 6:10",
+        "amount": "−93",
+        "hostId": "host_aria"
+      },
+      {
+        "title": "Quick Match",
+        "subtitle": "Yesterday",
+        "amount": "−10"
+      }
+    ],
+    "help": "Need help with a charge? Report a problem"
+  }
 }

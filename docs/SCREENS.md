@@ -21,7 +21,7 @@ Reference PNGs are 820×1728. That is the 390×844 phone plus a 10px bezel (`box
 | U07 | Age check & consent | 02 Onboarding B | `/onboarding/age` | Onboarding | done | |
 | U08 | Profile setup | 02 Onboarding B | `/onboarding/profile` | Onboarding | done | Nickname and spoken languages come from `user_profile.json`. Interest chips are the artboard set. |
 | U09 | Permissions primer | 02 Onboarding B | `/onboarding/permissions` | Onboarding | done | |
-| U10 | First-run guide (coach marks) | 02 Onboarding B | `/onboarding/guide` | Onboarding | done | Coach marks over Discover. The first tab reads "Home" on the artboard. Config's discover label is the page title. |
+| U10 | First-run guide (coach marks) | 02 Onboarding B | `/onboarding/guide` | Onboarding | done | Coach marks over Discover. The discover tab label in config is Home, matching the artboard. The page title is still `U01_title` (Discover). |
 | U11 | Home (Discover) | 03 Discover | `/discover` | Discover | todo | Host photos load from the network. |
 | U12 | Filter sheet | 03 Discover | `/discover/filters` | Discover | todo | |
 | U13 | Host profile | 03 Discover | `/hosts/:hostId` | Discover | todo | |
@@ -119,4 +119,4 @@ User PR order: Onboarding (U01–U10), Discover (U11–U14), Calls (U23–U31), 
 
 Host PR order follows the artboards: Partner onboarding, Partner application, Partner approval, Going online, Partner calls, Partner messages, Partner earnings, Partner performance, Partner profile & support.
 
-The sample `config.json` tabs are the user app's (Home, Match, Live, Messages, Me). The first tab id is still `discover`. Host tab labels are not in that file yet.
+The sample `config.json` tabs are the user app's (Home, Match, Live, Messages, Me). The discover tab id is still `discover`. Host tab labels are not in that file yet.
