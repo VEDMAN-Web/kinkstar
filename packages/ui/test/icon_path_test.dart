@@ -18,6 +18,13 @@ void main() {
       KsIcons.radio,
       KsIcons.messageSquare,
       KsIcons.user,
+      KsIcons.video,
+      KsIcons.heart,
+      KsIcons.gift,
+      KsIcons.trophy,
+      KsIcons.users,
+      KsIcons.x,
+      KsIcons.search,
     ];
     for (final glyph in drawings) {
       final drawing = (glyph as KsDrawGlyph).drawing;

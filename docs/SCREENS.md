@@ -26,8 +26,8 @@ Reference PNGs are 820×1728. That is the 390×844 phone plus a 10px bezel (`box
 | U12 | Filter sheet | 03 Discover | `/discover/filters` | Discover | todo | |
 | U13 | Host profile | 03 Discover | `/hosts/:hostId` | Discover | todo | |
 | U14 | Photo & intro-clip viewer | 03 Discover | `/hosts/:hostId/media` | Discover | todo | Full-bleed black viewer. |
-| U15 | Quick Match (idle) | 04 Match & Live | `/match` | Match & Live | todo | 260px dashed orbit with three avatars pinned around a centre control. |
-| U16 | Match found (swipe card) | 04 Match & Live | `/match/found` | Match & Live | todo | Tall card, skip / call / follow, auto-skip timer. |
+| U15 | Quick Match (idle) | 04 Match & Live | `/match` | Match & Live | done | Balance, free matches, and Hindi/English come from the profile. The orbit and the 218-host line are artboard copy. |
+| U16 | Match found (swipe card) | 04 Match & Live | `/match/found` | Match & Live | done | Riya is not in `hosts.json`. The card is artboard copy. |
 | U17 | Live rooms list (V2) | 04 Match & Live | `/live` | Match & Live | todo | V2. Room grid. |
 | U18 | Live room with PK battle (V2) | 04 Match & Live | `/live/:roomId` | Match & Live | todo | V2. Split PK bar (crimson / `#2563EB`), chat stack, gift and private-call buttons. |
 | U19 | Messages inbox (Chats / Calls / Following) | 05 Messages | `/messages` | Messages | todo | |

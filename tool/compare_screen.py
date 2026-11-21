@@ -3,9 +3,9 @@
 
 Usage (from the repo root):
 
-    python3 tool/compare_screen.py U11
+    python3 tool/compare_screen.py U23
 
-The reference is design/screens/user/U11_*.png or design/screens/host/P01_*.png.
+The reference is design/screens/user/U23_*.png or design/screens/host/P01_*.png.
 The build capture is design/compare/<ID>_build.png (390x844 at devicePixelRatio 2,
 so 780x1688). References are 820x1728 because they include a 10px logical bezel.
 This script crops 20 physical pixels off each edge, then writes:
@@ -13,10 +13,11 @@ This script crops 20 physical pixels off each edge, then writes:
 - design/compare/<ID>_side_by_side.png
 - design/compare/<ID>_diff.png
 
-It prints the percentage of pixels that differ at that shared size. A pixel
-counts as different when any RGB channel differs. The diff image is the
-per-channel absolute difference, multiplied by 4 and clamped, so unchanged
-pixels are black and small mismatches stay visible.
+It prints two percentages at that shared size. The first is the share of pixels
+where any RGB channel differs. The second is the share of pixels whose channels
+differ by at most 2. The diff image is the per-channel absolute difference,
+multiplied by 4 and clamped, so unchanged pixels are black and small mismatches
+stay visible.
 
 The process exits 0 even when pixels differ, and also when the capture or
 the reference is missing. CI can treat the printed percentage as a warning.
@@ -41,21 +42,25 @@ def reference_for(screen_id: str) -> Path:
     return matches[0]
 
 
-def difference_percent(reference: Image.Image, build: Image.Image) -> tuple[float, int, int]:
+def difference_percent(
+    reference: Image.Image, build: Image.Image
+) -> tuple[float, float, int, int]:
     diff = ImageChops.difference(reference, build)
     bands = diff.split()
     peak = bands[0]
     for band in bands[1:]:
         peak = ImageChops.lighter(peak, band)
-    changed = sum(peak.histogram()[1:])
+    histogram = peak.histogram()
+    changed = sum(histogram[1:])
+    within = sum(histogram[:3])
     total = reference.width * reference.height
     percent = 100 * changed / total if total else 0
-    return percent, changed, total
+    within_percent = 100 * within / total if total else 0
+    return percent, within_percent, changed, total
 
 
 def write_diff(reference: Image.Image, build: Image.Image, path: Path) -> None:
     diff = ImageChops.difference(reference, build)
-    # Amplify so a 1-level channel miss is still visible. Unchanged stays black.
     amplified = diff.point(lambda value: min(255, value * 4))
     amplified.save(path, optimize=True)
 
@@ -89,10 +94,13 @@ def compare(screen_id: str) -> None:
         )
         return
 
-    percent, changed, total = difference_percent(cropped, build)
+    percent, within_percent, changed, total = difference_percent(cropped, build)
     diff_path = ROOT / "design" / "compare" / f"{screen_id}_diff.png"
     write_diff(cropped, build, diff_path)
-    print(f"{screen_id} {percent:.2f}% ({changed}/{total} pixels)")
+    print(
+        f"{screen_id} {percent:.2f}% ({changed}/{total} pixels); "
+        f"{within_percent:.2f}% within 2 levels"
+    )
 
     width = cropped.width * 2 + GAP
     canvas = Image.new("RGB", (width, cropped.height + LABEL_H), (231, 227, 236))
