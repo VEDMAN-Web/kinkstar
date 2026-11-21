@@ -1,6 +1,9 @@
+import 'dart:math' as math;
+
 // SDK Material, not package:material_ui. That package also pulls intl.
 // ignore: deprecated_member_use
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:kinkstar_ui/kinkstar_ui.dart';
 
 import '../onboarding/chrome.dart';
@@ -73,7 +76,11 @@ class DiamondStoreScreen extends StatelessWidget {
               title: 'Diamonds',
               trailing: Text(
                 'History',
-                style: UserText.small.copyWith(color: UserColors.primarySoft),
+                style: UserText.small.copyWith(
+                  color: UserColors.primarySoft,
+                  decoration: TextDecoration.underline,
+                  decorationColor: UserColors.primarySoft,
+                ),
               ),
             ),
             Expanded(
@@ -83,9 +90,11 @@ class DiamondStoreScreen extends StatelessWidget {
                   _BalanceCard(diamonds: diamonds, minutes: minutes),
                   const SizedBox(height: 14),
                   const _OfferBanner(),
-                  const SizedBox(height: 14),
+                  // The balance card is 3px taller, so these gaps give the
+                  // packs +1.5px and leave the VIP row where the artboard has it.
+                  const SizedBox(height: 13.5),
                   const _PackGrid(_storePacks),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 12.5),
                   _VipRow(price: month?.priceINR ?? 399),
                   const SizedBox(height: 14),
                   Text.rich(
@@ -97,7 +106,11 @@ class DiamondStoreScreen extends StatelessWidget {
                         ),
                         TextSpan(
                           text: 'Refund policy',
-                          style: TextStyle(color: UserColors.primarySoft),
+                          style: TextStyle(
+                            color: UserColors.primarySoft,
+                            decoration: TextDecoration.underline,
+                            decorationColor: UserColors.primarySoft,
+                          ),
                         ),
                       ],
                     ),
@@ -498,13 +511,13 @@ class VipScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 children: [
                   const _VipHero(),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 16.5),
                   const _Perk('15% off every call minute'),
                   const _Perk('30 free Diamonds every day'),
                   const _Perk('Priority in Quick Match and queues'),
                   const _Perk('Unlimited free messages'),
                   const _Perk('VIP badge, entry effect, exclusive gifts'),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 11.5),
                   Row(
                     children: [
                       for (var i = 0; i < plans.length; i++) ...[
@@ -666,18 +679,15 @@ class _BalanceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(UserRadii.card),
-        border: Border.all(color: UserColors.chipGoldBorder),
-        gradient: const LinearGradient(
-          begin: Alignment(-0.866, -0.5),
-          end: Alignment(0.866, 0.5),
-          colors: [UserColors.chipGoldBg, UserColors.surface1],
-        ),
-      ),
-      child: Row(
+    return _CssCard(
+      angle: 120,
+      colors: const [UserColors.chipGoldBg, UserColors.surface1],
+      border: UserColors.chipGoldBorder,
+      child: Padding(
+        // 3px extra at the bottom matches the artboard card height.
+        // The row itself stays put.
+        padding: const EdgeInsets.fromLTRB(14, 14, 14, 17),
+        child: Row(
         children: [
           const KsIcon(KsIcons.gem, color: UserColors.gold),
           const SizedBox(width: 12),
@@ -689,10 +699,10 @@ class _BalanceCard extends StatelessWidget {
                   'Your balance',
                   style: UserText.xs.copyWith(fontWeight: FontWeight.w400),
                 ),
-                Text(
-                  '$diamonds',
-                  style: UserText.h1.copyWith(fontSize: 26, height: 1.1),
-                ),
+                // CSS `font: 700 26px Poppins` resets line-height to the
+                // font's normal 1.5. An explicit shorter height lifts the
+                // whole store below this card.
+                Text('$diamonds', style: UserText.balance),
               ],
             ),
           ),
@@ -701,6 +711,7 @@ class _BalanceCard extends StatelessWidget {
             style: UserText.xs.copyWith(fontWeight: FontWeight.w400),
           ),
         ],
+        ),
       ),
     );
   }
@@ -712,7 +723,7 @@ class _OfferBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: UserColors.surface1,
         borderRadius: BorderRadius.circular(UserRadii.card),
@@ -756,7 +767,7 @@ class _PackGrid extends StatelessWidget {
     return Column(
       children: [
         for (var row = 0; row < packs.length; row += 3) ...[
-          if (row > 0) const SizedBox(height: 10),
+          if (row > 0) const SizedBox(height: 9),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -795,18 +806,33 @@ class _StoreTile extends StatelessWidget {
               width: 1.5,
             ),
           ),
-          child: Column(
+            child: Column(
             children: [
-              _GemLine(grouped(pack.diamonds), bold: true),
+              // `<b>` holds a 22px gem on the text baseline, so the line box
+              // hangs ~6.5px below the glyph. The count stays at the top.
+              SizedBox(
+                height: 28.5,
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: _GemLine(grouped(pack.diamonds), bold: true, size: 15),
+                ),
+              ),
               const SizedBox(height: 4),
               Text(
                 pack.bonus,
-                style: UserText.xs.copyWith(color: UserColors.ok),
+                style: UserText.xs.copyWith(
+                  color: UserColors.ok,
+                  fontWeight: FontWeight.w400,
+                  height: 1.45,
+                ),
               ),
               const SizedBox(height: 4),
               Text(
                 '₹${grouped(pack.price)}',
-                style: UserText.small.copyWith(color: UserColors.text),
+                style: UserText.small.copyWith(
+                  color: UserColors.text,
+                  height: 1.45,
+                ),
               ),
             ],
           ),
@@ -892,11 +918,14 @@ class _OfferTile extends StatelessWidget {
             ),
             child: Column(
               children: [
-                _GemLine(grouped(pack.diamonds), bold: true),
+                _GemLine(grouped(pack.diamonds), bold: true, size: 15),
                 const SizedBox(height: 4),
                 Text(
                   'pay for ${grouped(pack.payFor)}',
-                  style: UserText.xs.copyWith(fontWeight: FontWeight.w400),
+                  style: UserText.xs.copyWith(
+                    fontWeight: FontWeight.w400,
+                    height: 1.45,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -904,6 +933,7 @@ class _OfferTile extends StatelessWidget {
                   style: UserText.small.copyWith(
                     fontWeight: FontWeight.w700,
                     color: UserColors.text,
+                    height: 1.45,
                   ),
                 ),
               ],
@@ -927,33 +957,39 @@ class _VipHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(UserRadii.card),
-        border: Border.all(color: UserColors.chipGoldBorder),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [UserColors.chipGoldBg, UserColors.voiceTop],
-        ),
-      ),
-      child: Column(
-        children: [
-          const KsIcon(KsIcons.crown, color: UserColors.gold),
-          const SizedBox(height: 6),
-          Text(
-            'VIP Gold',
-            style: UserText.h2.copyWith(
-              fontSize: 22,
-              fontWeight: FontWeight.w700,
-              color: UserColors.gold,
-            ),
+    return _CssCard(
+      angle: 135,
+      colors: const [UserColors.chipGoldBg, UserColors.voiceTop],
+      border: UserColors.chipGoldBorder,
+      child: SizedBox(
+        width: double.infinity,
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            children: [
+              // The crown sits in a line box: the 22px glyph, then the
+              // descender of the inherited 15px/1.45 strut (~6.5px).
+              const SizedBox(
+                height: 28.5,
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: KsIcon(KsIcons.crown, color: UserColors.gold),
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'VIP Gold',
+                style: UserText.h2.copyWith(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                  color: UserColors.gold,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text('Cancel anytime in Google Play', style: UserText.small),
+            ],
           ),
-          const SizedBox(height: 6),
-          Text('Cancel anytime in Google Play', style: UserText.small),
-        ],
+        ),
       ),
     );
   }
@@ -1212,23 +1248,32 @@ class _Card extends StatelessWidget {
 }
 
 class _GemLine extends StatelessWidget {
-  const _GemLine(this.text, {this.bold = false});
+  const _GemLine(this.text, {this.bold = false, this.size = 13});
 
   final String text;
   final bool bold;
+  final double size;
 
   @override
   Widget build(BuildContext context) {
+    // Centered in the row, the 15px count paints ~7px above the artboard,
+    // where it shares the gem's baseline. Nudge it down without growing
+    // the card.
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         const KsIcon(KsIcons.gem, color: UserColors.text),
         const SizedBox(width: 4),
-        Text(
-          text,
-          style: UserText.small.copyWith(
-            fontWeight: bold ? FontWeight.w700 : FontWeight.w400,
-            color: UserColors.text,
+        Transform.translate(
+          offset: const Offset(0, 7),
+          child: Text(
+            text,
+            style: UserText.small.copyWith(
+              fontSize: size,
+              fontWeight: bold ? FontWeight.w700 : FontWeight.w400,
+              color: UserColors.text,
+              height: 1.45,
+            ),
           ),
         ),
       ],
@@ -1251,6 +1296,103 @@ class _Pill extends StatelessWidget {
       ),
       child: Text(label, style: UserText.badge),
     );
+  }
+}
+
+/// CSS `linear-gradient(<angle>deg, c0, c1)` sized to the child.
+///
+/// Flutter's [Alignment.topLeft] to [Alignment.bottomRight] follows the
+/// box diagonal. A CSS angle keeps a square direction, so on a wide card
+/// the end color arrives sooner along the short side.
+class _CssCard extends SingleChildRenderObjectWidget {
+  const _CssCard({
+    required this.angle,
+    required this.colors,
+    required this.border,
+    required super.child,
+  });
+
+  final double angle;
+  final List<Color> colors;
+  final Color border;
+
+  @override
+  RenderObject createRenderObject(BuildContext context) {
+    return _RenderCssCard(angle: angle, colors: colors, border: border);
+  }
+
+  @override
+  void updateRenderObject(BuildContext context, _RenderCssCard renderObject) {
+    renderObject
+      ..angle = angle
+      ..colors = colors
+      ..border = border;
+  }
+}
+
+class _RenderCssCard extends RenderProxyBox {
+  _RenderCssCard({
+    required this._angle,
+    required this._colors,
+    required this._border,
+  });
+
+  double _angle;
+  List<Color> _colors;
+  Color _border;
+
+  double get angle => _angle;
+  set angle(double value) {
+    if (value == _angle) return;
+    _angle = value;
+    markNeedsPaint();
+  }
+
+  List<Color> get colors => _colors;
+  set colors(List<Color> value) {
+    if (value == _colors) return;
+    _colors = value;
+    markNeedsPaint();
+  }
+
+  Color get border => _border;
+  set border(Color value) {
+    if (value == _border) return;
+    _border = value;
+    markNeedsPaint();
+  }
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    final rect = offset & size;
+    final width = size.width;
+    final height = size.height;
+    final theta = _angle * math.pi / 180;
+    final dx = math.sin(theta);
+    final dy = -math.cos(theta);
+    final length = (width * dx).abs() + (height * dy).abs();
+    final center = Offset(width / 2, height / 2);
+    final half = Offset(dx, dy) * (length / 2);
+    Alignment align(Offset point) => Alignment(
+      width == 0 ? 0 : point.dx / width * 2 - 1,
+      height == 0 ? 0 : point.dy / height * 2 - 1,
+    );
+    final shader = LinearGradient(
+      begin: align(center - half),
+      end: align(center + half),
+      colors: _colors,
+    ).createShader(rect);
+    final radius = Radius.circular(UserRadii.card);
+    final card = RRect.fromRectAndRadius(rect, radius);
+    context.canvas.drawRRect(card, Paint()..shader = shader);
+    context.canvas.drawRRect(
+      card.deflate(0.5),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1
+        ..color = _border,
+    );
+    super.paint(context, offset);
   }
 }
 
