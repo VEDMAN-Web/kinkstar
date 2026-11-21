@@ -1,0 +1,25 @@
+name: kinkstar_user
+description: Kinkstar user app.
+publish_to: none
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.14.0
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^2.6.1
+  go_router: ^14.8.1
+  kinkstar_ui:
+    path: ../../packages/ui
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true

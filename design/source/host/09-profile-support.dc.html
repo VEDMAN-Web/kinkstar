@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>09 Partner profile & support – Me, Profile & media, Help, Safety, Settings, Refer hosts, Leave</title>
+<script src="./_runtime/react.js"></script>
+<script src="./_runtime/react-dom.js"></script>
+<script src="./_runtime/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+:root{--bg:#F7F5FB;--s1:#FFFFFF;--s2:#F0ECF7;--ln:#E2DCEC;--tx:#1C1528;--mu:#5E5470;--pri:#6D28D9;--pri2:#6D28D9;--gold:#B45309;--ok:#047857;--info:#1D4ED8}
+.lbl{font:600 15px Inter,sans-serif;color:#2A2233;display:flex;gap:8px;align-items:center;height:32px}
+.sid{background:#2A2233;color:#fff;border-radius:6px;padding:2px 8px;font-size:13px}
+.ph{width:390px;height:844px;border-radius:40px;overflow:hidden;background:var(--bg);color:var(--tx);font:400 15px/1.45 Inter,sans-serif;position:relative;display:flex;flex-direction:column;box-shadow:0 0 0 10px #2B2238}
+.ph *{box-sizing:border-box}
+.sb{height:44px;flex:none}
+.top{display:flex;align-items:center;gap:12px;padding:8px 16px;min-height:56px}
+.tt{font:600 20px Poppins,sans-serif;margin:0;flex:1}
+.h1{font:700 28px/1.2 Poppins,sans-serif;margin:0}
+.h2{font:600 18px Poppins,sans-serif;margin:0}
+.mu{color:var(--mu)}.gold{color:var(--gold)}.ok{color:var(--ok)}.pri{color:var(--pri2)}
+.sm{font-size:13px}.xs{font-size:12px}
+.body{flex:1;overflow:hidden;padding:0 16px;display:flex;flex-direction:column;gap:14px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;border-radius:26px;background:var(--pri);color:#fff;font:600 16px Inter,sans-serif;border:0;width:100%;text-decoration:none}
+.btn.g{background:#047857;color:#fff}
+.btn.o{background:transparent;border:1.5px solid var(--ln);color:var(--tx)}
+.btn.w{background:#1C1528;color:#fff}
+.btn.sm2{min-height:44px;font-size:14px;width:auto;padding:0 18px}
+.ib{width:44px;height:44px;border-radius:22px;display:flex;align-items:center;justify-content:center;background:var(--s2);border:0;color:var(--tx)}
+.ib svg,.ic{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.card{background:var(--s1);border:1px solid var(--ln);border-radius:18px;padding:14px}
+.row{display:flex;align-items:center;gap:12px}
+.col{display:flex;flex-direction:column;gap:8px}
+.sp{flex:1}
+.chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:16px;background:var(--s2);color:var(--tx);font:500 13px Inter,sans-serif;border:1px solid var(--ln)}
+.chip.on{background:var(--pri);border-color:var(--pri);color:#fff}
+.chip.gd{background:#FEF3C7;border-color:#F59E0B;color:#92400E}
+.av{width:48px;height:48px;border-radius:24px;background:#7C5BB5;display:flex;align-items:center;justify-content:center;font:600 16px Poppins,sans-serif;color:#fff;flex:none;position:relative}
+.av.l{width:88px;height:88px;border-radius:44px;font-size:28px}
+.dot{width:12px;height:12px;border-radius:6px;background:var(--ok);border:2px solid var(--bg);position:absolute;right:0;bottom:0}
+.img{background:#DCD3EA;border-radius:16px;display:flex;align-items:flex-end;justify-content:flex-start;color:#3F3552;font:500 12px Inter,sans-serif;padding:10px;position:relative;overflow:hidden}
+.img::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,.35) 0 12px,transparent 12px 24px)}
+.img>*{position:relative}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;font:600 11px Inter,sans-serif;background:rgba(0,0,0,.55);color:#fff}
+.badge.live{background:var(--ok);color:#052E1C}.badge.ai{background:#93C5FD;color:#0B2545}.badge.r{background:var(--pri);color:#fff}
+.tab{display:flex;justify-content:space-around;align-items:center;height:72px;border-top:1px solid var(--ln);background:var(--s1);flex:none;padding-bottom:8px}
+.tab a{display:flex;flex-direction:column;align-items:center;gap:2px;font:500 11px Inter,sans-serif;color:var(--mu);text-decoration:none;min-width:56px;min-height:44px;justify-content:center}
+.tab a.on{color:var(--pri2)}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--s1);border-radius:28px 28px 0 0;padding:12px 20px 28px;display:flex;flex-direction:column;gap:14px;border-top:1px solid var(--ln)}
+.grab{width:40px;height:4px;border-radius:2px;background:var(--ln);align-self:center}
+.dim{position:absolute;inset:0;background:rgba(20,12,30,.5)}
+.in{display:flex;flex-direction:column;gap:6px}
+.in label{font:500 13px Inter,sans-serif;color:var(--mu)}
+.in input,.in select,.in textarea{height:52px;border-radius:14px;border:1.5px solid var(--ln);background:var(--s2);color:var(--tx);padding:0 14px;font:500 16px Inter,sans-serif}
+.in textarea{height:96px;padding:12px 14px}
+.li{display:flex;align-items:center;gap:12px;min-height:56px;border-bottom:1px solid var(--ln);padding:6px 0}
+.pack{background:var(--s2);border:1.5px solid var(--ln);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:4px;align-items:center;position:relative}
+.pack.on{border-color:var(--pri);background:#EDE4FB}
+.tag{position:absolute;top:-10px;background:var(--pri);color:#fff;font:700 10px Inter,sans-serif;padding:2px 8px;border-radius:8px}
+.prog{height:8px;border-radius:4px;background:var(--s2);overflow:hidden}.prog i{display:block;height:100%;background:var(--pri)}
+.vid{position:absolute;inset:0;background:#2A1F35}
+.vid::after{content:"Live video (host camera)";position:absolute;top:46%;width:100%;text-align:center;color:rgba(255,255,255,.35);font:500 14px Inter,sans-serif}
+.pip{position:absolute;right:16px;top:100px;width:104px;height:150px;border-radius:16px;background:#4A3A58;border:2px solid rgba(255,255,255,.3);display:flex;align-items:flex-end;justify-content:center;font:500 11px Inter,sans-serif;color:#fff;padding:6px}
+.ov{position:absolute;left:0;right:0;display:flex;padding:0 16px;gap:10px;align-items:center}
+.glass{background:rgba(15,10,20,.55);border-radius:22px;padding:6px 12px;font:500 13px Inter,sans-serif;color:#fff}
+.seg{display:flex;background:var(--s2);border-radius:22px;padding:4px;gap:4px}
+.seg span{flex:1;text-align:center;padding:8px 0;border-radius:18px;font:500 13px Inter,sans-serif;color:var(--mu)}
+.seg span.on{background:var(--pri);color:#fff}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.sw{width:48px;height:28px;border-radius:14px;background:var(--pri);position:relative;flex:none}.sw::after{content:"";position:absolute;right:3px;top:3px;width:22px;height:22px;border-radius:11px;background:#fff}
+.sw.off{background:var(--ln)}.sw.off::after{right:auto;left:3px}
+.chk{width:22px;height:22px;border-radius:6px;border:2px solid var(--ln);flex:none}.chk.on{background:var(--pri);border-color:var(--pri)}
+.bub{max-width:76%;padding:10px 14px;border-radius:18px;font-size:14px}
+.bub.me{align-self:flex-end;background:var(--pri);color:#fff;border-bottom-right-radius:6px}
+.bub.her{align-self:flex-start;background:#fff;border:1px solid var(--ln);border-bottom-left-radius:6px}
+.otp{display:flex;gap:10px}.otp span{width:48px;height:56px;border-radius:12px;border:1.5px solid var(--ln);background:var(--s2);display:flex;align-items:center;justify-content:center;font:600 22px Poppins,sans-serif}
+.otp span.on{border-color:var(--pri)}
+.note{background:#EFF6FF;border:1px solid #BFDBFE;color:#1E3A8A;border-radius:12px;padding:10px 12px;font-size:13px}
+.kpi{background:#fff;border:1px solid var(--ln);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:2px}
+.kpi b{font:700 22px Poppins,sans-serif}
+.money{color:#047857}
+.warn{background:#FFFBEB;border:1px solid #FCD34D;color:#78350F;border-radius:12px;padding:10px 12px;font-size:13px}
+.bad{background:#FEF2F2;border:1px solid #FCA5A5;color:#7F1D1D;border-radius:12px;padding:10px 12px;font-size:13px}
+.step{display:flex;gap:6px}.step i{flex:1;height:4px;border-radius:2px;background:var(--ln)}.step i.on{background:var(--pri)}
+.vid{background:#2A1F35}.glass{color:#fff}
+.btn,.chip,.badge,.glass,.seg span{white-space:nowrap}
+.in{min-width:0}.in input,.in select,.in textarea{width:100%;min-width:0}
+.badge.live{background:#047857;color:#fff}
+
+</style>
+</helmet>
+<div style="width: 3098px; height: 968px; box-sizing: border-box; padding: 40px; display: flex; gap: 48px; background: #E7E3EC">
+<div style="display: flex; flex-direction: column; gap: 12px; width: 390px"><div class="lbl"><span class="sid">P37</span> Me tab</div><div class="ph">
+<div class="sb"></div>
+<div class="top"><p class="tt">Me</p><button class="ib" aria-label="Settings"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.6 1.6 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.6 1.6 0 00-1.8-.3 1.6 1.6 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.6 1.6 0 00-1-1.5 1.6 1.6 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.6 1.6 0 00.3-1.8 1.6 1.6 0 00-1.5-1H3a2 2 0 110-4h.1a1.6 1.6 0 001.5-1 1.6 1.6 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.6 1.6 0 001.8.3H9a1.6 1.6 0 001-1.5V3a2 2 0 114 0v.1a1.6 1.6 0 001 1.5 1.6 1.6 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.6 1.6 0 00-.3 1.8V9a1.6 1.6 0 001.5 1H21a2 2 0 110 4h-.1a1.6 1.6 0 00-1.5 1z"></path></svg></button></div>
+<div class="body">
+<div class="row"><div class="av l">P</div><div class="col sp" style="gap:2px"><b style="font:600 20px Poppins">Priya</b><span class="xs mu">Host ID 55102 · Star Talent Agency</span><div class="row" style="gap:6px"><span class="chip on" style="height:24px">Lv 12</span><span class="chip" style="height:24px"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> Verified</span></div></div></div>
+<div class="grid3"><div class="kpi"><span class="xs mu">Rating</span><b>4.8</b></div><div class="kpi"><span class="xs mu">Followers</span><b>8.4k</b></div><div class="kpi"><span class="xs mu">Quality</span><b>94</b></div></div>
+<div class="col" style="gap:0">
+<div class="li"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0116 0"></path></svg><span class="sp">Profile &amp; photos</span></div>
+<div class="li"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg><span class="sp">My schedule</span></div>
+<div class="li"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18M7 15l4-4 3 3 5-6"></path></svg><span class="sp">Quality &amp; strikes</span><span class="badge" style="background:#FEF3C7;color:#92400E">1</span></div>
+<div class="li"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="8" width="18" height="13" rx="1"></rect><path d="M12 8v13M3 12h18M12 8S10 3 7.5 4 9 8 12 8zm0 0s2-5 4.5-4S15 8 12 8z"></path></svg><span class="sp">Interactive gifts</span></div>
+<div class="li"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg><span class="sp">Online hours</span></div>
+<div class="li"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"></path></svg><span class="sp">Invite hosts</span></div>
+<div class="li"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><span class="sp">Safety centre</span></div>
+<div class="li"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.1 9a3 3 0 015.8 1c0 2-3 3-3 3M12 17h.01"></path></svg><span class="sp">Help &amp; support</span></div>
+</div>
+</div>
+<nav class="tab"><a href="#" class="" aria-label="Home"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10l9-7 9 7v10a2 2 0 01-2 2h-4v-7H9v7H5a2 2 0 01-2-2z"></path></svg>Home</a><a href="#" class="" aria-label="Callers"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="4"></circle><path d="M1 21a8 8 0 0116 0M17 4a4 4 0 010 8M23 21a8 8 0 00-5-7.4"></path></svg>Callers</a><a href="#" class="" aria-label="Messages"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"></path></svg>Messages</a><a href="#" class="" aria-label="Earnings"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="6" width="20" height="14" rx="2"></rect><path d="M16 13h2M2 10h20M6 6V4h12v2"></path></svg>Earnings</a><a href="#" class="on" aria-label="Me"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0116 0"></path></svg>Me</a></nav>
+</div></div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 390px"><div class="lbl"><span class="sid">P38</span> Profile &amp; media manager</div><div class="ph">
+<div class="sb"></div>
+<div class="top"><button class="ib" aria-label="Back"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button><p class="tt">Profile</p><a href="#" class="sm" style="color:var(--pri)">Preview</a></div>
+<div class="body">
+<div class="grid3"><div class="img" style="height:120px;border:2px solid var(--pri)"><span class="badge" style="background:var(--pri)">Cover</span></div><div class="img" style="height:120px"></div><div class="img" style="height:120px"><span class="badge" style="background:#B45309">Review</span></div></div>
+<div class="card row"><span class="ib"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="6" width="14" height="12" rx="2"></rect><path d="M16 10l6-3v10l-6-3z"></path></svg></span><div class="col sp" style="gap:0"><b class="sm">Intro clip · 14s</b><span class="xs mu">Shown labelled "Recorded intro"</span></div><a href="#" class="btn sm2 o">Re-record</a></div>
+<div class="in"><label for="b1">Bio</label><textarea id="b1">I love Bollywood music and long chats about travel.</textarea></div>
+<div class="card col" style="gap:4px"><div class="row"><b class="sm sp">Your call price</b><span class="chip on" style="height:28px">Tier B</span></div><span class="xs mu">Users pay <svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12l4 6-10 12L2 9z"></path><path d="M2 9h20M12 21L8 9l4-6 4 6z"></path></svg> 40/min video, 20/min voice. Tier is set by your level and demand; Level 6+ can request a higher tier.</span></div>
+<div class="note">Changes to photos and bio are reviewed before going live (usually 1 hour).</div>
+</div>
+</div></div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 390px"><div class="lbl"><span class="sid">P39</span> Help &amp; host support</div><div class="ph">
+<div class="sb"></div>
+<div class="top"><button class="ib" aria-label="Back"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button><p class="tt">Help &amp; support</p></div>
+<div class="body">
+<div class="card row" style="border-color:var(--pri)"><span class="ib" style="background:var(--pri);color:#fff"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"></path></svg></span><div class="col sp" style="gap:0"><b class="sm">Chat with host support</b><span class="xs mu">Hindi / English · 10 am – 2 am</span></div></div>
+<div class="col" style="gap:0">
+<div class="li"><span class="sp sm">When and how do I get paid?</span><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></div>
+<div class="li"><span class="sp sm">Why was a call refunded?</span><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></div>
+<div class="li"><span class="sp sm">How are levels and share calculated?</span><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></div>
+<div class="li"><span class="sp sm">How to appeal a strike</span><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></div>
+<div class="li"><span class="sp sm">Community rules for hosts</span><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></div>
+<div class="li"><span class="sp sm">Training videos</span><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></div>
+</div>
+<div class="card row"><div class="av" style="background:#4C1D95">S</div><div class="col sp" style="gap:0"><b class="sm">Your agency manager</b><span class="xs mu">Star Talent · Neha M.</span></div><a href="#" class="btn sm2 o">Message</a></div>
+</div>
+</div></div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 390px"><div class="lbl"><span class="sid">P40</span> Safety centre</div><div class="ph">
+<div class="sb"></div>
+<div class="top"><button class="ib" aria-label="Back"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button><p class="tt">Safety centre</p></div>
+<div class="body">
+<div class="card col" style="gap:4px;background:#FEF2F2;border-color:#FCA5A5"><b class="sm" style="color:#7F1D1D">Feel unsafe right now?</b><span class="xs" style="color:#7F1D1D">End the call, then report. Our team reviews within 30 minutes.</span><a href="#" class="btn sm2" style="background:#B91C1C;align-self:flex-start">Get help now</a></div>
+<div class="col" style="gap:0">
+<div class="li"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M4.9 4.9l14.2 14.2"></path></svg><span class="sp">Blocked users</span><span class="xs mu">4</span></div>
+<div class="li"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1zM4 22v-7"></path></svg><span class="sp">My reports</span><span class="xs mu">2 resolved</span></div>
+<div class="li"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg><span class="sp">Hide my city from users</span><span class="sw"></span></div>
+<div class="li"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0110 0v4"></path></svg><span class="sp">Screenshot protection</span><span class="xs ok">Always on</span></div>
+<div class="li"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"></path></svg><span class="sp">Block users from my state</span><span class="sw off"></span></div>
+</div>
+<div class="note">Users never see your real name, phone number or exact location.</div>
+</div>
+</div></div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 390px"><div class="lbl"><span class="sid">P41</span> Settings</div><div class="ph">
+<div class="sb"></div>
+<div class="top"><button class="ib" aria-label="Back"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button><p class="tt">Settings</p></div>
+<div class="body" style="gap:0">
+<p class="xs mu" style="margin:6px 0">CALLS</p>
+<div class="li"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="6" width="14" height="12" rx="2"></rect><path d="M16 10l6-3v10l-6-3z"></path></svg><span class="sp">Accept video calls</span><span class="sw"></span></div>
+<div class="li"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1.9.4 1.8.7 2.7a2 2 0 01-.5 2.1L8.1 9.8a16 16 0 006 6l1.3-1.3a2 2 0 012.1-.4c.9.3 1.8.6 2.7.7a2 2 0 011.8 2z"></path></svg><span class="sp">Accept voice calls</span><span class="sw"></span></div>
+<div class="li"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"></path></svg><span class="sp">Ring at full volume</span><span class="sw"></span></div>
+<div class="li"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"></path></svg><span class="sp">Beauty filter by default</span><span class="sw"></span></div>
+<p class="xs mu" style="margin:14px 0 6px">PAYMENTS</p>
+<div class="li"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"></path></svg><span class="sp">Payout method</span><span class="xs mu">UPI</span></div>
+<div class="li"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path><path d="M14 2v6h6M8 13h8M8 17h6"></path></svg><span class="sp">PAN &amp; tax details</span></div>
+<p class="xs mu" style="margin:14px 0 6px">ACCOUNT</p>
+<div class="li"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"></path></svg><span class="sp">App language</span><span class="xs mu">English</span></div>
+<div class="li"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"></path></svg><span class="sp">Sign out</span></div>
+<div class="li" style="color:#B91C1C"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"></path></svg><span class="sp">Leave Kinkstar</span></div>
+</div>
+</div></div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 390px"><div class="lbl"><span class="sid">P42</span> Invite hosts &amp; agency</div><div class="ph">
+<div class="sb"></div>
+<div class="top"><button class="ib" aria-label="Back"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button><p class="tt">Invite hosts</p></div>
+<div class="body">
+<div class="card col" style="align-items:center;text-align:center;gap:6px;background:#F3ECFF"><span style="color:var(--pri)"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="4"></circle><path d="M1 21a8 8 0 0116 0M17 4a4 4 0 010 8M23 21a8 8 0 00-5-7.4"></path></svg></span><p class="h2">Earn ₹[BONUS] per new host</p><span class="sm mu">When she completes 20 online hours in her first month</span></div>
+<div class="card row"><div class="col sp" style="gap:0"><span class="xs mu">Your invite code</span><b style="font:700 22px Poppins;letter-spacing:2px">PRIYA55</b></div><a href="#" class="btn sm2 o">Copy</a></div>
+<a href="#" class="btn"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"></path></svg> Share on WhatsApp</a>
+<div class="grid3"><div class="kpi"><span class="xs mu">Invited</span><b>3</b></div><div class="kpi"><span class="xs mu">Qualified</span><b>1</b></div><div class="kpi"><span class="xs mu">Earned</span><b class="money">₹[B]</b></div></div>
+<div class="card row"><div class="av" style="background:#4C1D95">S</div><div class="col sp" style="gap:0"><b class="sm">Star Talent Agency</b><span class="xs mu">Joined 2 Oct · manager Neha M.</span></div></div>
+</div>
+</div></div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 390px"><div class="lbl"><span class="sid">P43</span> Leave Kinkstar</div><div class="ph">
+<div class="sb"></div>
+<div class="top"><button class="ib" aria-label="Back"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button><p class="tt">Leave Kinkstar</p></div>
+<div class="body">
+<div class="card col"><b class="sm">Before you go</b><span class="sm mu">Your pending earnings of <b class="money">₹2,340</b> will be paid on the next payout day. Your profile is hidden immediately.</span></div>
+<div class="card row"><span class="ib"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h4v16H6zM14 4h4v16h-4z"></path></svg></span><div class="col sp" style="gap:0"><b class="sm">Take a break instead</b><span class="xs mu">Hide your profile for up to 60 days and keep your level</span></div><a href="#" class="btn sm2 o">Pause</a></div>
+<p class="sm mu" style="margin:0">Reason (optional)</p>
+<div class="col" style="gap:0"><div class="li"><span class="chk"></span><span class="sm">Not earning enough</span></div><div class="li"><span class="chk"></span><span class="sm">Bad experience with users</span></div><div class="li"><span class="chk"></span><span class="sm">Found other work</span></div></div>
+<a href="#" class="btn" style="background:#B91C1C;margin-top:auto">Delete my host account</a>
+<a href="#" class="btn o" style="margin-bottom:28px">Stay</a>
+</div>
+</div></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":3098,"height":968}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

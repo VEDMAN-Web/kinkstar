@@ -1,0 +1,12 @@
+Inter (weights 400, 500, 600, 700) and Poppins (weights 600, 700) are
+subsets of the SIL Open Font License fonts. Full license: OFL.txt.
+Poppins 500 is listed on the design's Google Fonts URL and is not used
+by any CSS rule, so it is not bundled.
+
+The subset covers Latin-1, general punctuation, the rupee sign, and the
+middle dot, ellipsis, dashes, and bullet used in the design. Inter and
+Poppins do not contain Indic glyphs. Hindi, Bengali, Tamil, Telugu,
+Marathi, and Kannada strings in config.json fall back to the platform font.
+
+Lucide.ttf is the regular Lucide icon font (one stroke weight, matching
+the design's 2px stroke). Wrapper license: LUCIDE-LICENSE.txt.

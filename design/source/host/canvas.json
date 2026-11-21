@@ -1,0 +1,79 @@
+{
+  "artboards": [
+    {
+      "file": "Main.dc.html",
+      "x": 0,
+      "y": 0,
+      "w": 2222,
+      "h": 968,
+      "title": "01 Partner onboarding – Splash, Language, Phone, OTP, Agency code"
+    },
+    {
+      "file": "02-application.dc.html",
+      "x": 0,
+      "y": 1088,
+      "w": 2222,
+      "h": 968,
+      "title": "02 Partner application – Basic info, Photos, Intro video, ID check, Live selfie"
+    },
+    {
+      "file": "03-approval.dc.html",
+      "x": 0,
+      "y": 2176,
+      "w": 1784,
+      "h": 968,
+      "title": "03 Partner approval – Payout details, Agreement, Application status, Training & quiz"
+    },
+    {
+      "file": "04-go-live.dc.html",
+      "x": 0,
+      "y": 3264,
+      "w": 1784,
+      "h": 968,
+      "title": "04 Going online – Home dashboard, Pre-check, Beauty settings, Online & waiting"
+    },
+    {
+      "file": "05-calls.dc.html",
+      "x": 0,
+      "y": 4352,
+      "w": 2222,
+      "h": 968,
+      "title": "05 Partner calls – Incoming call, In call, Call summary, Callers list, Calling a user back"
+    },
+    {
+      "file": "06-messages.dc.html",
+      "x": 0,
+      "y": 5440,
+      "w": 1784,
+      "h": 968,
+      "title": "06 Partner messages – Inbox, Chat with user, Quick-reply templates, Announcements"
+    },
+    {
+      "file": "07-earnings.dc.html",
+      "x": 0,
+      "y": 6528,
+      "w": 2222,
+      "h": 968,
+      "title": "07 Partner earnings – Overview, Transactions, Withdraw, Payout history, Level & share"
+    },
+    {
+      "file": "08-performance.dc.html",
+      "x": 0,
+      "y": 7616,
+      "w": 1784,
+      "h": 968,
+      "title": "08 Partner performance – Schedule, Online-hours log, Quality & strikes, Interactive gifts"
+    },
+    {
+      "file": "09-profile-support.dc.html",
+      "x": 0,
+      "y": 8704,
+      "w": 3098,
+      "h": 968,
+      "title": "09 Partner profile & support – Me, Profile & media, Help, Safety, Settings, Refer hosts, Leave"
+    }
+  ],
+  "launch": {
+    "view": "canvas"
+  }
+}

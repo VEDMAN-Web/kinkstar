@@ -1,0 +1,11 @@
+name: kinkstar
+publish_to: none
+description: Kinkstar user and host apps. Pub workspace, no extra tooling.
+
+environment:
+  sdk: ^3.14.0
+
+workspace:
+  - apps/user
+  - apps/host
+  - packages/ui

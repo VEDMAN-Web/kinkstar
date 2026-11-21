@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>01 Partner onboarding – Splash, Language, Phone, OTP, Agency code</title>
+<script src="./_runtime/react.js"></script>
+<script src="./_runtime/react-dom.js"></script>
+<script src="./_runtime/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+:root{--bg:#F7F5FB;--s1:#FFFFFF;--s2:#F0ECF7;--ln:#E2DCEC;--tx:#1C1528;--mu:#5E5470;--pri:#6D28D9;--pri2:#6D28D9;--gold:#B45309;--ok:#047857;--info:#1D4ED8}
+.lbl{font:600 15px Inter,sans-serif;color:#2A2233;display:flex;gap:8px;align-items:center;height:32px}
+.sid{background:#2A2233;color:#fff;border-radius:6px;padding:2px 8px;font-size:13px}
+.ph{width:390px;height:844px;border-radius:40px;overflow:hidden;background:var(--bg);color:var(--tx);font:400 15px/1.45 Inter,sans-serif;position:relative;display:flex;flex-direction:column;box-shadow:0 0 0 10px #2B2238}
+.ph *{box-sizing:border-box}
+.sb{height:44px;flex:none}
+.top{display:flex;align-items:center;gap:12px;padding:8px 16px;min-height:56px}
+.tt{font:600 20px Poppins,sans-serif;margin:0;flex:1}
+.h1{font:700 28px/1.2 Poppins,sans-serif;margin:0}
+.h2{font:600 18px Poppins,sans-serif;margin:0}
+.mu{color:var(--mu)}.gold{color:var(--gold)}.ok{color:var(--ok)}.pri{color:var(--pri2)}
+.sm{font-size:13px}.xs{font-size:12px}
+.body{flex:1;overflow:hidden;padding:0 16px;display:flex;flex-direction:column;gap:14px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;border-radius:26px;background:var(--pri);color:#fff;font:600 16px Inter,sans-serif;border:0;width:100%;text-decoration:none}
+.btn.g{background:#047857;color:#fff}
+.btn.o{background:transparent;border:1.5px solid var(--ln);color:var(--tx)}
+.btn.w{background:#1C1528;color:#fff}
+.btn.sm2{min-height:44px;font-size:14px;width:auto;padding:0 18px}
+.ib{width:44px;height:44px;border-radius:22px;display:flex;align-items:center;justify-content:center;background:var(--s2);border:0;color:var(--tx)}
+.ib svg,.ic{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.card{background:var(--s1);border:1px solid var(--ln);border-radius:18px;padding:14px}
+.row{display:flex;align-items:center;gap:12px}
+.col{display:flex;flex-direction:column;gap:8px}
+.sp{flex:1}
+.chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:16px;background:var(--s2);color:var(--tx);font:500 13px Inter,sans-serif;border:1px solid var(--ln)}
+.chip.on{background:var(--pri);border-color:var(--pri);color:#fff}
+.chip.gd{background:#FEF3C7;border-color:#F59E0B;color:#92400E}
+.av{width:48px;height:48px;border-radius:24px;background:#7C5BB5;display:flex;align-items:center;justify-content:center;font:600 16px Poppins,sans-serif;color:#fff;flex:none;position:relative}
+.av.l{width:88px;height:88px;border-radius:44px;font-size:28px}
+.dot{width:12px;height:12px;border-radius:6px;background:var(--ok);border:2px solid var(--bg);position:absolute;right:0;bottom:0}
+.img{background:#DCD3EA;border-radius:16px;display:flex;align-items:flex-end;justify-content:flex-start;color:#3F3552;font:500 12px Inter,sans-serif;padding:10px;position:relative;overflow:hidden}
+.img::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,.35) 0 12px,transparent 12px 24px)}
+.img>*{position:relative}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;font:600 11px Inter,sans-serif;background:rgba(0,0,0,.55);color:#fff}
+.badge.live{background:var(--ok);color:#052E1C}.badge.ai{background:#93C5FD;color:#0B2545}.badge.r{background:var(--pri);color:#fff}
+.tab{display:flex;justify-content:space-around;align-items:center;height:72px;border-top:1px solid var(--ln);background:var(--s1);flex:none;padding-bottom:8px}
+.tab a{display:flex;flex-direction:column;align-items:center;gap:2px;font:500 11px Inter,sans-serif;color:var(--mu);text-decoration:none;min-width:56px;min-height:44px;justify-content:center}
+.tab a.on{color:var(--pri2)}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--s1);border-radius:28px 28px 0 0;padding:12px 20px 28px;display:flex;flex-direction:column;gap:14px;border-top:1px solid var(--ln)}
+.grab{width:40px;height:4px;border-radius:2px;background:var(--ln);align-self:center}
+.dim{position:absolute;inset:0;background:rgba(20,12,30,.5)}
+.in{display:flex;flex-direction:column;gap:6px}
+.in label{font:500 13px Inter,sans-serif;color:var(--mu)}
+.in input,.in select,.in textarea{height:52px;border-radius:14px;border:1.5px solid var(--ln);background:var(--s2);color:var(--tx);padding:0 14px;font:500 16px Inter,sans-serif}
+.in textarea{height:96px;padding:12px 14px}
+.li{display:flex;align-items:center;gap:12px;min-height:56px;border-bottom:1px solid var(--ln);padding:6px 0}
+.pack{background:var(--s2);border:1.5px solid var(--ln);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:4px;align-items:center;position:relative}
+.pack.on{border-color:var(--pri);background:#EDE4FB}
+.tag{position:absolute;top:-10px;background:var(--pri);color:#fff;font:700 10px Inter,sans-serif;padding:2px 8px;border-radius:8px}
+.prog{height:8px;border-radius:4px;background:var(--s2);overflow:hidden}.prog i{display:block;height:100%;background:var(--pri)}
+.vid{position:absolute;inset:0;background:#2A1F35}
+.vid::after{content:"Live video (host camera)";position:absolute;top:46%;width:100%;text-align:center;color:rgba(255,255,255,.35);font:500 14px Inter,sans-serif}
+.pip{position:absolute;right:16px;top:100px;width:104px;height:150px;border-radius:16px;background:#4A3A58;border:2px solid rgba(255,255,255,.3);display:flex;align-items:flex-end;justify-content:center;font:500 11px Inter,sans-serif;color:#fff;padding:6px}
+.ov{position:absolute;left:0;right:0;display:flex;padding:0 16px;gap:10px;align-items:center}
+.glass{background:rgba(15,10,20,.55);border-radius:22px;padding:6px 12px;font:500 13px Inter,sans-serif;color:#fff}
+.seg{display:flex;background:var(--s2);border-radius:22px;padding:4px;gap:4px}
+.seg span{flex:1;text-align:center;padding:8px 0;border-radius:18px;font:500 13px Inter,sans-serif;color:var(--mu)}
+.seg span.on{background:var(--pri);color:#fff}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.sw{width:48px;height:28px;border-radius:14px;background:var(--pri);position:relative;flex:none}.sw::after{content:"";position:absolute;right:3px;top:3px;width:22px;height:22px;border-radius:11px;background:#fff}
+.sw.off{background:var(--ln)}.sw.off::after{right:auto;left:3px}
+.chk{width:22px;height:22px;border-radius:6px;border:2px solid var(--ln);flex:none}.chk.on{background:var(--pri);border-color:var(--pri)}
+.bub{max-width:76%;padding:10px 14px;border-radius:18px;font-size:14px}
+.bub.me{align-self:flex-end;background:var(--pri);color:#fff;border-bottom-right-radius:6px}
+.bub.her{align-self:flex-start;background:#fff;border:1px solid var(--ln);border-bottom-left-radius:6px}
+.otp{display:flex;gap:10px}.otp span{width:48px;height:56px;border-radius:12px;border:1.5px solid var(--ln);background:var(--s2);display:flex;align-items:center;justify-content:center;font:600 22px Poppins,sans-serif}
+.otp span.on{border-color:var(--pri)}
+.note{background:#EFF6FF;border:1px solid #BFDBFE;color:#1E3A8A;border-radius:12px;padding:10px 12px;font-size:13px}
+.kpi{background:#fff;border:1px solid var(--ln);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:2px}
+.kpi b{font:700 22px Poppins,sans-serif}
+.money{color:#047857}
+.warn{background:#FFFBEB;border:1px solid #FCD34D;color:#78350F;border-radius:12px;padding:10px 12px;font-size:13px}
+.bad{background:#FEF2F2;border:1px solid #FCA5A5;color:#7F1D1D;border-radius:12px;padding:10px 12px;font-size:13px}
+.step{display:flex;gap:6px}.step i{flex:1;height:4px;border-radius:2px;background:var(--ln)}.step i.on{background:var(--pri)}
+.vid{background:#2A1F35}.glass{color:#fff}
+.btn,.chip,.badge,.glass,.seg span{white-space:nowrap}
+.in{min-width:0}.in input,.in select,.in textarea{width:100%;min-width:0}
+.badge.live{background:#047857;color:#fff}
+
+</style>
+</helmet>
+<div style="width: 2222px; height: 968px; box-sizing: border-box; padding: 40px; display: flex; gap: 48px; background: #E7E3EC">
+<div style="display: flex; flex-direction: column; gap: 12px; width: 390px"><div class="lbl"><span class="sid">P01</span> Splash</div><div class="ph">
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:#F3ECFF">
+<div style="width:96px;height:96px;border-radius:28px;background:var(--pri);display:flex;align-items:center;justify-content:center;color:#fff"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"></path></svg></div>
+<p class="h1">Kinkstar Partner</p>
+<p class="mu" style="margin:0">Earn from video calls, on your schedule</p>
+</div>
+<div style="padding:24px;text-align:center" class="mu xs">For verified hosts 18+ only · v1.0.0</div>
+</div></div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 390px"><div class="lbl"><span class="sid">P02</span> Choose language</div><div class="ph">
+<div class="sb"></div>
+<div class="top"><p class="tt">Choose your language</p></div>
+<div class="body">
+<div class="col" style="gap:10px">
+<div class="card row" style="border-color:var(--pri)"><span class="sp">English</span><span class="chk on"></span></div>
+<div class="card row"><span class="sp">हिन्दी</span><span class="chk"></span></div>
+<div class="card row"><span class="sp">বাংলা</span><span class="chk"></span></div>
+<div class="card row"><span class="sp">தமிழ்</span><span class="chk"></span></div>
+<div class="card row"><span class="sp">తెలుగు</span><span class="chk"></span></div>
+<div class="card row"><span class="sp">Filipino</span><span class="chk"></span></div>
+</div>
+</div>
+<div style="padding:16px 16px 32px"><a href="#" class="btn">Continue</a></div>
+</div></div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 390px"><div class="lbl"><span class="sid">P03</span> Phone login</div><div class="ph">
+<div class="img" style="height:340px;border-radius:0;align-items:flex-end;justify-content:center;padding:24px"><span>[Illustration: host at home with ring light]</span></div>
+<div class="body" style="padding-top:20px">
+<p class="h1">Become a Kinkstar host</p>
+<p class="mu" style="margin:0">Weekly payouts to UPI or bank. Work when you want.</p>
+<div class="row" style="gap:10px">
+<div class="in" style="width:110px"><label for="cc">Code</label><select id="cc"><option>IN +91</option></select></div>
+<div class="in sp"><label for="pn">Mobile number</label><input id="pn" value="91234 56789"></div>
+</div>
+<a href="#" class="btn">Send code</a>
+<p class="xs mu" style="margin:0;text-align:center">Already a host? Same number logs you in.</p>
+</div>
+</div></div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 390px"><div class="lbl"><span class="sid">P04</span> OTP</div><div class="ph">
+<div class="sb"></div>
+<div class="top"><button class="ib" aria-label="Back"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button></div>
+<div class="body">
+<p class="h1">Enter the code</p>
+<p class="mu" style="margin:0">Sent to +91 91234 56789</p>
+<div class="otp" role="group" aria-label="6 digit code"><span>7</span><span>1</span><span class="on">|</span><span></span><span></span><span></span></div>
+<p class="sm mu" style="margin:0">Resend in <b style="color:var(--tx)">0:31</b></p>
+<div class="sp"></div>
+<a href="#" class="btn" style="margin-bottom:32px">Verify</a>
+</div>
+</div></div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 390px"><div class="lbl"><span class="sid">P05</span> Agency or referral code</div><div class="ph">
+<div class="sb"></div>
+<div class="top"><button class="ib" aria-label="Back"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button><span class="sp"></span><a href="#" class="sm mu" style="text-decoration:none">Skip</a></div>
+<div class="body">
+<div class="step"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+<p class="h1">Joined through an agency?</p>
+<p class="mu" style="margin:0">Enter your agency or referral code so they get credit and can help you.</p>
+<div class="in"><label for="ag">Agency or referral code</label><input id="ag" value="STARAG-204"></div>
+<div class="card row"><div class="av" style="background:#4C1D95">S</div><div class="col sp" style="gap:0"><b class="sm">Star Talent Agency, Mumbai</b><span class="xs mu">Verified agency · 86 hosts</span></div><span class="ok"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg></span></div>
+<div class="note">No agency? You can join directly. Agency commission is paid by Kinkstar, never taken from your earnings.</div>
+<div class="sp"></div>
+<a href="#" class="btn" style="margin-bottom:32px">Continue</a>
+</div>
+</div></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2222,"height":968}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
