@@ -177,5 +177,73 @@
     "viewer": {
       "liveCallLabel": "Call $name live · $rate/min"
     }
+  },
+  "calls": {
+    "confirm": {
+      "statusLine": "Online · usually answers in 5s",
+      "billing": "Per second · stops when you hang up",
+      "warning": "We'll warn you 60 seconds before your balance runs out. You can top up without ending the call.",
+      "dontShow": "Don't show this again for calls under 60/min",
+      "talkTime": "about 3 minutes",
+      "balanceLabel": "120 Diamonds",
+      "startLabel": "Start video call",
+      "voiceInstead": "Voice call instead · 20/min"
+    },
+    "outgoing": {
+      "status": "Calling…",
+      "notice": "You are not charged until she answers"
+    },
+    "incoming": {
+      "badge": "Verified host · live now",
+      "talked": "You talked yesterday",
+      "rateNote": "40/min if you answer",
+      "turnOff": "Turn off host call-backs"
+    },
+    "video": {
+      "clock": "03:12",
+      "balance": 88,
+      "minutesLeft": "~2 min left",
+      "caption": "Live video (host camera)",
+      "youLabel": "You",
+      "roseSent": 10,
+      "thanks": "Thank you so much!",
+      "balanceLine": "88 · ~2 min left"
+    },
+    "gifts": {
+      "clock": "03:40",
+      "balance": 64,
+      "combo": "Combo x3 active · send again within 3s"
+    },
+    "lowBalance": {
+      "clock": "0:58 left",
+      "seconds": 58,
+      "body": "Your balance runs out in 58 seconds. The call continues while you pay.",
+      "pay": "Pay ₹249 with Google Play",
+      "otherMethods": "Other payment methods",
+      "endWhenEmpty": "End call when balance runs out"
+    },
+    "voice": {
+      "hostId": "host_anjali",
+      "clock": "07:25",
+      "label": "Voice call · 20/min"
+    },
+    "summary": {
+      "chips": [
+        {"label": "Friendly", "selected": true},
+        {"label": "Good talk", "selected": false},
+        {"label": "Camera off", "selected": false},
+        {"label": "Rude", "selected": false}
+      ]
+    },
+    "queue": {
+      "place": 3,
+      "wait": "About 2 minutes",
+      "body": "All Hindi-speaking hosts are in calls. We'll connect you to the next free one.",
+      "ariaLine": "AI companion · 15/min",
+      "voiceHostsAvailable": 12,
+      "dontWait": "Don't want to wait?",
+      "notify": "Notify me when it's my turn",
+      "leave": "Leave queue"
+    }
   }
 }

@@ -83,7 +83,7 @@ U13 and U14 add these fields on Priya only:
 | gallery.moreLabel | `+3`. |
 | gallery.viewerLabel | `[Intro clip · 12s · labelled "Recorded intro"]`. |
 
-**Anjali** (`host_anjali`) is the second U11 card: 26, Hindi and Marathi, online, video 60/min. **Neha** (`host_neha`) is the third: 23, Tamil and English, video 40/min. Her badge is `● In a call`, so `status` is `busy`. City, rating, call count, followers, charm level, tier letter, and voice rate are not on the artboard, so those fields are null. The 60/min and 40/min figures are not used to fill the tier letter or the voice rate.
+**Anjali** (`host_anjali`) is the second U11 card and the U29 voice call: 26, Hindi and Marathi, online, video 60/min, voice 20/min. **Neha** (`host_neha`) is the third U11 card: 23, Tamil and English, video 40/min. Her badge is `● In a call`, so `status` is `busy`. City, rating, call count, followers, charm level, and tier letter are not on U11–U14 or U23–U31, so those fields are null. Neha's voice rate is not shown, so it is null. The shown video rates are not used to fill the tier letter.
 
 Display rates for the other human tiers, so the list has a spread: tier A is 60/30, tier C is 20/10. Only tier B was specified.
 
@@ -91,7 +91,7 @@ Display rates for the other human tiers, so the list has a spread: tier A is 60/
 
 ## wallet.json
 
-- `packs`: 6 Diamond packs. Fields `id`, `diamonds`, `bonus`, `priceINR`, `tags`. Tags are only `MOST_POPULAR` (`pack_700`) and `BEST_VALUE` (`pack_9000`).
+- `packs`: 6 Diamond packs. Fields `id`, `diamonds`, `bonus`, `priceINR`, `tags`. U28 shows the ₹249 pack as 600 diamonds, tag `BEST`, label `+20% bonus`, and the ₹499 pack as 1,300 diamonds with no bonus line. Those are `pack_700` (`diamonds` 600, `bonus` null, `bonusLabel` `+20% bonus`, tag `BEST`) and `pack_1500` (`diamonds` 1300, `bonus` null). The ids stay `pack_700` and `pack_1500` because the ledger and `rechargePackIds` use them, and neither id is on the artboard. `bonus` is null on those two packs because U28 does not print a diamond bonus count. 20% of 600 is not stored. The other tag is `BEST_VALUE` on `pack_9000`. The sample ledger still credits 700 and then 100 on `pack_700` so the balance can end at 120, which U23 shows as `120 Diamonds`. That credit is not recomputed from the U28 sheet.
 - `firstRechargeOffer`: `expiresAt` (ISO-8601 UTC) and `validOnce` (`true`). No extra Diamond amount was specified, so none is stored.
 - `paymentMethods`: `google_play`, `upi_razorpay_alt_billing`. Fields `id`, `label`.
 - `vipPlans`: 1 week 129, 1 month 399, 3 months 999 INR. Fields `id`, `duration`, `priceINR`.
@@ -106,11 +106,12 @@ Gift catalog. Fields: `id`, `name`, `price` (10–999 Diamonds), `category` (`po
 | name | price | category |
 | --- | --- | --- |
 | Rose | 10 | popular |
+| Star | 30 | null. U27 shows the name and the price, not a category or an animation. |
 | Wave | 20 | interactive |
-| Sing for me | 99 | interactive |
+| Sing for me | 99 | interactive. U27 tag `SONG`. U26 chip `Song`. |
 | Dance | 199 | luxury |
 | Diya | 49 | event |
-| Crown | 999 | luxury |
+| Crown | 500 | luxury |
 
 The 8:42 call sends Rose and Sing for me.
 
@@ -165,6 +166,7 @@ The only app config. Prices stay in `wallet.json`. This file points at pack ids 
 | homeBanners | `id`, `imageUrl` (absolute URL on `assetBaseUrl`), `deeplink`, `startAt`, `endAt`, `serverDriven` (`true`). `banner_recharge` opens `kinkstar://recharge` and carries the U11 promo: `title` `First recharge: +100% Diamonds`, `detail` `Ends in 23:41:10 · new users only`, `cta` `Get`. `banner_discover` opens `kinkstar://discover` and has no promo copy. |
 | tabs | Bottom tabs in order: Home, Match, Live, Messages, Me. Fields `id`, `label`, `enabled`. The first id is still `discover`. The artboard tab label is `Home`. The page title stays `strings.U01_title` (`Discover`). All five are enabled in this sample. |
 | discover | U11–U12 copy that is not a host field. `cardHostIds` is Priya, Anjali, Neha, Aria. `chips` are Hot (selected), New, Following, Hindi, Filter. `badges` are `● Online`, `● In a call`, `Free call`, `Verified`. `filters.hostCount` is `128` and `filters.submitLabel` is `Show 128 hosts`. Language options are Hindi (selected), English, Tamil, Telugu, Bengali, Marathi. Kannada stays in `languages.json` and is not a filter chip. Price options are Any (selected), Up to 40, `40–80` (en dash), `80+`. Show options are Online now (selected), Free-call hosts, AI companions. Region options are All India (selected), North, South, East, West. `profile.chatLabel` is `Chat` and `profile.videoCallLabel` is `Video call`. `viewer.liveCallLabel` is `Call $name live · $rate/min` (`Call Priya live · 40/min` on U14). |
+| calls | U23–U31 copy that is not already a host, gift, pack, or `call_priya_842` field. Clocks are `03:12` (U26), `03:40` (U27), `0:58 left` (U28), `07:25` (U29). In-call balances are 88 and 64. U29 names `host_anjali`. U30 chips are Friendly (selected), Good talk, Camera off, Rude. U31 place is 3, wait `About 2 minutes`, and 12 voice-only hosts. U30's 8:42, 349 Diamonds, and 2 gifts stay on `call_priya_842`. |
 | features.quickMatch | `true` |
 | features.liveRooms | `true` |
 | features.aiCompanion | `true` (Aria) |

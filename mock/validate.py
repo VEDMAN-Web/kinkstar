@@ -292,8 +292,9 @@ def check_hosts(hosts) -> dict:
             if not is_int(host.get("callsCount")) or not is_int(host.get("followers")):
                 fail(f"{label}: callsCount and followers must be integers")
         elif host.get("isAI") is False:
-            if host.get("voiceRatePerMin") is not None:
-                fail(f"{label}: voiceRatePerMin stays null until the artboard shows it")
+            voice = host.get("voiceRatePerMin")
+            if voice is not None and (not is_int(voice) or voice < 0):
+                fail(f"{label}: voiceRatePerMin must be null or a non-negative integer")
             if host.get("callsCount") is not None or host.get("followers") is not None:
                 fail(f"{label}: callsCount and followers stay null until the artboard shows them")
             if not is_int(host.get("videoRatePerMin")):
@@ -365,7 +366,7 @@ def check_hosts(hosts) -> dict:
             "charmLevel": None,
             "tier": None,
             "videoRatePerMin": 60,
-            "voiceRatePerMin": None,
+            "voiceRatePerMin": 20,
             "status": "online",
             "isAI": False,
         },
@@ -409,19 +410,30 @@ def check_wallet(wallet) -> dict:
     if not isinstance(rows, list) or not 5 <= len(rows) <= 7:
         fail("wallet.packs: expected 5 to 7 packs")
         rows = []
-    tag_seen = {"MOST_POPULAR": 0, "BEST_VALUE": 0}
+    tag_seen = {"BEST": 0, "BEST_VALUE": 0}
+    pack_optional = {"bonusLabel"}
     for i, pack in enumerate(rows):
         require_keys(
             pack,
             {"id", "diamonds", "bonus", "priceINR", "tags"},
             f"wallet.packs[{i}]",
+            optional=pack_optional,
         )
         if not isinstance(pack, dict):
             continue
         packs[pack.get("id")] = pack
-        for key in ("diamonds", "bonus", "priceINR"):
+        for key in ("diamonds", "priceINR"):
             if not is_int(pack.get(key)) or pack.get(key) < 0:
                 fail(f"wallet.packs[{i}].{key}: expected a non-negative integer")
+        bonus = pack.get("bonus")
+        if bonus is not None and (not is_int(bonus) or bonus < 0):
+            fail(f"wallet.packs[{i}].bonus: expected null or a non-negative integer")
+        extras = set(pack) - {"id", "diamonds", "bonus", "priceINR", "tags"}
+        if pack.get("id") == "pack_700":
+            if extras != {"bonusLabel"} or pack.get("bonusLabel") != "+20% bonus":
+                fail(f"wallet.packs[{i}]: U28 bonus label must be +20% bonus")
+        elif extras:
+            fail(f"wallet.packs[{i}]: unexpected {sorted(extras)}")
         tags = pack.get("tags")
         if not isinstance(tags, list):
             fail(f"wallet.packs[{i}].tags: expected a list")
@@ -434,6 +446,22 @@ def check_wallet(wallet) -> dict:
     for tag, count in tag_seen.items():
         if count != 1:
             fail(f"wallet.packs: tag {tag} appears {count} times, expected 1")
+    sheet = packs.get("pack_700")
+    if not isinstance(sheet, dict) or (
+        sheet.get("diamonds") != 600
+        or sheet.get("priceINR") != 249
+        or sheet.get("bonus") is not None
+        or sheet.get("tags") != ["BEST"]
+    ):
+        fail("wallet.packs pack_700: U28 shows 600 diamonds at ₹249, tag BEST, +20% bonus")
+    larger = packs.get("pack_1500")
+    if not isinstance(larger, dict) or (
+        larger.get("diamonds") != 1300
+        or larger.get("priceINR") != 499
+        or larger.get("bonus") is not None
+        or larger.get("tags") != []
+    ):
+        fail("wallet.packs pack_1500: U28 shows 1,300 diamonds at ₹499 and no bonus")
     offer = wallet.get("firstRechargeOffer")
     require_keys(offer, {"expiresAt", "validOnce"}, "wallet.firstRechargeOffer")
     if isinstance(offer, dict):
@@ -481,6 +509,7 @@ def check_gifts(gifts) -> dict:
             gift,
             {"id", "name", "price", "category", "animation"},
             f"gifts[{i}]",
+            optional={"tag", "chipLabel"},
         )
         if not isinstance(gift, dict):
             continue
@@ -489,12 +518,26 @@ def check_gifts(gifts) -> dict:
         price = gift.get("price")
         if not is_int(price) or not 10 <= price <= 999:
             fail(f"gifts[{i}]: price must be an integer from 10 to 999")
-        if gift.get("category") not in GIFT_CATEGORIES:
+        category = gift.get("category")
+        if category is None:
+            if gift.get("name") != "Star":
+                fail(f"gifts[{i}]: category is null only for Star, which U27 does not classify")
+        elif category not in GIFT_CATEGORIES:
             fail(f"gifts[{i}]: bad category")
-        categories.add(gift.get("category"))
-        if not isinstance(gift.get("animation"), str) or not gift.get("animation"):
+        else:
+            categories.add(category)
+        animation = gift.get("animation")
+        if animation is None:
+            if gift.get("name") != "Star":
+                fail(f"gifts[{i}]: animation is null only for Star, which U27 does not show")
+        elif not isinstance(animation, str) or not animation:
             fail(f"gifts[{i}]: animation placeholder required")
-    expected = {"Rose": 10, "Wave": 20, "Sing for me": 99, "Dance": 199}
+        if gift.get("name") == "Sing for me":
+            if gift.get("tag") != "SONG" or gift.get("chipLabel") != "Song":
+                fail("gifts: Sing for me tag is SONG and the U26 chip is Song")
+        elif "tag" in gift or "chipLabel" in gift:
+            fail(f"gifts[{i}]: tag and chipLabel are only on Sing for me")
+    expected = {"Rose": 10, "Wave": 20, "Star": 30, "Sing for me": 99, "Dance": 199, "Crown": 500}
     for name, price in expected.items():
         if names.get(name) != price:
             fail(f"gifts: {name} must cost {price}")
@@ -673,9 +716,20 @@ def check_ledger(ledger, packs: dict, calls: dict, gifts: dict, balance: int) ->
             meta = {}
         if kind in {"recharge", "bonus"}:
             pack = packs.get(ref)
-            field = "diamonds" if kind == "recharge" else "bonus"
-            if not pack or amount != pack.get(field):
-                fail(f"{label}: {kind} amount must match pack {field}")
+            if not pack:
+                fail(f"{label}: {kind} ref does not resolve")
+            elif ref == "pack_700" and kind == "recharge":
+                # U28 lists 600 diamonds. This row stays 700 so the sample
+                # still ends at diamondBalance 120. 20% of 600 is not stored.
+                if amount != 700:
+                    fail(f"{label}: sample recharge credit stays 700")
+            elif ref == "pack_700" and kind == "bonus":
+                if amount != 100:
+                    fail(f"{label}: sample bonus credit stays 100")
+            else:
+                field = "diamonds" if kind == "recharge" else "bonus"
+                if amount != pack.get(field):
+                    fail(f"{label}: {kind} amount must match pack {field}")
         if kind == "call":
             call = calls.get(ref)
             call_amounts[ref] = call_amounts.get(ref, 0) + amount
@@ -799,6 +853,7 @@ def check_config(config, codes: set[str], packs: dict) -> None:
             "features",
             "limits",
             "discover",
+            "calls",
         },
         "config",
     )
@@ -943,6 +998,7 @@ def check_config(config, codes: set[str], packs: dict) -> None:
         fail("config.limits: expected freeMatchesPerDay 3, freeMessagesPerHost 3, lowBalanceWarningSec 60")
 
     _check_discover(config.get("discover"))
+    _check_calls(config.get("calls"))
 
 
 def _check_discover(discover) -> None:
@@ -1018,6 +1074,85 @@ def _check_discover(discover) -> None:
             for key in sorted(set(discover) | set(expected)):
                 if discover.get(key) != expected.get(key):
                     fail(f"config.discover.{key}: mismatch")
+
+
+def _check_calls(calls) -> None:
+    """U23–U31 copy. Clocks and balances are the artboard strings, not derived."""
+    mid = "\u00b7"
+    expected = {
+        "confirm": {
+            "statusLine": f"Online {mid} usually answers in 5s",
+            "billing": f"Per second {mid} stops when you hang up",
+            "warning": "We'll warn you 60 seconds before your balance runs out. You can top up without ending the call.",
+            "dontShow": "Don't show this again for calls under 60/min",
+            "talkTime": "about 3 minutes",
+            "balanceLabel": "120 Diamonds",
+            "startLabel": "Start video call",
+            "voiceInstead": f"Voice call instead {mid} 20/min",
+        },
+        "outgoing": {
+            "status": "Calling\u2026",
+            "notice": "You are not charged until she answers",
+        },
+        "incoming": {
+            "badge": f"Verified host {mid} live now",
+            "talked": "You talked yesterday",
+            "rateNote": "40/min if you answer",
+            "turnOff": "Turn off host call-backs",
+        },
+        "video": {
+            "clock": "03:12",
+            "balance": 88,
+            "minutesLeft": f"~2 min left",
+            "caption": "Live video (host camera)",
+            "youLabel": "You",
+            "roseSent": 10,
+            "thanks": "Thank you so much!",
+            "balanceLine": f"88 {mid} ~2 min left",
+        },
+        "gifts": {
+            "clock": "03:40",
+            "balance": 64,
+            "combo": f"Combo x3 active {mid} send again within 3s",
+        },
+        "lowBalance": {
+            "clock": "0:58 left",
+            "seconds": 58,
+            "body": "Your balance runs out in 58 seconds. The call continues while you pay.",
+            "pay": "Pay \u20b9249 with Google Play",
+            "otherMethods": "Other payment methods",
+            "endWhenEmpty": "End call when balance runs out",
+        },
+        "voice": {
+            "hostId": "host_anjali",
+            "clock": "07:25",
+            "label": f"Voice call {mid} 20/min",
+        },
+        "summary": {
+            "chips": [
+                {"label": "Friendly", "selected": True},
+                {"label": "Good talk", "selected": False},
+                {"label": "Camera off", "selected": False},
+                {"label": "Rude", "selected": False},
+            ]
+        },
+        "queue": {
+            "place": 3,
+            "wait": "About 2 minutes",
+            "body": "All Hindi-speaking hosts are in calls. We'll connect you to the next free one.",
+            "ariaLine": f"AI companion {mid} 15/min",
+            "voiceHostsAvailable": 12,
+            "dontWait": "Don't want to wait?",
+            "notify": "Notify me when it's my turn",
+            "leave": "Leave queue",
+        },
+    }
+    if calls != expected:
+        fail("config.calls: does not match the U23–U31 artboard copy")
+        if isinstance(calls, dict) and isinstance(expected, dict):
+            for key in sorted(set(calls) | set(expected)):
+                if calls.get(key) != expected.get(key):
+                    fail(f"config.calls.{key}: mismatch")
 
 
 def _check_lang_map(value, codes: set[str], label: str) -> None:

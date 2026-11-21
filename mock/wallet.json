@@ -2,8 +2,8 @@
   "packs": [
     {"id": "pack_100", "diamonds": 100, "bonus": 0, "priceINR": 49, "tags": []},
     {"id": "pack_300", "diamonds": 300, "bonus": 30, "priceINR": 129, "tags": []},
-    {"id": "pack_700", "diamonds": 700, "bonus": 100, "priceINR": 249, "tags": ["MOST_POPULAR"]},
-    {"id": "pack_1500", "diamonds": 1500, "bonus": 250, "priceINR": 499, "tags": []},
+    {"id": "pack_700", "diamonds": 600, "bonus": null, "bonusLabel": "+20% bonus", "priceINR": 249, "tags": ["BEST"]},
+    {"id": "pack_1500", "diamonds": 1300, "bonus": null, "priceINR": 499, "tags": []},
     {"id": "pack_4000", "diamonds": 4000, "bonus": 800, "priceINR": 999, "tags": []},
     {"id": "pack_9000", "diamonds": 9000, "bonus": 3000, "priceINR": 1999, "tags": ["BEST_VALUE"]}
   ],

@@ -43,7 +43,7 @@
     "charmLevel": null,
     "tier": null,
     "videoRatePerMin": 60,
-    "voiceRatePerMin": null,
+    "voiceRatePerMin": 20,
     "status": "online",
     "isAI": false
   },

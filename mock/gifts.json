@@ -7,6 +7,13 @@
     "animation": "placeholder/gifts/rose"
   },
   {
+    "id": "gift_star",
+    "name": "Star",
+    "price": 30,
+    "category": null,
+    "animation": null
+  },
+  {
     "id": "gift_wave",
     "name": "Wave",
     "price": 20,
@@ -18,7 +25,9 @@
     "name": "Sing for me",
     "price": 99,
     "category": "interactive",
-    "animation": "placeholder/gifts/sing"
+    "animation": "placeholder/gifts/sing",
+    "tag": "SONG",
+    "chipLabel": "Song"
   },
   {
     "id": "gift_dance",
@@ -37,7 +46,7 @@
   {
     "id": "gift_crown",
     "name": "Crown",
-    "price": 999,
+    "price": 500,
     "category": "luxury",
     "animation": "placeholder/gifts/crown"
   }
