@@ -11,6 +11,7 @@ class MessagesData {
     required this.diamonds,
     required this.freeLeft,
     required this.priceAfter,
+    required this.gifts,
   });
 
   final String priya;
@@ -18,6 +19,11 @@ class MessagesData {
   final int diamonds;
   final int freeLeft;
   final int priceAfter;
+  final Map<String, (String, int)> gifts;
+
+  String giftName(String id, String fallback) => gifts[id]?.$1 ?? fallback;
+
+  int giftPrice(String id, int fallback) => gifts[id]?.$2 ?? fallback;
 
   static const fallback = MessagesData(
     priya: 'Priya',
@@ -25,6 +31,7 @@ class MessagesData {
     diamonds: 120,
     freeLeft: 3,
     priceAfter: 5,
+    gifts: {},
   );
 }
 
@@ -44,11 +51,21 @@ Future<MessagesData> loadMessages() async {
   }
 
   final free = profile['freeMessages'] as Map<String, dynamic>;
+  final giftsRaw = jsonDecode(
+    await rootBundle.loadString('assets/mock/gifts.json'),
+  ) as List<dynamic>;
   return MessagesData(
     priya: name('host_priya', MessagesData.fallback.priya),
     aria: name('host_aria', MessagesData.fallback.aria),
     diamonds: profile['diamondBalance'] as int,
     freeLeft: free['left'] as int,
     priceAfter: free['priceAfter'] as int,
+    gifts: {
+      for (final item in giftsRaw)
+        (item as Map<String, dynamic>)['id'] as String: (
+          item['name'] as String,
+          item['price'] as int,
+        ),
+    },
   );
 }

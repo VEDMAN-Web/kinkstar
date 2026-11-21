@@ -39,10 +39,12 @@ void main() {
     }, timeout: const Timeout(Duration(seconds: 30)));
   }
 
-  test('copied hosts.json matches mock/ byte for byte', () {
-    expect(
-      File('assets/mock/hosts.json').readAsBytesSync(),
-      File('../../mock/hosts.json').readAsBytesSync(),
-    );
+  test('copied mock files match mock/ byte for byte', () {
+    for (final name in ['hosts.json', 'gifts.json']) {
+      expect(
+        File('assets/mock/$name').readAsBytesSync(),
+        File('../../mock/$name').readAsBytesSync(),
+      );
+    }
   });
 }

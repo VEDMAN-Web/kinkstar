@@ -252,7 +252,7 @@ class _ChatGiftScreenState extends State<ChatGiftScreen> {
           const Positioned.fill(child: ColoredBox(color: UserColors.dim)),
           Align(
             alignment: Alignment.bottomCenter,
-            child: _GiftSheet(diamonds: _data.diamonds),
+            child: _GiftSheet(data: _data),
           ),
         ],
       ),
@@ -876,19 +876,37 @@ class _MessageField extends StatelessWidget {
 }
 
 class _GiftSheet extends StatelessWidget {
-  const _GiftSheet({required this.diamonds});
+  const _GiftSheet({required this.data});
 
-  final int diamonds;
+  final MessagesData data;
 
-  static const _gifts = [
-    _Gift('Rose', '10', KsIcons.heart, UserColors.primarySoft, selected: true),
-    _Gift('Star', '30', KsIcons.star, UserColors.gold),
-    _Gift('Chocolate', '50', KsIcons.gift, UserColors.text),
-    _Gift('Crown', '500', KsIcons.crown, UserColors.gold, tag: 'HOT'),
-    _Gift('Kiss', '99', KsIcons.sparkle, UserColors.text),
-    _Gift('Fireworks', '199', KsIcons.zap, UserColors.text),
-    _Gift('Diamond ring', '999', KsIcons.gem, UserColors.text),
+  List<_Gift> get _gifts => [
     _Gift(
+      data.giftName('gift_rose', 'Rose'),
+      '${data.giftPrice('gift_rose', 10)}',
+      KsIcons.heart,
+      UserColors.primarySoft,
+      selected: true,
+    ),
+    _Gift(
+      data.giftName('gift_star', 'Star'),
+      '${data.giftPrice('gift_star', 30)}',
+      KsIcons.star,
+      UserColors.gold,
+    ),
+    // These five are on the artboard and not in gifts.json.
+    const _Gift('Chocolate', '50', KsIcons.gift, UserColors.text),
+    _Gift(
+      data.giftName('gift_crown', 'Crown'),
+      '${data.giftPrice('gift_crown', 500)}',
+      KsIcons.crown,
+      UserColors.gold,
+      tag: 'HOT',
+    ),
+    const _Gift('Kiss', '99', KsIcons.sparkle, UserColors.text),
+    const _Gift('Fireworks', '199', KsIcons.zap, UserColors.text),
+    const _Gift('Diamond ring', '999', KsIcons.gem, UserColors.text),
+    const _Gift(
       'Daily heart',
       '0 (1 left)',
       KsIcons.heart,
@@ -925,7 +943,7 @@ class _GiftSheet extends StatelessWidget {
           Row(
             children: [
               Expanded(child: Text('Send a gift', style: UserText.h2)),
-              _DiamondChip(diamonds),
+              _DiamondChip(data.diamonds),
             ],
           ),
           const SizedBox(height: 14),

@@ -32,7 +32,7 @@ Reference PNGs are 820×1728. That is the 390×844 phone plus a 10px bezel (`box
 | U18 | Live room with PK battle (V2) | 04 Match & Live | `/live/:roomId` | Match & Live | todo | V2. Split PK bar (crimson / `#2563EB`), chat stack, gift and private-call buttons. |
 | U19 | Messages inbox (Chats / Calls / Following) | 05 Messages | `/messages` | Messages | done | Priya and Aria's names come from `hosts.json`. The other threads are artboard copy. |
 | U20 | Chat conversation | 05 Messages | `/messages/:threadId` | Messages | done | Free-message count and the price after it come from `user_profile.json`. |
-| U21 | Chat gift sheet | 05 Messages | `/messages/:threadId/gifts` | Messages | done | Diamond balance comes from the profile. The gift grid is the artboard. |
+| U21 | Chat gift sheet | 05 Messages | `/messages/:threadId/gifts` | Messages | done | Diamond balance comes from the profile. Rose, Star, and Crown (500) come from `gifts.json`. Chocolate, Kiss, Fireworks, Diamond ring, and Daily heart are artboard-only. Crown's HOT tag is not in the JSON. |
 | U22 | Me tab | 09 Me & engagement | `/me` | Me & engagement | todo | |
 | U23 | Pre-call confirm sheet | 06 Calls A | `/call/confirm` | Calls | todo | |
 | U24 | Outgoing call (connecting) | 06 Calls A | `/call/outgoing` | Calls | todo | Pulsing rings: 12px and 26px crimson shadows. |
