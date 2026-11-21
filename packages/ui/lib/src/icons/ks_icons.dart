@@ -64,8 +64,11 @@ abstract final class KsIcons {
       KsSvgPath('M2 9h20M12 21L8 9l4-6 4 6z'),
     ]),
   );
-  static const KsGlyph video = KsFontGlyph(
-    IconData(57765, fontFamily: family, fontPackage: package),
+  static const KsGlyph video = KsDrawGlyph(
+    KsDrawing([
+      KsSvgRect(x: 2, y: 6, width: 14, height: 12, rx: 2),
+      KsSvgPath('M16 10l6-3v10l-6-3z'),
+    ]),
   );
   static const KsGlyph camera = KsDrawGlyph(
     KsDrawing([
@@ -97,8 +100,11 @@ abstract final class KsIcons {
   static const KsGlyph shield = KsDrawGlyph(
     KsDrawing([KsSvgPath('M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z')]),
   );
-  static const KsGlyph bot = KsFontGlyph(
-    IconData(57787, fontFamily: family, fontPackage: package),
+  static const KsGlyph bot = KsDrawGlyph(
+    KsDrawing([
+      KsSvgRect(x: 4, y: 8, width: 16, height: 12, rx: 3),
+      KsSvgPath('M12 4v4M9 13h.01M15 13h.01M9 17h6'),
+    ]),
   );
   static const KsGlyph info = KsFontGlyph(
     IconData(57593, fontFamily: family, fontPackage: package),
@@ -110,8 +116,13 @@ abstract final class KsIcons {
       ),
     ]),
   );
-  static const KsGlyph gift = KsFontGlyph(
-    IconData(57569, fontFamily: family, fontPackage: package),
+  static const KsGlyph gift = KsDrawGlyph(
+    KsDrawing([
+      KsSvgRect(x: 3, y: 8, width: 18, height: 13, rx: 1),
+      KsSvgPath(
+        'M12 8v13M3 12h18M12 8S10 3 7.5 4 9 8 12 8zm0 0s2-5 4.5-4S15 8 12 8z',
+      ),
+    ]),
   );
   static const KsGlyph globe = KsDrawGlyph(
     KsDrawing([
@@ -133,8 +144,8 @@ abstract final class KsIcons {
       KsSvgPath('M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z'),
     ]),
   );
-  static const KsGlyph crown = KsFontGlyph(
-    IconData(57814, fontFamily: family, fontPackage: package),
+  static const KsGlyph crown = KsDrawGlyph(
+    KsDrawing([KsSvgPath('M2 18h20l-2-11-5 5-3-7-3 7-5-5z')]),
   );
   static const KsGlyph x = KsFontGlyph(
     IconData(57778, fontFamily: family, fontPackage: package),
@@ -145,14 +156,21 @@ abstract final class KsIcons {
   static const KsGlyph zap = KsDrawGlyph(
     KsDrawing([KsSvgPath('M13 2L3 14h9l-1 8 10-12h-9z')]),
   );
-  static const KsGlyph calendar = KsFontGlyph(
-    IconData(57443, fontFamily: family, fontPackage: package),
+  static const KsGlyph calendar = KsDrawGlyph(
+    KsDrawing([
+      KsSvgRect(x: 3, y: 4, width: 18, height: 18, rx: 2),
+      KsSvgPath('M16 2v4M8 2v4M3 10h18'),
+    ]),
   );
   static const KsGlyph expand = KsDrawGlyph(
     KsDrawing([KsSvgPath('M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5')]),
   );
-  static const KsGlyph heart = KsFontGlyph(
-    IconData(57586, fontFamily: family, fontPackage: package),
+  static const KsGlyph heart = KsDrawGlyph(
+    KsDrawing([
+      KsSvgPath(
+        'M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 00-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 000-7.8z',
+      ),
+    ]),
   );
   static const KsGlyph flag = KsFontGlyph(
     IconData(57553, fontFamily: family, fontPackage: package),
@@ -186,8 +204,13 @@ abstract final class KsIcons {
   static const KsGlyph user = KsDrawGlyph(
     KsDrawing([KsSvgCircle(12, 8, 4), KsSvgPath('M4 21a8 8 0 0116 0')]),
   );
-  static const KsGlyph share2 = KsFontGlyph(
-    IconData(57686, fontFamily: family, fontPackage: package),
+  static const KsGlyph share2 = KsDrawGlyph(
+    KsDrawing([
+      KsSvgCircle(18, 5, 3),
+      KsSvgCircle(6, 12, 3),
+      KsSvgCircle(18, 19, 3),
+      KsSvgPath('M8.6 13.5l6.8 4M15.4 6.5l-6.8 4'),
+    ]),
   );
   static const KsGlyph ellipsisVertical = KsFontGlyph(
     IconData(57527, fontFamily: family, fontPackage: package),
@@ -195,8 +218,12 @@ abstract final class KsIcons {
   static const KsGlyph search = KsFontGlyph(
     IconData(57681, fontFamily: family, fontPackage: package),
   );
-  static const KsGlyph trophy = KsFontGlyph(
-    IconData(58227, fontFamily: family, fontPackage: package),
+  static const KsGlyph trophy = KsDrawGlyph(
+    KsDrawing([
+      KsSvgPath(
+        'M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0zM17 5h3v2a3 3 0 01-3 3M7 5H4v2a3 3 0 003 3',
+      ),
+    ]),
   );
   static const KsGlyph users = KsFontGlyph(
     IconData(57764, fontFamily: family, fontPackage: package),
@@ -216,14 +243,25 @@ abstract final class KsIcons {
   static const KsGlyph sparkle = KsFontGlyph(
     IconData(58494, fontFamily: family, fontPackage: package),
   );
-  static const KsGlyph wallet = KsFontGlyph(
-    IconData(57860, fontFamily: family, fontPackage: package),
+  static const KsGlyph wallet = KsDrawGlyph(
+    KsDrawing([
+      KsSvgRect(x: 2, y: 6, width: 20, height: 14, rx: 2),
+      KsSvgPath('M16 13h2M2 10h20M6 6V4h12v2'),
+    ]),
   );
-  static const KsGlyph settings = KsFontGlyph(
-    IconData(57684, fontFamily: family, fontPackage: package),
+  static const KsGlyph settings = KsDrawGlyph(
+    KsDrawing([
+      KsSvgCircle(12, 12, 3),
+      KsSvgPath(
+        'M19.4 15a1.6 1.6 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.6 1.6 0 00-1.8-.3 1.6 1.6 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.6 1.6 0 00-1-1.5 1.6 1.6 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.6 1.6 0 00.3-1.8 1.6 1.6 0 00-1.5-1H3a2 2 0 110-4h.1a1.6 1.6 0 001.5-1 1.6 1.6 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.6 1.6 0 001.8.3H9a1.6 1.6 0 001-1.5V3a2 2 0 114 0v.1a1.6 1.6 0 001 1.5 1.6 1.6 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.6 1.6 0 00-.3 1.8V9a1.6 1.6 0 001.5 1H21a2 2 0 110 4h-.1a1.6 1.6 0 00-1.5 1z',
+      ),
+    ]),
   );
-  static const KsGlyph circleHelp = KsFontGlyph(
-    IconData(57474, fontFamily: family, fontPackage: package),
+  static const KsGlyph circleHelp = KsDrawGlyph(
+    KsDrawing([
+      KsSvgCircle(12, 12, 10),
+      KsSvgPath('M9.1 9a3 3 0 015.8 1c0 2-3 3-3 3M12 17h.01'),
+    ]),
   );
   static const KsGlyph chartLine = KsFontGlyph(
     IconData(58021, fontFamily: family, fontPackage: package),

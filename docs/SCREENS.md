@@ -33,7 +33,7 @@ Reference PNGs are 820×1728. That is the 390×844 phone plus a 10px bezel (`box
 | U19 | Messages inbox (Chats / Calls / Following) | 05 Messages | `/messages` | Messages | todo | |
 | U20 | Chat conversation | 05 Messages | `/messages/:threadId` | Messages | todo | |
 | U21 | Chat gift sheet | 05 Messages | `/messages/:threadId/gifts` | Messages | todo | |
-| U22 | Me tab | 09 Me & engagement | `/me` | Me & engagement | todo | |
+| U22 | Me tab | 09 Me & engagement | `/me` | Me & engagement | done | |
 | U23 | Pre-call confirm sheet | 06 Calls A | `/call/confirm` | Calls | todo | |
 | U24 | Outgoing call (connecting) | 06 Calls A | `/call/outgoing` | Calls | todo | Pulsing rings: 12px and 26px crimson shadows. |
 | U25 | Incoming call from a real host | 06 Calls A | `/call/incoming` | Calls | todo | |
@@ -49,12 +49,12 @@ Reference PNGs are 820×1728. That is the 390×844 phone plus a 10px bezel (`box
 | U35 | First-recharge offer popup | 08 Wallet | `/wallet/offer` | Wallet | todo | |
 | U36 | VIP membership | 08 Wallet | `/wallet/vip` | Wallet | todo | |
 | U37 | Wallet history (Recharges / Spending) | 08 Wallet | `/wallet/history` | Wallet | todo | |
-| U38 | My level | 09 Me & engagement | `/me/level` | Me & engagement | todo | |
-| U39 | Daily check-in | 09 Me & engagement | `/me/check-in` | Me & engagement | todo | 7-day grid. Day 7 spans two columns. |
-| U40 | Events & leaderboard | 09 Me & engagement | `/me/events` | Me & engagement | todo | Event banner is server-driven. |
-| U41 | Refer & earn | 09 Me & engagement | `/me/refer` | Me & engagement | todo | Invite code uses letter-spacing 2px. |
+| U38 | My level | 09 Me & engagement | `/me/level` | Me & engagement | done | |
+| U39 | Daily check-in | 09 Me & engagement | `/me/check-in` | Me & engagement | done | 7-day grid. Day 7 spans two columns. |
+| U40 | Events & leaderboard | 09 Me & engagement | `/me/events` | Me & engagement | done | Event banner is server-driven. |
+| U41 | Refer & earn | 09 Me & engagement | `/me/refer` | Me & engagement | done | Invite code uses letter-spacing 2px. |
 | U42 | Notifications centre | 05 Messages | `/notifications` | Messages | todo | |
-| U43 | AI companion profile (labelled AI) | 09 Me & engagement | `/ai/:hostId` | Me & engagement | todo | Must stay labelled AI. |
+| U43 | AI companion profile (labelled AI) | 09 Me & engagement | `/ai/:hostId` | Me & engagement | done | The badge reads `hosts.json` label "AI companion". The voice chip stays "8/min voice"; JSON `voiceRatePerMin` is 15. The subtitle line stays the artboard sentence; JSON subtitle is only "Always available". |
 | U45 | Settings | 10 Settings A | `/settings` | Settings | todo | |
 | U46 | Edit profile | 10 Settings A | `/settings/profile` | Settings | todo | |
 | U47 | Blocked users | 10 Settings A | `/settings/blocked` | Settings | todo | |
