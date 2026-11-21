@@ -13,11 +13,11 @@ void main() {
       widget: const ProviderScope(child: UserApp()),
       outputPath: '../../design/compare/U01_build.png',
     );
-    final bytes = await file.readAsBytes();
+    final bytes = file.readAsBytesSync();
     expect(bytes[0], 0x89);
     final width = (bytes[16] << 24) | (bytes[17] << 16) | (bytes[18] << 8) | bytes[19];
     final height = (bytes[20] << 24) | (bytes[21] << 16) | (bytes[22] << 8) | bytes[23];
     expect(width, 780);
     expect(height, 1688);
-  });
+  }, timeout: const Timeout(Duration(seconds: 30)));
 }
