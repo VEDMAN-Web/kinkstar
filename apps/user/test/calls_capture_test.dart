@@ -56,5 +56,9 @@ void main() {
         File('../../mock/$name').readAsBytesSync(),
       );
     }
+    expect(
+      File('../../packages/ui/assets/config/config.json').readAsBytesSync(),
+      File('../../mock/config.json').readAsBytesSync(),
+    );
   });
 }

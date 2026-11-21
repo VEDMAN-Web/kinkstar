@@ -6,8 +6,8 @@ import 'package:kinkstar_ui/kinkstar_ui.dart';
 import '../onboarding/chrome.dart';
 import 'data.dart';
 
-/// Artboard copy that `mock/` does not contain. Listed in the group PR so it
-/// can be added without changing the layout.
+/// Shown only before `config.calls` loads. The loaded screen reads these
+/// strings from JSON.
 const _answersIn = 'Online · usually answers in 5s';
 const _billing = 'Per second · stops when you hang up';
 const _balanceWarning =
@@ -78,7 +78,7 @@ class ConfirmCallScreen extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              _answersIn,
+                              data?.lines.answersIn ?? _answersIn,
                               style: UserText.xs.copyWith(
                                 fontWeight: FontWeight.w400,
                                 color: UserColors.muted,
@@ -115,24 +115,37 @@ class ConfirmCallScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        _Stat('Billing', Text(_billing, style: UserText.small)),
+                        _Stat(
+                          'Billing',
+                          Text(
+                            data?.lines.billing ?? _billing,
+                            style: UserText.small,
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                  const _Note(_balanceWarning),
+                  _Note(data?.lines.warning ?? _balanceWarning),
                   Row(
                     children: [
                       const KsCheck(on: true),
                       const SizedBox(width: 8),
-                      Expanded(child: Text(_dontShow, style: UserText.small)),
+                      Expanded(
+                        child: Text(
+                          data?.lines.dontShow ?? _dontShow,
+                          style: UserText.small,
+                        ),
+                      ),
                     ],
                   ),
-                  const KsButton(
-                    label: 'Start video call',
+                  KsButton(
+                    label: data?.lines.startLabel ?? 'Start video call',
                     icon: KsIcons.video,
                   ),
                   KsButton(
-                    label: 'Voice call instead · $voice/min',
+                    label:
+                        data?.lines.voiceInstead ??
+                        'Voice call instead · $voice/min',
                     background: Colors.transparent,
                     foreground: UserColors.text,
                     borderColor: UserColors.line,
@@ -182,7 +195,7 @@ class OutgoingCallScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 14),
                 Text(
-                  _notCharged,
+                  data?.lines.notice ?? _notCharged,
                   style: UserText.xs.copyWith(
                     fontWeight: FontWeight.w400,
                     color: UserColors.muted,
@@ -251,7 +264,7 @@ class IncomingCallScreen extends StatelessWidget {
                         const KsIcon(KsIcons.shield, color: UserColors.white),
                         const SizedBox(width: 6),
                         Text(
-                          _verifiedLive,
+                          data?.lines.incomingBadge ?? _verifiedLive,
                           style: UserText.small.copyWith(
                             color: UserColors.white,
                           ),
@@ -269,7 +282,7 @@ class IncomingCallScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   _GemText(
-                    '$_talkedYesterday · $video/min if you answer',
+                    '${data?.lines.talked ?? _talkedYesterday} · ${data?.lines.rateNote ?? '$video/min if you answer'}',
                     color: UserColors.muted,
                   ),
                   const Spacer(),
@@ -293,7 +306,7 @@ class IncomingCallScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    _turnOffCallbacks,
+                    data?.lines.turnOff ?? _turnOffCallbacks,
                     style: UserText.small.copyWith(color: UserColors.muted),
                   ),
                 ],
@@ -317,11 +330,17 @@ class VideoCallScreen extends StatelessWidget {
         final video = data?.priya.videoRatePerMin ?? 40;
         final rose = data?.gift('gift_rose').name ?? 'Rose';
         final wave = data?.gift('gift_wave').price ?? 20;
-        final sing = data?.gift('gift_sing').price ?? 99;
+        final singGift = data?.gift('gift_sing');
+        final sing = singGift?.price ?? 99;
+        final songChip = singGift?.chipLabel ?? _songChip;
         final dance = data?.gift('gift_dance').price ?? 199;
+        final lines = data?.lines;
         return Stack(
           children: [
-            const _VideoBackdrop(),
+            _VideoBackdrop(
+              caption: lines?.caption ?? _videoCaption,
+              youLabel: lines?.youLabel ?? _youLabel,
+            ),
             Positioned(
               top: 52,
               left: 16,
@@ -372,7 +391,10 @@ class VideoCallScreen extends StatelessWidget {
                           style: UserText.glass.copyWith(color: UserColors.ok),
                         ),
                         const SizedBox(width: 6),
-                        Text(_videoClock, style: UserText.glass),
+                        Text(
+                          lines?.videoClock ?? _videoClock,
+                          style: UserText.glass,
+                        ),
                       ],
                     ),
                   ),
@@ -390,7 +412,7 @@ class VideoCallScreen extends StatelessWidget {
               left: 16,
               child: _Glass(
                 child: _GemText(
-                  'Balance $_liveBalance · ~$_liveMinutesLeft min left',
+                  'Balance ${lines?.balanceLine ?? '$_liveBalance · ~$_liveMinutesLeft min left'}',
                   color: UserColors.white,
                   size: 12,
                 ),
@@ -407,14 +429,14 @@ class VideoCallScreen extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          '$_youLabel ',
+                          '${lines?.youLabel ?? _youLabel} ',
                           style: UserText.small.copyWith(
                             fontWeight: FontWeight.w700,
                             color: UserColors.white,
                           ),
                         ),
                         Text(
-                          'sent $rose x$_roseSent',
+                          'sent $rose x${lines?.roseSent ?? _roseSent}',
                           style: UserText.small.copyWith(
                             color: UserColors.white,
                           ),
@@ -434,7 +456,7 @@ class VideoCallScreen extends StatelessWidget {
                             text: name,
                             style: const TextStyle(fontWeight: FontWeight.w700),
                           ),
-                          const TextSpan(text: ': $_priyaThanks'),
+                          TextSpan(text: ': ${lines?.thanks ?? _priyaThanks}'),
                         ],
                       ),
                     ),
@@ -456,7 +478,7 @@ class VideoCallScreen extends StatelessWidget {
                       style: UserText.xs.copyWith(color: UserColors.white),
                     ),
                     const SizedBox(width: 8),
-                    _DarkChip('$_songChip · $sing'),
+                    _DarkChip('$songChip · $sing'),
                     const SizedBox(width: 8),
                     _DarkChip('Wave · $wave'),
                     const SizedBox(width: 8),
@@ -522,9 +544,15 @@ class GiftPanelScreen extends StatelessWidget {
       builder: (data) {
         final rose = data?.gift('gift_rose');
         final sing = data?.gift('gift_sing');
+        final star = data?.gift('gift_star');
+        final crown = data?.gift('gift_crown');
+        final lines = data?.lines;
         return Stack(
           children: [
-            const _VideoBackdrop(),
+            _VideoBackdrop(
+              caption: lines?.caption ?? _videoCaption,
+              youLabel: lines?.youLabel ?? _youLabel,
+            ),
             Positioned(
               top: 52,
               left: 16,
@@ -537,7 +565,7 @@ class GiftPanelScreen extends StatelessWidget {
                       style: UserText.glass.copyWith(color: UserColors.ok),
                     ),
                     const SizedBox(width: 6),
-                    Text(_giftClock, style: UserText.glass),
+                    Text(lines?.giftClock ?? _giftClock, style: UserText.glass),
                   ],
                 ),
               ),
@@ -550,7 +578,7 @@ class GiftPanelScreen extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(child: Text('Gifts', style: UserText.h2)),
-                      _GoldChip('$_giftBalance'),
+                      _GoldChip('${lines?.giftBalance ?? _giftBalance}'),
                       const SizedBox(width: 12),
                       KsButton(
                         label: 'Top up',
@@ -577,31 +605,36 @@ class GiftPanelScreen extends StatelessWidget {
                         price: '${rose?.price ?? 10}',
                       ),
                       const SizedBox(width: 8),
-                      const _Pack(
+                      _Pack(
                         icon: KsIcons.star,
                         iconColor: UserColors.gold,
-                        name: _starName,
-                        price: '$_starPrice',
+                        name: star?.name ?? _starName,
+                        price: '${star?.price ?? _starPrice}',
                       ),
                       const SizedBox(width: 8),
                       _Pack(
-                        tag: 'SONG',
+                        tag: sing?.tag ?? 'SONG',
                         icon: KsIcons.mic,
                         name: sing?.name ?? 'Sing for me',
                         price: '${sing?.price ?? 99}',
                       ),
                       const SizedBox(width: 8),
-                      const _Pack(
+                      _Pack(
                         icon: KsIcons.crown,
                         iconColor: UserColors.gold,
-                        name: 'Crown',
-                        price: '$_crownArtboardPrice',
+                        name: crown?.name ?? 'Crown',
+                        price: '${crown?.price ?? _crownArtboardPrice}',
                       ),
                     ],
                   ),
                   Row(
                     children: [
-                      Expanded(child: Text(_combo, style: UserText.small)),
+                      Expanded(
+                        child: Text(
+                          lines?.combo ?? _combo,
+                          style: UserText.small,
+                        ),
+                      ),
                       const SizedBox(width: 8),
                       KsButton(
                         label: 'Send ${rose?.name ?? 'Rose'}',
@@ -628,10 +661,14 @@ class TopUpScreen extends StatelessWidget {
     return _CallStage(
       builder: (data) {
         final name = data?.priya.name ?? 'Priya';
-        final pay = data?.payLabel ?? 'Google Play';
+        final lines = data?.lines;
+        final packs = lines?.packs;
         return Stack(
           children: [
-            const _VideoBackdrop(),
+            _VideoBackdrop(
+              caption: lines?.caption ?? _videoCaption,
+              youLabel: lines?.youLabel ?? _youLabel,
+            ),
             Positioned(
               top: 52,
               left: 16,
@@ -642,7 +679,10 @@ class TopUpScreen extends StatelessWidget {
                   children: [
                     const KsIcon(KsIcons.clock4, color: UserColors.white),
                     const SizedBox(width: 6),
-                    Text('$_lowBalanceClock left', style: UserText.glass),
+                    Text(
+                      lines?.lowClock ?? '$_lowBalanceClock left',
+                      style: UserText.glass,
+                    ),
                   ],
                 ),
               ),
@@ -654,37 +694,50 @@ class TopUpScreen extends StatelessWidget {
                   _Grab(),
                   Text('Keep talking to $name', style: UserText.h2),
                   Text(
-                    'Your balance runs out in $_lowBalanceSeconds seconds. The call continues while you pay.',
+                    lines?.lowBody ??
+                        'Your balance runs out in $_lowBalanceSeconds seconds. The call continues while you pay.',
                     style: UserText.small,
                   ),
-                  const Row(
+                  Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _PayPack(diamonds: '100', price: '₹49'),
-                      SizedBox(width: 10),
-                      _PayPack(
-                        diamonds: '600',
-                        price: '₹249',
-                        bonus: '+20% bonus',
-                        tag: 'BEST',
-                        selected: true,
-                      ),
-                      SizedBox(width: 10),
-                      _PayPack(diamonds: '1,300', price: '₹499'),
+                      for (var i = 0; i < (packs?.length ?? 3); i++) ...[
+                        if (i > 0) const SizedBox(width: 10),
+                        if (packs == null && i == 0)
+                          const _PayPack(diamonds: '100', price: '₹49')
+                        else if (packs == null && i == 1)
+                          const _PayPack(
+                            diamonds: '600',
+                            price: '₹249',
+                            bonus: '+20% bonus',
+                            tag: 'BEST',
+                            selected: true,
+                          )
+                        else if (packs == null)
+                          const _PayPack(diamonds: '1,300', price: '₹499')
+                        else
+                          _PayPack(
+                            diamonds: packs[i].diamondsLabel,
+                            price: '₹${packs[i].priceInr}',
+                            bonus: packs[i].bonusLabel,
+                            tag: packs[i].tag,
+                            selected: packs[i].tag != null,
+                          ),
+                      ],
                     ],
                   ),
                   KsButton(
-                    label: 'Pay ₹249 with $pay',
+                    label: lines?.lowPay ?? 'Pay ₹249 with Google Play',
                     background: UserColors.gold,
                     foreground: UserColors.goldInk,
                   ),
                   Text(
-                    'Other payment methods',
+                    lines?.lowOther ?? 'Other payment methods',
                     textAlign: TextAlign.center,
                     style: UserText.small,
                   ),
-                  const KsButton(
-                    label: 'End call when balance runs out',
+                  KsButton(
+                    label: lines?.lowEnd ?? 'End call when balance runs out',
                     background: Colors.transparent,
                     foreground: UserColors.text,
                     borderColor: UserColors.line,
@@ -704,76 +757,80 @@ class VoiceCallScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: DecoratedBox(
-        decoration: BoxDecoration(gradient: UserGradients.voiceCall),
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(24, 110, 24, 48),
-          child: Column(
-            children: [
-              _Glass(
-                child: _GemText(
-                  'Voice call · $_anjaliVoiceRate/min',
-                  color: UserColors.white,
+    return _CallStage(
+      builder: (data) {
+        final anjali = data?.anjali.name ?? _anjaliName;
+        final lines = data?.lines;
+        return DecoratedBox(
+          decoration: BoxDecoration(gradient: UserGradients.voiceCall),
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(24, 110, 24, 48),
+            child: Column(
+              children: [
+                _Glass(
+                  child: _GemText(
+                    lines?.voiceLabel ?? 'Voice call · $_anjaliVoiceRate/min',
+                    color: UserColors.white,
+                  ),
                 ),
-              ),
-              SizedBox(height: 20),
-              _Avatar(_anjaliName, size: 150, fontSize: 48),
-              SizedBox(height: 12),
-              Text(_anjaliName, style: UserText.h1),
-              SizedBox(height: 12),
-              Text.rich(
-                TextSpan(
-                  style: UserText.body,
+                SizedBox(height: 20),
+                _Avatar(anjali, size: 150, fontSize: 48),
+                SizedBox(height: 12),
+                Text(anjali, style: UserText.h1),
+                SizedBox(height: 12),
+                Text.rich(
+                  TextSpan(
+                    style: UserText.body,
+                    children: [
+                      TextSpan(
+                        text: '● ',
+                        style: TextStyle(color: UserColors.ok),
+                      ),
+                      TextSpan(
+                        text: lines?.voiceClock ?? _voiceClock,
+                        style: TextStyle(color: UserColors.muted),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 12),
+                _Waveform(),
+                Spacer(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    TextSpan(
-                      text: '● ',
-                      style: TextStyle(color: UserColors.ok),
+                    _RoundControl(
+                      icon: KsIcons.micOff,
+                      label: 'Mute',
+                      size: 56,
+                      muted: true,
                     ),
-                    TextSpan(
-                      text: _voiceClock,
-                      style: TextStyle(color: UserColors.muted),
+                    _RoundControl(
+                      icon: KsIcons.video,
+                      label: 'Video',
+                      size: 56,
+                      muted: true,
+                    ),
+                    _RoundControl(
+                      icon: KsIcons.gift,
+                      label: 'Gift',
+                      size: 56,
+                      muted: true,
+                      color: UserColors.gold,
+                    ),
+                    _RoundControl(
+                      icon: KsIcons.phoneOff,
+                      label: 'End',
+                      size: 56,
+                      background: UserColors.danger,
                     ),
                   ],
                 ),
-              ),
-              SizedBox(height: 12),
-              _Waveform(),
-              Spacer(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _RoundControl(
-                    icon: KsIcons.micOff,
-                    label: 'Mute',
-                    size: 56,
-                    muted: true,
-                  ),
-                  _RoundControl(
-                    icon: KsIcons.video,
-                    label: 'Video',
-                    size: 56,
-                    muted: true,
-                  ),
-                  _RoundControl(
-                    icon: KsIcons.gift,
-                    label: 'Gift',
-                    size: 56,
-                    muted: true,
-                    color: UserColors.gold,
-                  ),
-                  _RoundControl(
-                    icon: KsIcons.phoneOff,
-                    label: 'End',
-                    size: 56,
-                    background: UserColors.danger,
-                  ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
@@ -832,15 +889,23 @@ class CallSummaryScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 14),
-                    const Wrap(
+                    Wrap(
                       alignment: WrapAlignment.center,
                       spacing: 8,
                       runSpacing: 8,
                       children: [
-                        KsChip(label: 'Friendly', on: true),
-                        KsChip(label: 'Good talk'),
-                        KsChip(label: 'Camera off'),
-                        KsChip(label: 'Rude'),
+                        for (final chip
+                            in data?.lines.chips ??
+                                const [
+                                  CallChip(label: 'Friendly', selected: true),
+                                  CallChip(label: 'Good talk', selected: false),
+                                  CallChip(
+                                    label: 'Camera off',
+                                    selected: false,
+                                  ),
+                                  CallChip(label: 'Rude', selected: false),
+                                ])
+                          KsChip(label: chip.label, on: chip.selected),
                       ],
                     ),
                     const Spacer(),
@@ -889,7 +954,7 @@ class QueueScreen extends StatelessWidget {
     return _CallStage(
       builder: (data) {
         final aria = data?.aria.name ?? 'Aria';
-        final rate = data?.aria.videoRatePerMin ?? 15;
+        final lines = data?.lines;
         return Column(
           children: [
             const SizedBox(height: UserSpace.statusBar),
@@ -903,12 +968,12 @@ class QueueScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     const SizedBox(height: 20),
-                    const _QueueRing(_queuePlace),
+                    _QueueRing(lines?.queuePlace ?? _queuePlace),
                     const SizedBox(height: 16),
-                    Text(_queueWait, style: UserText.h2),
+                    Text(lines?.queueWait ?? _queueWait, style: UserText.h2),
                     const SizedBox(height: 16),
                     Text(
-                      _queueCopy,
+                      lines?.queueBody ?? _queueCopy,
                       textAlign: TextAlign.center,
                       style: UserText.small,
                     ),
@@ -918,7 +983,7 @@ class QueueScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Don't want to wait?",
+                            lines?.dontWait ?? "Don't want to wait?",
                             style: UserText.small.copyWith(
                               fontWeight: FontWeight.w700,
                               color: UserColors.text,
@@ -951,7 +1016,8 @@ class QueueScreen extends StatelessWidget {
                                       ],
                                     ),
                                     Text(
-                                      'AI companion · $rate/min',
+                                      lines?.ariaLine ??
+                                          'AI companion · ${data?.aria.videoRatePerMin ?? 15}/min',
                                       style: UserText.xs.copyWith(
                                         fontWeight: FontWeight.w400,
                                         color: UserColors.muted,
@@ -984,7 +1050,7 @@ class QueueScreen extends StatelessWidget {
                                       ),
                                     ),
                                     Text(
-                                      '$_voiceHostsAvailable available now',
+                                      '${lines?.voiceHosts ?? _voiceHostsAvailable} available now',
                                       style: UserText.xs.copyWith(
                                         fontWeight: FontWeight.w400,
                                         color: UserColors.muted,
@@ -1013,7 +1079,7 @@ class QueueScreen extends StatelessWidget {
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
-                            "Notify me when it's my turn",
+                            lines?.notify ?? "Notify me when it's my turn",
                             style: UserText.small.copyWith(
                               color: UserColors.text,
                             ),
@@ -1022,8 +1088,8 @@ class QueueScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    const KsButton(
-                      label: 'Leave queue',
+                    KsButton(
+                      label: lines?.leave ?? 'Leave queue',
                       background: Colors.transparent,
                       foreground: UserColors.text,
                       borderColor: UserColors.line,
@@ -1069,7 +1135,10 @@ class _CallStageState extends State<_CallStage> {
 }
 
 class _VideoBackdrop extends StatelessWidget {
-  const _VideoBackdrop();
+  const _VideoBackdrop({required this.caption, required this.youLabel});
+
+  final String caption;
+  final String youLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -1081,19 +1150,21 @@ class _VideoBackdrop extends StatelessWidget {
           left: 0,
           right: 0,
           child: Text(
-            _videoCaption,
+            caption,
             textAlign: TextAlign.center,
             style: UserText.caption,
           ),
         ),
-        const Positioned(right: 16, top: 100, child: _Pip()),
+        Positioned(right: 16, top: 100, child: _Pip(youLabel)),
       ],
     );
   }
 }
 
 class _Pip extends StatelessWidget {
-  const _Pip();
+  const _Pip(this.label);
+
+  final String label;
 
   @override
   Widget build(BuildContext context) {
@@ -1107,7 +1178,7 @@ class _Pip extends StatelessWidget {
         borderRadius: BorderRadius.circular(UserRadii.chip),
         border: Border.all(color: UserColors.pipBorder, width: 2),
       ),
-      child: Text(_youLabel, style: UserText.badge),
+      child: Text(label, style: UserText.badge),
     );
   }
 }
