@@ -89,6 +89,10 @@ Future<void> _loadPackageFonts() async {
     'Noto Sans Telugu',
     '/usr/share/fonts/truetype/noto/NotoSansTelugu-Regular.ttf',
   );
+  await _loadFileFont(
+    'Noto Sans Symbols2',
+    '/usr/share/fonts/truetype/noto/NotoSansSymbols2-Regular.ttf',
+  );
 }
 
 Future<void> _loadFileFont(String family, String path) async {

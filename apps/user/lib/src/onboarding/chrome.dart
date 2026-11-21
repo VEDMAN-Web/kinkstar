@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 // SDK Material, not package:material_ui. That package also pulls intl.
 // ignore: deprecated_member_use
 import 'package:flutter/material.dart';
@@ -16,6 +18,7 @@ class KsButton extends StatelessWidget {
     this.borderColor,
     this.minHeight = UserSpace.buttonMin,
     this.textStyle,
+    this.fullWidth = true,
   });
 
   final String label;
@@ -26,6 +29,7 @@ class KsButton extends StatelessWidget {
   final Color? borderColor;
   final double minHeight;
   final TextStyle? textStyle;
+  final bool fullWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +51,7 @@ class KsButton extends StatelessWidget {
         child: ConstrainedBox(
           constraints: BoxConstraints(
             minHeight: minHeight,
-            minWidth: compact ? 0 : double.infinity,
+            minWidth: fullWidth && !compact ? double.infinity : 0,
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 18),
@@ -291,6 +295,7 @@ class KsMediaBox extends StatelessWidget {
     this.alignEnd = false,
     this.center = false,
     this.padding = const EdgeInsets.all(10),
+    this.overlay,
   });
 
   final String label;
@@ -299,6 +304,7 @@ class KsMediaBox extends StatelessWidget {
   final bool alignEnd;
   final bool center;
   final EdgeInsets padding;
+  final Widget? overlay;
 
   @override
   Widget build(BuildContext context) {
@@ -309,13 +315,21 @@ class KsMediaBox extends StatelessWidget {
         width: double.infinity,
         child: CustomPaint(
           painter: const _HatchPainter(),
-          child: Container(
-            alignment: center
-                ? Alignment.center
-                : (alignEnd ? Alignment.bottomCenter : Alignment.bottomLeft),
-            padding: padding,
-            child: Text(label, textAlign: TextAlign.center, style: UserText.xs),
-          ),
+          child:
+              overlay ??
+              Container(
+                alignment: center
+                    ? Alignment.center
+                    : (alignEnd
+                          ? Alignment.bottomCenter
+                          : Alignment.bottomLeft),
+                padding: padding,
+                child: Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  style: UserText.xs,
+                ),
+              ),
         ),
       ),
     );
@@ -330,12 +344,22 @@ class _HatchPainter extends CustomPainter {
     canvas.drawRect(Offset.zero & size, Paint()..color = UserColors.media);
     final paint = Paint()..color = UserColors.hatch;
     const period = UserHatch.periodPx;
+    // CSS repeating-linear-gradient: 0deg points up, angles grow clockwise,
+    // and the 0px stop sits half a gradient-line before the box center.
+    final radians = UserHatch.angleDeg * math.pi / 180;
+    final dx = math.sin(radians);
+    final dy = -math.cos(radians);
+    final length = size.width * dx.abs() + size.height * dy.abs();
     canvas.save();
     canvas.clipRect(Offset.zero & size);
     canvas.translate(size.width / 2, size.height / 2);
-    canvas.rotate(UserHatch.angleDeg * 3.141592653589793 / 180);
+    canvas.rotate(math.atan2(dy, dx));
     final span = size.longestSide * 2;
-    for (double x = -span; x < span; x += period) {
+    var x = -length / 2;
+    while (x > -span) {
+      x -= period;
+    }
+    for (; x < span; x += period) {
       canvas.drawRect(
         Rect.fromLTWH(x, -span, UserHatch.stripePx, span * 2),
         paint,
@@ -372,6 +396,65 @@ class KsTopBar extends StatelessWidget {
             ?trailing,
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Bottom navigation from `.tab`. Labels come from config, including Home.
+class UserTabBar extends StatelessWidget {
+  const UserTabBar({
+    super.key,
+    required this.tabs,
+    this.selectedId = 'discover',
+  });
+
+  final List<ConfigTab> tabs;
+  final String selectedId;
+
+  static const _icons = {
+    'discover': KsIcons.house,
+    'match': KsIcons.expand,
+    'live': KsIcons.radio,
+    'messages': KsIcons.messageSquare,
+    'me': KsIcons.user,
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    final enabled = tabs.where((tab) => tab.enabled).toList();
+    return Container(
+      height: UserSpace.tabBar,
+      padding: const EdgeInsets.only(bottom: 8),
+      decoration: const BoxDecoration(
+        color: UserColors.surface1,
+        border: Border(top: BorderSide(color: UserColors.line)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          for (final tab in enabled)
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                KsIcon(
+                  _icons[tab.id] ?? KsIcons.circleHelp,
+                  color: tab.id == selectedId
+                      ? UserColors.primarySoft
+                      : UserColors.muted,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  tab.label,
+                  style: UserText.tab.copyWith(
+                    color: tab.id == selectedId
+                        ? UserColors.primarySoft
+                        : UserColors.muted,
+                  ),
+                ),
+              ],
+            ),
+        ],
       ),
     );
   }
