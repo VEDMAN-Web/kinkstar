@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:kinkstar_ui/kinkstar_ui.dart';
 
 import 'onboarding/screens.dart';
+import 'settings/screens.dart';
 
 class UserApp extends StatefulWidget {
   const UserApp({super.key});
@@ -70,6 +71,61 @@ class _UserAppState extends State<UserApp> {
         path: '/onboarding/guide',
         name: 'guide',
         builder: (context, state) => const GuideScreen(),
+      ),
+      GoRoute(
+        path: '/settings',
+        name: 'settings',
+        builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/settings/profile',
+        name: 'editProfile',
+        builder: (context, state) => const EditProfileScreen(),
+      ),
+      GoRoute(
+        path: '/settings/blocked',
+        name: 'blocked',
+        builder: (context, state) => const BlockedScreen(),
+      ),
+      GoRoute(
+        path: '/settings/language',
+        name: 'appLanguage',
+        builder: (context, state) => const AppLanguageScreen(),
+      ),
+      GoRoute(
+        path: '/settings/help',
+        name: 'help',
+        builder: (context, state) => const HelpScreen(),
+      ),
+      GoRoute(
+        path: '/settings/report',
+        name: 'report',
+        builder: (context, state) => const ReportScreen(),
+      ),
+      GoRoute(
+        path: '/settings/rate',
+        name: 'rate',
+        builder: (context, state) => const RateScreen(),
+      ),
+      GoRoute(
+        path: '/settings/about',
+        name: 'about',
+        builder: (context, state) => const AboutScreen(),
+      ),
+      GoRoute(
+        path: '/settings/delete-account',
+        name: 'deleteAccount',
+        builder: (context, state) => const DeleteAccountScreen(),
+      ),
+      GoRoute(
+        path: '/force-update',
+        name: 'forceUpdate',
+        builder: (context, state) => const ForceUpdateScreen(),
+      ),
+      GoRoute(
+        path: '/offline',
+        name: 'offline',
+        builder: (context, state) => const OfflineScreen(),
       ),
     ],
   );

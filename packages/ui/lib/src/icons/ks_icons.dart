@@ -25,10 +25,10 @@ final class KsDrawGlyph extends KsGlyph {
 ///
 /// [chevronDown], [chevronLeft], [chevronRight], [ban], [check], [clock4],
 /// and [lock] are the current Lucide outlines, which match those artboard
-/// paths. The U01–U10 glyphs that did not match are [KsDrawGlyph]s of the
+/// paths. Glyphs whose font outline does not match are [KsDrawGlyph]s of the
 /// exact design paths: [star], [zap], [globe], [phone], [shield], [camera],
-/// [mic], [bell], [gem], [house], [expand], [radio], [messageSquare], and
-/// [user].
+/// [mic], [bell], [gem], [house], [expand], [radio], [messageSquare], [user],
+/// [info], [gift], [logOut], [trash2], [plus], [upload], and [wifi].
 ///
 /// Release builds tree-shake the Lucide font down to the code points still
 /// referenced by [KsFontGlyph] constants.
@@ -100,8 +100,8 @@ abstract final class KsIcons {
   static const KsGlyph bot = KsFontGlyph(
     IconData(57787, fontFamily: family, fontPackage: package),
   );
-  static const KsGlyph info = KsFontGlyph(
-    IconData(57593, fontFamily: family, fontPackage: package),
+  static const KsGlyph info = KsDrawGlyph(
+    KsDrawing([KsSvgCircle(12, 12, 10), KsSvgPath('M12 16v-4M12 8h.01')]),
   );
   static const KsGlyph bell = KsDrawGlyph(
     KsDrawing([
@@ -110,8 +110,13 @@ abstract final class KsIcons {
       ),
     ]),
   );
-  static const KsGlyph gift = KsFontGlyph(
-    IconData(57569, fontFamily: family, fontPackage: package),
+  static const KsGlyph gift = KsDrawGlyph(
+    KsDrawing([
+      KsSvgRect(x: 3, y: 8, width: 18, height: 13, rx: 1),
+      KsSvgPath(
+        'M12 8v13M3 12h18M12 8S10 3 7.5 4 9 8 12 8zm0 0s2-5 4.5-4S15 8 12 8z',
+      ),
+    ]),
   );
   static const KsGlyph globe = KsDrawGlyph(
     KsDrawing([
@@ -119,14 +124,16 @@ abstract final class KsIcons {
       KsSvgPath('M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20'),
     ]),
   );
-  static const KsGlyph logOut = KsFontGlyph(
-    IconData(57614, fontFamily: family, fontPackage: package),
+  static const KsGlyph logOut = KsDrawGlyph(
+    KsDrawing([
+      KsSvgPath('M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9'),
+    ]),
   );
-  static const KsGlyph trash2 = KsFontGlyph(
-    IconData(57742, fontFamily: family, fontPackage: package),
+  static const KsGlyph trash2 = KsDrawGlyph(
+    KsDrawing([KsSvgPath('M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6')]),
   );
-  static const KsGlyph plus = KsFontGlyph(
-    IconData(57661, fontFamily: family, fontPackage: package),
+  static const KsGlyph plus = KsDrawGlyph(
+    KsDrawing([KsSvgPath('M12 5v14M5 12h14')]),
   );
   static const KsGlyph messageSquare = KsDrawGlyph(
     KsDrawing([
@@ -201,11 +208,19 @@ abstract final class KsIcons {
   static const KsGlyph users = KsFontGlyph(
     IconData(57764, fontFamily: family, fontPackage: package),
   );
-  static const KsGlyph upload = KsFontGlyph(
-    IconData(57758, fontFamily: family, fontPackage: package),
+  static const KsGlyph upload = KsDrawGlyph(
+    KsDrawing([
+      KsSvgPath(
+        'M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12',
+      ),
+    ]),
   );
-  static const KsGlyph wifi = KsFontGlyph(
-    IconData(57774, fontFamily: family, fontPackage: package),
+  static const KsGlyph wifi = KsDrawGlyph(
+    KsDrawing([
+      KsSvgPath(
+        'M5 12.6a10 10 0 0114 0M8.5 16.1a5 5 0 017 0M12 20h.01M1.4 9a15 15 0 0121.2 0',
+      ),
+    ]),
   );
   static const KsGlyph image = KsFontGlyph(
     IconData(57590, fontFamily: family, fontPackage: package),

@@ -26,9 +26,7 @@ Future<File> captureFrame(
   await tester.runAsync(_loadPackageFonts);
 
   final boundaryKey = GlobalKey();
-  await tester.pumpWidget(
-    RepaintBoundary(key: boundaryKey, child: widget),
-  );
+  await tester.pumpWidget(RepaintBoundary(key: boundaryKey, child: widget));
   // A fixed number of frames. A repeating ticker would keep pumpAndSettle
   // open until the test timeout.
   for (var i = 0; i < 15; i++) {
@@ -68,9 +66,7 @@ Future<void> _loadPackageFonts() async {
     '$_fontAsset/Poppins-600.ttf',
     '$_fontAsset/Poppins-700.ttf',
   ]);
-  await _loadFamily('$_fontPackage/Lucide', const [
-    '$_fontAsset/Lucide.ttf',
-  ]);
+  await _loadFamily('$_fontPackage/Lucide', const ['$_fontAsset/Lucide.ttf']);
   // Indic letters are not in Inter. Load the host's Noto fonts so captures
   // show the same glyphs a phone would fall back to. They are not app assets.
   await _loadFileFont(
@@ -88,6 +84,10 @@ Future<void> _loadPackageFonts() async {
   await _loadFileFont(
     'Noto Sans Telugu',
     '/usr/share/fonts/truetype/noto/NotoSansTelugu-Regular.ttf',
+  );
+  await _loadFileFont(
+    'Noto Sans Kannada',
+    '/usr/share/fonts/truetype/noto/NotoSansKannada-Regular.ttf',
   );
 }
 
