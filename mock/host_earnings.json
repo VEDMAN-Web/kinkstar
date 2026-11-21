@@ -1,0 +1,50 @@
+{
+  "hostId": "host_priya",
+  "entries": [
+    {
+      "id": "earn_call_priya_refunded",
+      "callId": "call_priya_refunded",
+      "userDiamonds": 40,
+      "giftUserDiamonds": 0,
+      "inrAmount": null,
+      "sharePercent": null,
+      "tds": null
+    },
+    {
+      "id": "earn_call_priya_missed",
+      "callId": "call_priya_missed",
+      "userDiamonds": 0,
+      "giftUserDiamonds": 0,
+      "inrAmount": null,
+      "sharePercent": null,
+      "tds": null
+    },
+    {
+      "id": "earn_call_priya_dropped",
+      "callId": "call_priya_dropped",
+      "userDiamonds": 20,
+      "giftUserDiamonds": 0,
+      "inrAmount": null,
+      "sharePercent": null,
+      "tds": null
+    },
+    {
+      "id": "earn_call_priya_voice",
+      "callId": "call_priya_voice",
+      "userDiamonds": 202,
+      "giftUserDiamonds": 0,
+      "inrAmount": null,
+      "sharePercent": null,
+      "tds": null
+    },
+    {
+      "id": "earn_call_priya_842",
+      "callId": "call_priya_842",
+      "userDiamonds": 349,
+      "giftUserDiamonds": 109,
+      "inrAmount": null,
+      "sharePercent": null,
+      "tds": null
+    }
+  ]
+}

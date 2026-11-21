@@ -1,0 +1,62 @@
+[
+  {
+    "id": "call_priya_refunded",
+    "hostId": "host_priya",
+    "userId": "user_rahul",
+    "type": "video",
+    "startedAt": "2026-11-14T13:00:00Z",
+    "durationSec": 60,
+    "ratePerMin": 40,
+    "diamondsCharged": 40,
+    "giftsCount": 0,
+    "status": "refunded"
+  },
+  {
+    "id": "call_priya_missed",
+    "hostId": "host_priya",
+    "userId": "user_rahul",
+    "type": "video",
+    "startedAt": "2026-11-15T11:22:00Z",
+    "durationSec": 0,
+    "ratePerMin": 40,
+    "diamondsCharged": 0,
+    "giftsCount": 0,
+    "status": "missed"
+  },
+  {
+    "id": "call_priya_dropped",
+    "hostId": "host_priya",
+    "userId": "user_rahul",
+    "type": "video",
+    "startedAt": "2026-11-16T18:05:00Z",
+    "durationSec": 30,
+    "ratePerMin": 40,
+    "diamondsCharged": 20,
+    "giftsCount": 0,
+    "status": "dropped"
+  },
+  {
+    "id": "call_priya_voice",
+    "hostId": "host_priya",
+    "userId": "user_rahul",
+    "type": "voice",
+    "startedAt": "2026-11-17T09:40:00Z",
+    "durationSec": 606,
+    "ratePerMin": 20,
+    "diamondsCharged": 202,
+    "giftsCount": 0,
+    "status": "completed"
+  },
+  {
+    "id": "call_priya_842",
+    "hostId": "host_priya",
+    "userId": "user_rahul",
+    "type": "video",
+    "startedAt": "2026-11-18T14:12:00Z",
+    "durationSec": 522,
+    "ratePerMin": 40,
+    "diamondsCharged": 349,
+    "giftsCount": 2,
+    "status": "completed"
+  }
+]

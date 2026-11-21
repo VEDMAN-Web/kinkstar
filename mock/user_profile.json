@@ -1,0 +1,19 @@
+{
+  "id": "user_rahul",
+  "username": "Rahul_K",
+  "avatar": "placeholder/avatars/rahul.png",
+  "languages": ["hi", "en"],
+  "level": 2,
+  "levelProgress": {
+    "current": 320,
+    "required": 500,
+    "nextLevel": 3,
+    "percent": 64
+  },
+  "vip": {"active": false},
+  "diamondBalance": 120,
+  "followsCount": 5,
+  "freeMatchesLeft": 2,
+  "freeMatchesTotal": 3,
+  "freeMessages": {"left": 3, "priceAfter": 5}
+}

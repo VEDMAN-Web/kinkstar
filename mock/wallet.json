@@ -1,0 +1,29 @@
+{
+  "packs": [
+    {"id": "pack_100", "diamonds": 100, "bonus": 0, "priceINR": 49, "tags": []},
+    {"id": "pack_300", "diamonds": 300, "bonus": 30, "priceINR": 129, "tags": []},
+    {"id": "pack_700", "diamonds": 700, "bonus": 100, "priceINR": 249, "tags": ["MOST_POPULAR"]},
+    {"id": "pack_1500", "diamonds": 1500, "bonus": 250, "priceINR": 499, "tags": []},
+    {"id": "pack_4000", "diamonds": 4000, "bonus": 800, "priceINR": 999, "tags": []},
+    {"id": "pack_9000", "diamonds": 9000, "bonus": 3000, "priceINR": 1999, "tags": ["BEST_VALUE"]}
+  ],
+  "firstRechargeOffer": {
+    "expiresAt": "2026-12-31T23:59:59Z",
+    "validOnce": true
+  },
+  "paymentMethods": [
+    {"id": "google_play", "label": "Google Play"},
+    {"id": "upi_razorpay_alt_billing", "label": "UPI (Razorpay alternate billing)"}
+  ],
+  "vipPlans": [
+    {"id": "vip_1w", "duration": "1 week", "priceINR": 129},
+    {"id": "vip_1m", "duration": "1 month", "priceINR": 399},
+    {"id": "vip_3m", "duration": "3 months", "priceINR": 999}
+  ],
+  "vipPerks": [
+    "15% off calls",
+    "30 free Diamonds/day",
+    "priority match",
+    "unlimited free messages"
+  ]
+}

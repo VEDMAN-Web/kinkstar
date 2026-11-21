@@ -1,0 +1,109 @@
+{
+  "version": "1.0.0",
+  "assetBaseUrl": "https://cdn.example.com/kinkstar/",
+  "strings": {
+    "U01_title": {
+      "hi": "खोजें",
+      "en": "Discover",
+      "bn": "আবিষ্কার করুন",
+      "ta": "கண்டறியுங்கள்",
+      "te": "కనుగొనండి",
+      "mr": "शोधा",
+      "kn": "ಅನ್ವೇಷಿಸಿ"
+    },
+    "U01_subtitle": {
+      "hi": "बात करने के लिए किसी को खोजें",
+      "en": "Find someone to talk to",
+      "bn": "কথা বলার জন্য কাউকে খুঁজুন",
+      "ta": "பேச ஒருவரைக் கண்டறியுங்கள்",
+      "te": "మాట్లాడటానికి ఎవరినైనా కనుగొనండి",
+      "mr": "बोलण्यासाठी कोणाला तरी शोधा",
+      "kn": "ಮಾತನಾಡಲು ಯಾರನ್ನಾದರೂ ಹುಡುಕಿ"
+    },
+    "U32_title": {
+      "hi": "रिचार्ज",
+      "en": "Recharge",
+      "bn": "রিচার্জ",
+      "ta": "ரீசார்ஜ்",
+      "te": "రీచార్జ్",
+      "mr": "रिचार्ज",
+      "kn": "ರೀಚಾರ್ಜ್"
+    },
+    "U32_subtitle": {
+      "hi": "डायमंड्स पाएं",
+      "en": "Get Diamonds",
+      "bn": "ডায়মন্ড নিন",
+      "ta": "டயமண்ட்ஸ் பெறுங்கள்",
+      "te": "డైమండ్స్ పొందండి",
+      "mr": "डायमंड्स मिळवा",
+      "kn": "ಡೈಮಂಡ್ಸ್ ಪಡೆಯಿರಿ"
+    },
+    "U48_lowBalance": {
+      "hi": "एक मिनट से कम बैलेंस बचा है",
+      "en": "Less than a minute of balance left",
+      "bn": "এক মিনিটের কম ব্যালেন্স বাকি",
+      "ta": "இருப்பு ஒரு நிமிடத்துக்கும் குறைவு",
+      "te": "బ్యాలెన్స్ ఒక నిమిషం కంటే తక్కువ ఉంది",
+      "mr": "एका मिनिटापेक्षा कमी शिल्लक आहे",
+      "kn": "ಒಂದು ನಿಮಿಷಕ್ಕಿಂತ ಕಡಿಮೆ ಬ್ಯಾಲೆನ್ಸ್ ಉಳಿದಿದೆ"
+    }
+  },
+  "rechargePackIds": [
+    "pack_100",
+    "pack_300",
+    "pack_700",
+    "pack_1500",
+    "pack_4000",
+    "pack_9000"
+  ],
+  "homeBanners": [
+    {
+      "id": "banner_recharge",
+      "imageUrl": "https://cdn.example.com/kinkstar/banners/recharge.png",
+      "deeplink": "kinkstar://recharge",
+      "startAt": "2026-11-01T00:00:00Z",
+      "endAt": "2026-12-31T23:59:59Z",
+      "serverDriven": true
+    },
+    {
+      "id": "banner_discover",
+      "imageUrl": "https://cdn.example.com/kinkstar/banners/discover.png",
+      "deeplink": "kinkstar://discover",
+      "startAt": "2026-11-01T00:00:00Z",
+      "endAt": "2026-12-31T23:59:59Z",
+      "serverDriven": true
+    }
+  ],
+  "tabs": [
+    {"id": "discover", "label": "Discover", "enabled": true},
+    {"id": "match", "label": "Match", "enabled": true},
+    {"id": "live", "label": "Live", "enabled": true},
+    {"id": "messages", "label": "Messages", "enabled": true},
+    {"id": "me", "label": "Me", "enabled": true}
+  ],
+  "features": {
+    "quickMatch": true,
+    "liveRooms": true,
+    "aiCompanion": true,
+    "vip": true,
+    "chatPaidMessages": true,
+    "forceUpdate": {"minVersion": "1.0.0"},
+    "maintenance": {
+      "on": false,
+      "message": {
+        "hi": "हम जल्द वापस आएंगे।",
+        "en": "We'll be back soon.",
+        "bn": "আমরা শীঘ্রই ফিরে আসব।",
+        "ta": "நாங்கள் விரைவில் திரும்புவோம்.",
+        "te": "మేము త్వరలో తిరిగి వస్తాము.",
+        "mr": "आम्ही लवकरच परत येऊ.",
+        "kn": "ನಾವು ಶೀಘ್ರದಲ್ಲೇ ಮರಳುತ್ತೇವೆ."
+      }
+    }
+  },
+  "limits": {
+    "freeMatchesPerDay": 3,
+    "freeMessagesPerHost": 3,
+    "lowBalanceWarningSec": 60
+  }
+}

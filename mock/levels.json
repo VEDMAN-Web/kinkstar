@@ -1,0 +1,40 @@
+{
+  "userLevels": [
+    {"level": 1, "diamonds": 0, "perks": []},
+    {"level": 2, "diamonds": 500, "perks": []},
+    {"level": 3, "diamonds": 1000, "perks": []},
+    {"level": 4, "diamonds": 2000, "perks": []},
+    {"level": 5, "diamonds": 3500, "perks": []},
+    {"level": 6, "diamonds": 5500, "perks": []},
+    {"level": 7, "diamonds": 8000, "perks": []},
+    {"level": 8, "diamonds": 11000, "perks": []},
+    {"level": 9, "diamonds": 14500, "perks": []},
+    {"level": 10, "diamonds": 18500, "perks": ["5% call discount"]},
+    {"level": 11, "diamonds": 23000, "perks": []},
+    {"level": 12, "diamonds": 28000, "perks": []},
+    {"level": 13, "diamonds": 33500, "perks": []},
+    {"level": 14, "diamonds": 39500, "perks": []},
+    {"level": 15, "diamonds": 46000, "perks": []},
+    {"level": 16, "diamonds": 53000, "perks": []},
+    {"level": 17, "diamonds": 60500, "perks": []},
+    {"level": 18, "diamonds": 68500, "perks": []},
+    {"level": 19, "diamonds": 77000, "perks": []},
+    {"level": 20, "diamonds": 86000, "perks": ["dedicated support"]},
+    {"level": 21, "diamonds": 95500, "perks": []},
+    {"level": 22, "diamonds": 105500, "perks": []},
+    {"level": 23, "diamonds": 116000, "perks": []},
+    {"level": 24, "diamonds": 127000, "perks": []},
+    {"level": 25, "diamonds": 138500, "perks": []},
+    {"level": 26, "diamonds": 150500, "perks": []},
+    {"level": 27, "diamonds": 163000, "perks": []},
+    {"level": 28, "diamonds": 176000, "perks": []},
+    {"level": 29, "diamonds": 189500, "perks": []},
+    {"level": 30, "diamonds": 200000, "perks": []}
+  ],
+  "hostLevels": [
+    {"band": "1-5", "fromLevel": 1, "toLevel": 5, "sharePercent": null},
+    {"band": "6-10", "fromLevel": 6, "toLevel": 10, "sharePercent": null},
+    {"band": "11-15", "fromLevel": 11, "toLevel": 15, "sharePercent": null},
+    {"band": "16+", "fromLevel": 16, "toLevel": null, "sharePercent": null}
+  ]
+}
