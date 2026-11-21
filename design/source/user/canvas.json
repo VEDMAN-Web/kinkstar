@@ -1,0 +1,95 @@
+{
+  "artboards": [
+    {
+      "file": "Main.dc.html",
+      "x": 0,
+      "y": 0,
+      "w": 2222,
+      "h": 968,
+      "title": "01 Onboarding A – Splash, Language, Login, Phone, OTP"
+    },
+    {
+      "file": "02-onboarding-b.dc.html",
+      "x": 0,
+      "y": 1088,
+      "w": 2222,
+      "h": 968,
+      "title": "02 Onboarding B – Country code, Age & consent, Profile setup, Permissions, First-run guide"
+    },
+    {
+      "file": "03-discover.dc.html",
+      "x": 0,
+      "y": 2176,
+      "w": 1784,
+      "h": 968,
+      "title": "03 Discover – Home, Filters, Host profile, Media viewer"
+    },
+    {
+      "file": "04-match-live.dc.html",
+      "x": 0,
+      "y": 3264,
+      "w": 1784,
+      "h": 968,
+      "title": "04 Match & Live – Quick Match, Match found, Live rooms, Live room"
+    },
+    {
+      "file": "05-messages.dc.html",
+      "x": 0,
+      "y": 4352,
+      "w": 1784,
+      "h": 968,
+      "title": "05 Messages – Inbox, Chat, Chat gift sheet, Notifications"
+    },
+    {
+      "file": "06-calls-a.dc.html",
+      "x": 0,
+      "y": 5440,
+      "w": 1784,
+      "h": 968,
+      "title": "06 Calls A – Pre-call confirm, Calling, Incoming host call, Queue"
+    },
+    {
+      "file": "07-calls-b.dc.html",
+      "x": 0,
+      "y": 6528,
+      "w": 2222,
+      "h": 968,
+      "title": "07 Calls B – In video call, In-call gifts, Low balance top-up, Voice call, Call summary"
+    },
+    {
+      "file": "08-wallet.dc.html",
+      "x": 0,
+      "y": 7616,
+      "w": 2660,
+      "h": 968,
+      "title": "08 Wallet – Diamond store, Payment method, Success, First-recharge offer, VIP, History"
+    },
+    {
+      "file": "09-me-engage.dc.html",
+      "x": 0,
+      "y": 8704,
+      "w": 2660,
+      "h": 968,
+      "title": "09 Me & engagement – Me, Levels, Daily check-in, Events & leaderboard, Refer & earn, AI companion"
+    },
+    {
+      "file": "10-settings-a.dc.html",
+      "x": 0,
+      "y": 9792,
+      "w": 2222,
+      "h": 968,
+      "title": "10 Settings A – Settings, Edit profile, Blocked users, Language, Help & feedback"
+    },
+    {
+      "file": "11-settings-b.dc.html",
+      "x": 0,
+      "y": 10880,
+      "w": 2660,
+      "h": 968,
+      "title": "11 Settings B – Report, Rate app, About, Delete account, Force update, No connection"
+    }
+  ],
+  "launch": {
+    "view": "canvas"
+  }
+}

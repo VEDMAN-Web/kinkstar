@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>02 Onboarding B – Country code, Age & consent, Profile setup, Permissions, First-run guide</title>
+<script src="./_runtime/react.js"></script>
+<script src="./_runtime/react-dom.js"></script>
+<script src="./_runtime/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+:root{--bg:#0F0A14;--s1:#1A1322;--s2:#251B30;--ln:#3A2E47;--tx:#F7F2FA;--mu:#BBAECB;--pri:#E11D48;--pri2:#FB7185;--gold:#F5B83D;--ok:#34D399;--info:#93C5FD}
+.lbl{font:600 15px Inter,sans-serif;color:#2A2233;display:flex;gap:8px;align-items:center;height:32px}
+.sid{background:#2A2233;color:#fff;border-radius:6px;padding:2px 8px;font-size:13px}
+.ph{width:390px;height:844px;border-radius:40px;overflow:hidden;background:var(--bg);color:var(--tx);font:400 15px/1.45 Inter,sans-serif;position:relative;display:flex;flex-direction:column;box-shadow:0 0 0 10px #16121B}
+.ph *{box-sizing:border-box}
+.sb{height:44px;flex:none}
+.top{display:flex;align-items:center;gap:12px;padding:8px 16px;min-height:56px}
+.tt{font:600 20px Poppins,sans-serif;margin:0;flex:1}
+.h1{font:700 28px/1.2 Poppins,sans-serif;margin:0}
+.h2{font:600 18px Poppins,sans-serif;margin:0}
+.mu{color:var(--mu)}.gold{color:var(--gold)}.ok{color:var(--ok)}.pri{color:var(--pri2)}
+.sm{font-size:13px}.xs{font-size:12px}
+.body{flex:1;overflow:hidden;padding:0 16px;display:flex;flex-direction:column;gap:14px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;border-radius:26px;background:var(--pri);color:#fff;font:600 16px Inter,sans-serif;border:0;width:100%;text-decoration:none}
+.btn.g{background:var(--gold);color:#241500}
+.btn.o{background:transparent;border:1.5px solid var(--ln);color:var(--tx)}
+.btn.w{background:#fff;color:#1A1322}
+.btn.sm2{min-height:44px;font-size:14px;width:auto;padding:0 18px}
+.ib{width:44px;height:44px;border-radius:22px;display:flex;align-items:center;justify-content:center;background:var(--s2);border:0;color:var(--tx)}
+.ib svg,.ic{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.card{background:var(--s1);border:1px solid var(--ln);border-radius:18px;padding:14px}
+.row{display:flex;align-items:center;gap:12px}
+.col{display:flex;flex-direction:column;gap:8px}
+.sp{flex:1}
+.chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:16px;background:var(--s2);color:var(--tx);font:500 13px Inter,sans-serif;border:1px solid var(--ln)}
+.chip.on{background:var(--pri);border-color:var(--pri);color:#fff}
+.chip.gd{background:#3A2A08;border-color:#6B4E10;color:var(--gold)}
+.av{width:48px;height:48px;border-radius:24px;background:#4B3A5C;display:flex;align-items:center;justify-content:center;font:600 16px Poppins,sans-serif;color:#fff;flex:none;position:relative}
+.av.l{width:88px;height:88px;border-radius:44px;font-size:28px}
+.dot{width:12px;height:12px;border-radius:6px;background:var(--ok);border:2px solid var(--bg);position:absolute;right:0;bottom:0}
+.img{background:#3B2D4A;border-radius:16px;display:flex;align-items:flex-end;justify-content:flex-start;color:#E6DCEF;font:500 12px Inter,sans-serif;padding:10px;position:relative;overflow:hidden}
+.img::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,.04) 0 12px,transparent 12px 24px)}
+.img>*{position:relative}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;font:600 11px Inter,sans-serif;background:rgba(0,0,0,.55);color:#fff}
+.badge.live{background:var(--ok);color:#052E1C}.badge.ai{background:#93C5FD;color:#0B2545}.badge.r{background:var(--pri);color:#fff}
+.tab{display:flex;justify-content:space-around;align-items:center;height:72px;border-top:1px solid var(--ln);background:var(--s1);flex:none;padding-bottom:8px}
+.tab a{display:flex;flex-direction:column;align-items:center;gap:2px;font:500 11px Inter,sans-serif;color:var(--mu);text-decoration:none;min-width:56px;min-height:44px;justify-content:center}
+.tab a.on{color:var(--pri2)}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--s1);border-radius:28px 28px 0 0;padding:12px 20px 28px;display:flex;flex-direction:column;gap:14px;border-top:1px solid var(--ln)}
+.grab{width:40px;height:4px;border-radius:2px;background:var(--ln);align-self:center}
+.dim{position:absolute;inset:0;background:rgba(5,2,8,.6)}
+.in{display:flex;flex-direction:column;gap:6px}
+.in label{font:500 13px Inter,sans-serif;color:var(--mu)}
+.in input,.in select,.in textarea{height:52px;border-radius:14px;border:1.5px solid var(--ln);background:var(--s2);color:var(--tx);padding:0 14px;font:500 16px Inter,sans-serif}
+.in textarea{height:96px;padding:12px 14px}
+.li{display:flex;align-items:center;gap:12px;min-height:56px;border-bottom:1px solid var(--ln);padding:6px 0}
+.pack{background:var(--s2);border:1.5px solid var(--ln);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:4px;align-items:center;position:relative}
+.pack.on{border-color:var(--gold);background:#2E2310}
+.tag{position:absolute;top:-10px;background:var(--gold);color:#241500;font:700 10px Inter,sans-serif;padding:2px 8px;border-radius:8px}
+.prog{height:8px;border-radius:4px;background:var(--s2);overflow:hidden}.prog i{display:block;height:100%;background:var(--gold)}
+.vid{position:absolute;inset:0;background:#2A1F35}
+.vid::after{content:"Live video (host camera)";position:absolute;top:46%;width:100%;text-align:center;color:rgba(255,255,255,.35);font:500 14px Inter,sans-serif}
+.pip{position:absolute;right:16px;top:100px;width:104px;height:150px;border-radius:16px;background:#4A3A58;border:2px solid rgba(255,255,255,.3);display:flex;align-items:flex-end;justify-content:center;font:500 11px Inter,sans-serif;color:#fff;padding:6px}
+.ov{position:absolute;left:0;right:0;display:flex;padding:0 16px;gap:10px;align-items:center}
+.glass{background:rgba(15,10,20,.55);border-radius:22px;padding:6px 12px;font:500 13px Inter,sans-serif;color:#fff}
+.seg{display:flex;background:var(--s2);border-radius:22px;padding:4px;gap:4px}
+.seg span{flex:1;text-align:center;padding:8px 0;border-radius:18px;font:500 13px Inter,sans-serif;color:var(--mu)}
+.seg span.on{background:var(--pri);color:#fff}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.sw{width:48px;height:28px;border-radius:14px;background:var(--pri);position:relative;flex:none}.sw::after{content:"";position:absolute;right:3px;top:3px;width:22px;height:22px;border-radius:11px;background:#fff}
+.sw.off{background:var(--ln)}.sw.off::after{right:auto;left:3px}
+.chk{width:22px;height:22px;border-radius:6px;border:2px solid var(--ln);flex:none}.chk.on{background:var(--pri);border-color:var(--pri)}
+.bub{max-width:76%;padding:10px 14px;border-radius:18px;font-size:14px}
+.bub.me{align-self:flex-end;background:var(--pri);color:#fff;border-bottom-right-radius:6px}
+.bub.her{align-self:flex-start;background:var(--s2);border-bottom-left-radius:6px}
+.otp{display:flex;gap:10px}.otp span{width:48px;height:56px;border-radius:12px;border:1.5px solid var(--ln);background:var(--s2);display:flex;align-items:center;justify-content:center;font:600 22px Poppins,sans-serif}
+.otp span.on{border-color:var(--pri)}
+.note{background:#1E2A3A;border:1px solid #2F4560;color:#CFE3FA;border-radius:12px;padding:10px 12px;font-size:13px}
+.btn,.chip,.badge,.glass,.seg span{white-space:nowrap}
+.in{min-width:0}.in input,.in select,.in textarea{width:100%;min-width:0}
+
+</style>
+</helmet>
+<div style="width: 2222px; height: 968px; box-sizing: border-box; padding: 40px; display: flex; gap: 48px; background: #E7E3EC">
+<div style="display: flex; flex-direction: column; gap: 12px; width: 390px"><div class="lbl"><span class="sid">U06</span> Country code picker</div><div class="ph">
+<div class="sb"></div>
+<div class="top"><button class="ib" aria-label="Back"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button><p class="tt">Select country code</p></div>
+<div class="body">
+<div class="in"><label for="cs">Search country</label><input id="cs" placeholder="Search"></div>
+<div class="card row"><span class="mu sm">Detected from your network</span><span class="sp"></span><b>India +91</b></div>
+<p class="xs mu" style="margin:0">ALL COUNTRIES</p>
+<div class="col" style="gap:0">
+<div class="li"><span class="sp">Bangladesh</span><span class="mu">+880</span></div>
+<div class="li"><span class="sp">India</span><span class="mu">+91</span><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg></div>
+<div class="li"><span class="sp">Indonesia</span><span class="mu">+62</span></div>
+<div class="li"><span class="sp">Nepal</span><span class="mu">+977</span></div>
+<div class="li"><span class="sp">Pakistan</span><span class="mu">+92</span></div>
+<div class="li"><span class="sp">Philippines</span><span class="mu">+63</span></div>
+<div class="li"><span class="sp">Sri Lanka</span><span class="mu">+94</span></div>
+</div>
+</div>
+</div></div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 390px"><div class="lbl"><span class="sid">U07</span> Age check &amp; consent</div><div class="ph">
+<div class="sb"></div>
+<div class="body" style="padding-top:24px">
+<div style="width:64px;height:64px;border-radius:20px;background:var(--s2);display:flex;align-items:center;justify-content:center;color:var(--gold)"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div>
+<p class="h1">Before you start</p>
+<p class="mu" style="margin:0">Kinkstar Calls is for adults only. Nudity, harassment and sharing contact details are not allowed.</p>
+<div class="in"><label for="dob">Date of birth</label><input id="dob" value="14 / 03 / 1996"></div>
+<div class="row"><span class="chk on"></span><span class="sm">I confirm I am 18 or older</span></div>
+<div class="row"><span class="chk on"></span><span class="sm">I agree to the <a href="#" style="color:var(--pri2)">Terms</a>, <a href="#" style="color:var(--pri2)">Privacy Policy</a> and <a href="#" style="color:var(--pri2)">Community Rules</a></span></div>
+<div class="row"><span class="chk"></span><span class="sm">Send me offers and updates (optional)</span></div>
+<div class="sp"></div>
+<a href="#" class="btn" style="margin-bottom:32px">Agree and continue</a>
+</div>
+</div></div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 390px"><div class="lbl"><span class="sid">U08</span> Profile setup</div><div class="ph">
+<div class="sb"></div>
+<div class="top"><p class="tt">Set up your profile</p><a href="#" class="mu sm" style="text-decoration:none">Skip</a></div>
+<div class="body">
+<div style="align-self:center;position:relative"><div class="av l">R</div><span class="ib" style="position:absolute;right:-6px;bottom:-6px;background:var(--pri);width:36px;height:36px"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></span></div>
+<div class="in"><label for="nn">Nickname</label><input id="nn" value="Rahul_K"></div>
+<div class="col"><span class="sm mu">I want to talk in</span>
+<div class="row" style="flex-wrap:wrap;gap:8px"><span class="chip on">Hindi</span><span class="chip on">English</span><span class="chip">Tamil</span><span class="chip">Bengali</span><span class="chip">Telugu</span></div></div>
+<div class="col"><span class="sm mu">Interests (helps us suggest hosts)</span>
+<div class="row" style="flex-wrap:wrap;gap:8px"><span class="chip on">Music</span><span class="chip">Movies</span><span class="chip on">Travel</span><span class="chip">Fitness</span><span class="chip">Cricket</span><span class="chip">Cooking</span></div></div>
+<div class="sp"></div>
+<a href="#" class="btn" style="margin-bottom:32px">Save and continue</a>
+</div>
+</div></div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 390px"><div class="lbl"><span class="sid">U09</span> Permissions primer</div><div class="ph">
+<div class="sb"></div>
+<div class="body" style="padding-top:24px">
+<p class="h1">Turn on calls</p>
+<p class="mu" style="margin:0">We ask only when needed. You can change these anytime.</p>
+<div class="card row"><span class="ib"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></span><div class="col sp" style="gap:2px"><b>Camera</b><span class="xs mu">For video calls</span></div><span class="sw"></span></div>
+<div class="card row"><span class="ib"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10a7 7 0 0014 0M12 19v3"></path></svg></span><div class="col sp" style="gap:2px"><b>Microphone</b><span class="xs mu">For voice and video calls</span></div><span class="sw"></span></div>
+<div class="card row"><span class="ib"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"></path></svg></span><div class="col sp" style="gap:2px"><b>Notifications</b><span class="xs mu">Know when hosts you follow are online</span></div><span class="sw off"></span></div>
+<div class="card row"><span class="ib"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1.9.4 1.8.7 2.7a2 2 0 01-.5 2.1L8.1 9.8a16 16 0 006 6l1.3-1.3a2 2 0 012.1-.4c.9.3 1.8.6 2.7.7a2 2 0 011.8 2z"></path></svg></span><div class="col sp" style="gap:2px"><b>Full-screen call alerts</b><span class="xs mu">Ring when a host calls you back</span></div><span class="sw off"></span></div>
+<div class="sp"></div>
+<a href="#" class="btn">Allow</a>
+<a href="#" class="btn o" style="margin-bottom:32px">Not now</a>
+</div>
+</div></div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 390px"><div class="lbl"><span class="sid">U10</span> First-run guide (coach marks)</div><div class="ph">
+<div class="sb"></div>
+<div class="top"><p class="tt">Discover</p><span class="chip gd"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12l4 6-10 12L2 9z"></path><path d="M2 9h20M12 21L8 9l4-6 4 6z"></path></svg> 0</span></div>
+<div class="body"><div class="grid2"><div class="img" style="height:230px">Host</div><div class="img" style="height:230px">Host</div><div class="img" style="height:230px">Host</div><div class="img" style="height:230px">Host</div></div></div>
+<nav class="tab"><a href="#" class="on" aria-label="Home"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10l9-7 9 7v10a2 2 0 01-2 2h-4v-7H9v7H5a2 2 0 01-2-2z"></path></svg>Home</a><a href="#" class="" aria-label="Match"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"></path></svg>Match</a><a href="#" class="" aria-label="Live"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M16.2 7.8a6 6 0 010 8.4M7.8 16.2a6 6 0 010-8.4M19.1 4.9a10 10 0 010 14.2M4.9 19.1a10 10 0 010-14.2"></path></svg>Live</a><a href="#" class="" aria-label="Messages"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"></path></svg>Messages</a><a href="#" class="" aria-label="Me"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0116 0"></path></svg>Me</a></nav>
+<div class="dim"></div>
+<div style="position:absolute;left:24px;top:120px;width:160px;height:230px;border:3px solid var(--gold);border-radius:18px"></div>
+<div class="card" style="position:absolute;left:24px;right:24px;top:380px;background:#fff;color:#1A1322;border:0">
+<p class="h2" style="color:#1A1322">1 of 3 · Tap a host to see her profile</p>
+<p class="sm" style="margin:6px 0 12px;color:#4A4055">Green dot = online now. Price per minute is shown before every call.</p>
+<div class="row"><a href="#" class="sm" style="color:#6B5B7B">Skip tour</a><span class="sp"></span><a href="#" class="btn sm2">Next</a></div>
+</div>
+<div class="card" style="position:absolute;left:24px;right:24px;bottom:96px;background:var(--gold);color:#241500;border:0;text-align:center"><b>Your first call is free</b> · up to 60 seconds with any host marked "Free call"</div>
+</div></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2222,"height":968}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

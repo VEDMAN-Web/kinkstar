@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>05 Messages – Inbox, Chat, Chat gift sheet, Notifications</title>
+<script src="./_runtime/react.js"></script>
+<script src="./_runtime/react-dom.js"></script>
+<script src="./_runtime/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+:root{--bg:#0F0A14;--s1:#1A1322;--s2:#251B30;--ln:#3A2E47;--tx:#F7F2FA;--mu:#BBAECB;--pri:#E11D48;--pri2:#FB7185;--gold:#F5B83D;--ok:#34D399;--info:#93C5FD}
+.lbl{font:600 15px Inter,sans-serif;color:#2A2233;display:flex;gap:8px;align-items:center;height:32px}
+.sid{background:#2A2233;color:#fff;border-radius:6px;padding:2px 8px;font-size:13px}
+.ph{width:390px;height:844px;border-radius:40px;overflow:hidden;background:var(--bg);color:var(--tx);font:400 15px/1.45 Inter,sans-serif;position:relative;display:flex;flex-direction:column;box-shadow:0 0 0 10px #16121B}
+.ph *{box-sizing:border-box}
+.sb{height:44px;flex:none}
+.top{display:flex;align-items:center;gap:12px;padding:8px 16px;min-height:56px}
+.tt{font:600 20px Poppins,sans-serif;margin:0;flex:1}
+.h1{font:700 28px/1.2 Poppins,sans-serif;margin:0}
+.h2{font:600 18px Poppins,sans-serif;margin:0}
+.mu{color:var(--mu)}.gold{color:var(--gold)}.ok{color:var(--ok)}.pri{color:var(--pri2)}
+.sm{font-size:13px}.xs{font-size:12px}
+.body{flex:1;overflow:hidden;padding:0 16px;display:flex;flex-direction:column;gap:14px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;border-radius:26px;background:var(--pri);color:#fff;font:600 16px Inter,sans-serif;border:0;width:100%;text-decoration:none}
+.btn.g{background:var(--gold);color:#241500}
+.btn.o{background:transparent;border:1.5px solid var(--ln);color:var(--tx)}
+.btn.w{background:#fff;color:#1A1322}
+.btn.sm2{min-height:44px;font-size:14px;width:auto;padding:0 18px}
+.ib{width:44px;height:44px;border-radius:22px;display:flex;align-items:center;justify-content:center;background:var(--s2);border:0;color:var(--tx)}
+.ib svg,.ic{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.card{background:var(--s1);border:1px solid var(--ln);border-radius:18px;padding:14px}
+.row{display:flex;align-items:center;gap:12px}
+.col{display:flex;flex-direction:column;gap:8px}
+.sp{flex:1}
+.chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:16px;background:var(--s2);color:var(--tx);font:500 13px Inter,sans-serif;border:1px solid var(--ln)}
+.chip.on{background:var(--pri);border-color:var(--pri);color:#fff}
+.chip.gd{background:#3A2A08;border-color:#6B4E10;color:var(--gold)}
+.av{width:48px;height:48px;border-radius:24px;background:#4B3A5C;display:flex;align-items:center;justify-content:center;font:600 16px Poppins,sans-serif;color:#fff;flex:none;position:relative}
+.av.l{width:88px;height:88px;border-radius:44px;font-size:28px}
+.dot{width:12px;height:12px;border-radius:6px;background:var(--ok);border:2px solid var(--bg);position:absolute;right:0;bottom:0}
+.img{background:#3B2D4A;border-radius:16px;display:flex;align-items:flex-end;justify-content:flex-start;color:#E6DCEF;font:500 12px Inter,sans-serif;padding:10px;position:relative;overflow:hidden}
+.img::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,.04) 0 12px,transparent 12px 24px)}
+.img>*{position:relative}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;font:600 11px Inter,sans-serif;background:rgba(0,0,0,.55);color:#fff}
+.badge.live{background:var(--ok);color:#052E1C}.badge.ai{background:#93C5FD;color:#0B2545}.badge.r{background:var(--pri);color:#fff}
+.tab{display:flex;justify-content:space-around;align-items:center;height:72px;border-top:1px solid var(--ln);background:var(--s1);flex:none;padding-bottom:8px}
+.tab a{display:flex;flex-direction:column;align-items:center;gap:2px;font:500 11px Inter,sans-serif;color:var(--mu);text-decoration:none;min-width:56px;min-height:44px;justify-content:center}
+.tab a.on{color:var(--pri2)}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--s1);border-radius:28px 28px 0 0;padding:12px 20px 28px;display:flex;flex-direction:column;gap:14px;border-top:1px solid var(--ln)}
+.grab{width:40px;height:4px;border-radius:2px;background:var(--ln);align-self:center}
+.dim{position:absolute;inset:0;background:rgba(5,2,8,.6)}
+.in{display:flex;flex-direction:column;gap:6px}
+.in label{font:500 13px Inter,sans-serif;color:var(--mu)}
+.in input,.in select,.in textarea{height:52px;border-radius:14px;border:1.5px solid var(--ln);background:var(--s2);color:var(--tx);padding:0 14px;font:500 16px Inter,sans-serif}
+.in textarea{height:96px;padding:12px 14px}
+.li{display:flex;align-items:center;gap:12px;min-height:56px;border-bottom:1px solid var(--ln);padding:6px 0}
+.pack{background:var(--s2);border:1.5px solid var(--ln);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:4px;align-items:center;position:relative}
+.pack.on{border-color:var(--gold);background:#2E2310}
+.tag{position:absolute;top:-10px;background:var(--gold);color:#241500;font:700 10px Inter,sans-serif;padding:2px 8px;border-radius:8px}
+.prog{height:8px;border-radius:4px;background:var(--s2);overflow:hidden}.prog i{display:block;height:100%;background:var(--gold)}
+.vid{position:absolute;inset:0;background:#2A1F35}
+.vid::after{content:"Live video (host camera)";position:absolute;top:46%;width:100%;text-align:center;color:rgba(255,255,255,.35);font:500 14px Inter,sans-serif}
+.pip{position:absolute;right:16px;top:100px;width:104px;height:150px;border-radius:16px;background:#4A3A58;border:2px solid rgba(255,255,255,.3);display:flex;align-items:flex-end;justify-content:center;font:500 11px Inter,sans-serif;color:#fff;padding:6px}
+.ov{position:absolute;left:0;right:0;display:flex;padding:0 16px;gap:10px;align-items:center}
+.glass{background:rgba(15,10,20,.55);border-radius:22px;padding:6px 12px;font:500 13px Inter,sans-serif;color:#fff}
+.seg{display:flex;background:var(--s2);border-radius:22px;padding:4px;gap:4px}
+.seg span{flex:1;text-align:center;padding:8px 0;border-radius:18px;font:500 13px Inter,sans-serif;color:var(--mu)}
+.seg span.on{background:var(--pri);color:#fff}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.sw{width:48px;height:28px;border-radius:14px;background:var(--pri);position:relative;flex:none}.sw::after{content:"";position:absolute;right:3px;top:3px;width:22px;height:22px;border-radius:11px;background:#fff}
+.sw.off{background:var(--ln)}.sw.off::after{right:auto;left:3px}
+.chk{width:22px;height:22px;border-radius:6px;border:2px solid var(--ln);flex:none}.chk.on{background:var(--pri);border-color:var(--pri)}
+.bub{max-width:76%;padding:10px 14px;border-radius:18px;font-size:14px}
+.bub.me{align-self:flex-end;background:var(--pri);color:#fff;border-bottom-right-radius:6px}
+.bub.her{align-self:flex-start;background:var(--s2);border-bottom-left-radius:6px}
+.otp{display:flex;gap:10px}.otp span{width:48px;height:56px;border-radius:12px;border:1.5px solid var(--ln);background:var(--s2);display:flex;align-items:center;justify-content:center;font:600 22px Poppins,sans-serif}
+.otp span.on{border-color:var(--pri)}
+.note{background:#1E2A3A;border:1px solid #2F4560;color:#CFE3FA;border-radius:12px;padding:10px 12px;font-size:13px}
+.btn,.chip,.badge,.glass,.seg span{white-space:nowrap}
+.in{min-width:0}.in input,.in select,.in textarea{width:100%;min-width:0}
+
+</style>
+</helmet>
+<div style="width: 1784px; height: 968px; box-sizing: border-box; padding: 40px; display: flex; gap: 48px; background: #E7E3EC">
+<div style="display: flex; flex-direction: column; gap: 12px; width: 390px"><div class="lbl"><span class="sid">U19</span> Messages inbox (Chats / Calls / Following)</div><div class="ph">
+<div class="sb"></div>
+<div class="top"><p class="tt">Messages</p><button class="ib" aria-label="Mark all read / clear"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg></button></div>
+<div style="padding:0 16px 12px"><div class="seg"><span class="on">Chats</span><span>Calls</span><span>Following</span></div></div>
+<div class="body" style="gap:0">
+<div class="li"><div class="av" style="background:var(--pri)"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"></path></svg></div><div class="col sp" style="gap:0"><div class="row"><b>Kinkstar Team</b><span class="badge" style="background:var(--s2)">Official</span></div><span class="sm mu">Your free call is ready. Tap to start.</span></div><span class="xs mu">now</span></div>
+<div class="li"><div class="av">P<span class="dot"></span></div><div class="col sp" style="gap:0"><b>Priya</b><span class="sm mu">Thanks for the rose! Call me later?</span></div><div class="col" style="align-items:flex-end;gap:4px"><span class="xs mu">9:42 pm</span><span class="badge r">2</span></div></div>
+<div class="li"><div class="av">A<span class="dot"></span></div><div class="col sp" style="gap:0"><b>Anjali</b><span class="sm mu">[Gift] Chocolate x1</span></div><span class="xs mu">9:10 pm</span></div>
+<div class="li"><div class="av" style="background:#1E3A5F"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="8" width="16" height="12" rx="3"></rect><path d="M12 4v4M9 13h.01M15 13h.01M9 17h6"></path></svg></div><div class="col sp" style="gap:0"><div class="row"><b>Aria</b><span class="badge ai">AI</span></div><span class="sm mu">Good evening! How was your day?</span></div><span class="xs mu">8:01 pm</span></div>
+<div class="li"><div class="av">N</div><div class="col sp" style="gap:0"><b>Neha</b><span class="sm mu">You: Hi Neha</span></div><span class="xs mu">Yesterday</span></div>
+<div class="li"><div class="av">S</div><div class="col sp" style="gap:0"><b>Sana</b><span class="sm mu">[Missed call] 2 min ago</span></div><span class="xs mu">Mon</span></div>
+</div>
+<nav class="tab"><a href="#" class="" aria-label="Home"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10l9-7 9 7v10a2 2 0 01-2 2h-4v-7H9v7H5a2 2 0 01-2-2z"></path></svg>Home</a><a href="#" class="" aria-label="Match"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"></path></svg>Match</a><a href="#" class="" aria-label="Live"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M16.2 7.8a6 6 0 010 8.4M7.8 16.2a6 6 0 010-8.4M19.1 4.9a10 10 0 010 14.2M4.9 19.1a10 10 0 010-14.2"></path></svg>Live</a><a href="#" class="on" aria-label="Messages"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"></path></svg>Messages</a><a href="#" class="" aria-label="Me"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0116 0"></path></svg>Me</a></nav>
+</div></div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 390px"><div class="lbl"><span class="sid">U20</span> Chat conversation</div><div class="ph">
+<div class="sb"></div>
+<div class="top"><button class="ib" aria-label="Back"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button><div class="av" style="width:40px;height:40px">P<span class="dot"></span></div><div class="col sp" style="gap:0"><b>Priya</b><span class="xs ok">Online · replies in ~2 min</span></div><button class="ib" aria-label="Voice call"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1.9.4 1.8.7 2.7a2 2 0 01-.5 2.1L8.1 9.8a16 16 0 006 6l1.3-1.3a2 2 0 012.1-.4c.9.3 1.8.6 2.7.7a2 2 0 011.8 2z"></path></svg></button><button class="ib" aria-label="Video call" style="background:var(--pri)"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="6" width="14" height="12" rx="2"></rect><path d="M16 10l6-3v10l-6-3z"></path></svg></button></div>
+<div class="note" style="margin:0 16px 10px">For your safety, never share phone numbers, UPI IDs or money outside the app.</div>
+<div class="body" style="gap:8px">
+<span class="xs mu" style="align-self:center">Today 9:30 pm</span>
+<div class="bub me">Hi Priya! Loved your intro clip</div>
+<div class="bub her">Hi! Thank you. Where are you from?</div>
+<div class="bub me">Delhi. Want to video call?</div>
+<div class="card row" style="align-self:center;padding:10px 14px;gap:8px"><span style="color:var(--gold)"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="8" width="18" height="13" rx="1"></rect><path d="M12 8v13M3 12h18M12 8S10 3 7.5 4 9 8 12 8zm0 0s2-5 4.5-4S15 8 12 8z"></path></svg></span><span class="sm">You sent <b>Rose x1</b></span></div>
+<div class="bub her">Thanks for the rose! Call me later?</div>
+<div class="card row" style="padding:10px 12px"><span class="sm sp">3 free messages left · then 5 <svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12l4 6-10 12L2 9z"></path><path d="M2 9h20M12 21L8 9l4-6 4 6z"></path></svg> each</span><a href="#" class="sm" style="color:var(--gold)">Why?</a></div>
+</div>
+<div class="row" style="padding:10px 12px 28px;gap:8px;border-top:1px solid var(--ln)"><button class="ib" aria-label="Send photo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="M21 15l-5-5L5 21"></path></svg></button><div class="in sp"><label for="m" style="position:absolute;left:-9999px">Message</label><input id="m" placeholder="Type a message" style="height:44px;border-radius:22px"></div><button class="ib" aria-label="Gifts" style="color:var(--gold)"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="8" width="18" height="13" rx="1"></rect><path d="M12 8v13M3 12h18M12 8S10 3 7.5 4 9 8 12 8zm0 0s2-5 4.5-4S15 8 12 8z"></path></svg></button><button class="ib" aria-label="Send" style="background:var(--pri)"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"></path></svg></button></div>
+</div></div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 390px"><div class="lbl"><span class="sid">U21</span> Chat gift sheet</div><div class="ph">
+<div class="sb"></div>
+<div class="top"><button class="ib" aria-label="Back"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button><b class="sp">Priya</b></div>
+<div class="body"><div class="bub her">Thanks for the rose!</div></div>
+<div class="dim"></div>
+<div class="sheet">
+<div class="grab"></div>
+<div class="row"><p class="h2 sp">Send a gift</p><span class="chip gd"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12l4 6-10 12L2 9z"></path><path d="M2 9h20M12 21L8 9l4-6 4 6z"></path></svg> 120</span></div>
+<div class="seg"><span class="on">Popular</span><span>Luxury</span><span>Interactive</span><span>VIP</span></div>
+<div class="grid4">
+<div class="pack on"><span style="color:var(--pri2)"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 00-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 000-7.8z"></path></svg></span><span class="xs">Rose</span><span class="xs gold">10</span></div>
+<div class="pack"><span style="color:var(--gold)"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"></path></svg></span><span class="xs">Star</span><span class="xs gold">30</span></div>
+<div class="pack"><span><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="8" width="18" height="13" rx="1"></rect><path d="M12 8v13M3 12h18M12 8S10 3 7.5 4 9 8 12 8zm0 0s2-5 4.5-4S15 8 12 8z"></path></svg></span><span class="xs">Chocolate</span><span class="xs gold">50</span></div>
+<div class="pack"><span class="tag">HOT</span><span style="color:var(--gold)"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M2 18h20l-2-11-5 5-3-7-3 7-5-5z"></path></svg></span><span class="xs">Crown</span><span class="xs gold">500</span></div>
+<div class="pack"><span><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"></path></svg></span><span class="xs">Kiss</span><span class="xs gold">99</span></div>
+<div class="pack"><span><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9z"></path></svg></span><span class="xs">Fireworks</span><span class="xs gold">199</span></div>
+<div class="pack"><span><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12l4 6-10 12L2 9z"></path><path d="M2 9h20M12 21L8 9l4-6 4 6z"></path></svg></span><span class="xs">Diamond ring</span><span class="xs gold">999</span></div>
+<div class="pack"><span class="tag">FREE</span><span><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 00-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 000-7.8z"></path></svg></span><span class="xs">Daily heart</span><span class="xs gold">0 (1 left)</span></div>
+</div>
+<div class="row"><div class="seg" style="width:150px"><span>x1</span><span class="on">x10</span><span>x99</span></div><span class="sp"></span><a href="#" class="btn sm2 g">Top up</a><a href="#" class="btn sm2">Send · 100</a></div>
+</div>
+</div></div>
+<div style="display: flex; flex-direction: column; gap: 12px; width: 390px"><div class="lbl"><span class="sid">U42</span> Notifications centre</div><div class="ph">
+<div class="sb"></div>
+<div class="top"><button class="ib" aria-label="Back"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button><p class="tt">Notifications</p><a href="#" class="sm" style="color:var(--pri2)">Read all</a></div>
+<div class="body" style="gap:0">
+<p class="xs mu" style="margin:6px 0">TODAY</p>
+<div class="li"><span class="ib" style="background:#123826;color:var(--ok)"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="6" width="14" height="12" rx="2"></rect><path d="M16 10l6-3v10l-6-3z"></path></svg></span><div class="col sp" style="gap:0"><b class="sm">Priya is online now</b><span class="xs mu">You follow her · tap to call</span></div><span class="xs mu">2m</span></div>
+<div class="li"><span class="ib" style="background:#3A2A08;color:var(--gold)"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12l4 6-10 12L2 9z"></path><path d="M2 9h20M12 21L8 9l4-6 4 6z"></path></svg></span><div class="col sp" style="gap:0"><b class="sm">Daily reward ready</b><span class="xs mu">Day 3 streak · +15 Diamonds</span></div><span class="xs mu">1h</span></div>
+<div class="li"><span class="ib"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0zM17 5h3v2a3 3 0 01-3 3M7 5H4v2a3 3 0 003 3"></path></svg></span><div class="col sp" style="gap:0"><b class="sm">You reached Level 3</b><span class="xs mu">New avatar frame unlocked</span></div><span class="xs mu">5h</span></div>
+<p class="xs mu" style="margin:12px 0 6px">EARLIER</p>
+<div class="li"><span class="ib" style="color:var(--pri2)"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="8" width="18" height="13" rx="1"></rect><path d="M12 8v13M3 12h18M12 8S10 3 7.5 4 9 8 12 8zm0 0s2-5 4.5-4S15 8 12 8z"></path></svg></span><div class="col sp" style="gap:0"><b class="sm">Diwali gift festival starts</b><span class="xs mu">Limited gifts · 3 days</span></div><span class="xs mu">2d</span></div>
+<div class="li"><span class="ib"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></span><div class="col sp" style="gap:0"><b class="sm">Report update</b><span class="xs mu">Action taken on your report #4821</span></div><span class="xs mu">3d</span></div>
+<div class="li"><span class="ib"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="6" width="20" height="14" rx="2"></rect><path d="M16 13h2M2 10h20M6 6V4h12v2"></path></svg></span><div class="col sp" style="gap:0"><b class="sm">Recharge successful</b><span class="xs mu">+1,200 Diamonds · ₹249</span></div><span class="xs mu">4d</span></div>
+</div>
+</div></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1784,"height":968}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
