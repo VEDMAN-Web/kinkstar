@@ -214,6 +214,8 @@ const _scriptFallback = [
   'Noto Sans Tamil',
   'Noto Sans Telugu',
   'Noto Sans Kannada',
+  // U+2605 BLACK STAR, which the host profile line uses and Inter lacks.
+  'Noto Sans Symbols2',
 ];
 
 TextStyle _inter(

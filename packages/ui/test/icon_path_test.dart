@@ -5,6 +5,14 @@ void main() {
   test('artboard paths parse and have ink', () {
     const drawings = [
       KsIcons.star,
+      KsIcons.clock4,
+      KsIcons.video,
+      KsIcons.gift,
+      KsIcons.x,
+      KsIcons.heart,
+      KsIcons.filter,
+      KsIcons.share2,
+      KsIcons.ellipsisVertical,
       KsIcons.zap,
       KsIcons.globe,
       KsIcons.phone,

@@ -23,12 +23,9 @@ final class KsDrawGlyph extends KsGlyph {
 
 /// Icons used by the design SVGs.
 ///
-/// [chevronDown], [chevronLeft], [chevronRight], [ban], [check], [clock4],
-/// and [lock] are the current Lucide outlines, which match those artboard
-/// paths. The U01–U10 glyphs that did not match are [KsDrawGlyph]s of the
-/// exact design paths: [star], [zap], [globe], [phone], [shield], [camera],
-/// [mic], [bell], [gem], [house], [expand], [radio], [messageSquare], and
-/// [user].
+/// [chevronDown], [chevronLeft], [chevronRight], [ban], [check], and [lock]
+/// are the current Lucide outlines, which match those artboard paths. Every
+/// other glyph used on U01–U14 is a [KsDrawGlyph] of the design SVG.
 ///
 /// Release builds tree-shake the Lucide font down to the code points still
 /// referenced by [KsFontGlyph] constants.
@@ -52,8 +49,8 @@ abstract final class KsIcons {
   static const KsGlyph check = KsFontGlyph(
     IconData(57452, fontFamily: family, fontPackage: package),
   );
-  static const KsGlyph clock4 = KsFontGlyph(
-    IconData(57937, fontFamily: family, fontPackage: package),
+  static const KsGlyph clock4 = KsDrawGlyph(
+    KsDrawing([KsSvgCircle(12, 12, 10), KsSvgPath('M12 6v6l4 2')]),
   );
   static const KsGlyph lock = KsFontGlyph(
     IconData(57611, fontFamily: family, fontPackage: package),
@@ -64,8 +61,11 @@ abstract final class KsIcons {
       KsSvgPath('M2 9h20M12 21L8 9l4-6 4 6z'),
     ]),
   );
-  static const KsGlyph video = KsFontGlyph(
-    IconData(57765, fontFamily: family, fontPackage: package),
+  static const KsGlyph video = KsDrawGlyph(
+    KsDrawing([
+      KsSvgRect(x: 2, y: 6, width: 14, height: 12, rx: 2),
+      KsSvgPath('M16 10l6-3v10l-6-3z'),
+    ]),
   );
   static const KsGlyph camera = KsDrawGlyph(
     KsDrawing([
@@ -110,8 +110,13 @@ abstract final class KsIcons {
       ),
     ]),
   );
-  static const KsGlyph gift = KsFontGlyph(
-    IconData(57569, fontFamily: family, fontPackage: package),
+  static const KsGlyph gift = KsDrawGlyph(
+    KsDrawing([
+      KsSvgRect(x: 3, y: 8, width: 18, height: 13, rx: 1),
+      KsSvgPath(
+        'M12 8v13M3 12h18M12 8S10 3 7.5 4 9 8 12 8zm0 0s2-5 4.5-4S15 8 12 8z',
+      ),
+    ]),
   );
   static const KsGlyph globe = KsDrawGlyph(
     KsDrawing([
@@ -136,8 +141,8 @@ abstract final class KsIcons {
   static const KsGlyph crown = KsFontGlyph(
     IconData(57814, fontFamily: family, fontPackage: package),
   );
-  static const KsGlyph x = KsFontGlyph(
-    IconData(57778, fontFamily: family, fontPackage: package),
+  static const KsGlyph x = KsDrawGlyph(
+    KsDrawing([KsSvgPath('M18 6L6 18M6 6l12 12')]),
   );
   static const KsGlyph creditCard = KsFontGlyph(
     IconData(57514, fontFamily: family, fontPackage: package),
@@ -151,8 +156,12 @@ abstract final class KsIcons {
   static const KsGlyph expand = KsDrawGlyph(
     KsDrawing([KsSvgPath('M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5')]),
   );
-  static const KsGlyph heart = KsFontGlyph(
-    IconData(57586, fontFamily: family, fontPackage: package),
+  static const KsGlyph heart = KsDrawGlyph(
+    KsDrawing([
+      KsSvgPath(
+        'M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 00-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 000-7.8z',
+      ),
+    ]),
   );
   static const KsGlyph flag = KsFontGlyph(
     IconData(57553, fontFamily: family, fontPackage: package),
@@ -167,8 +176,8 @@ abstract final class KsIcons {
       ),
     ]),
   );
-  static const KsGlyph filter = KsFontGlyph(
-    IconData(57564, fontFamily: family, fontPackage: package),
+  static const KsGlyph filter = KsDrawGlyph(
+    KsDrawing([KsSvgPath('M22 3H2l8 9.5V19l4 2v-8.5z')]),
   );
   static const KsGlyph house = KsDrawGlyph(
     KsDrawing([
@@ -186,11 +195,20 @@ abstract final class KsIcons {
   static const KsGlyph user = KsDrawGlyph(
     KsDrawing([KsSvgCircle(12, 8, 4), KsSvgPath('M4 21a8 8 0 0116 0')]),
   );
-  static const KsGlyph share2 = KsFontGlyph(
-    IconData(57686, fontFamily: family, fontPackage: package),
+  static const KsGlyph share2 = KsDrawGlyph(
+    KsDrawing([
+      KsSvgCircle(18, 5, 3),
+      KsSvgCircle(6, 12, 3),
+      KsSvgCircle(18, 19, 3),
+      KsSvgPath('M8.6 13.5l6.8 4M15.4 6.5l-6.8 4'),
+    ]),
   );
-  static const KsGlyph ellipsisVertical = KsFontGlyph(
-    IconData(57527, fontFamily: family, fontPackage: package),
+  static const KsGlyph ellipsisVertical = KsDrawGlyph(
+    KsDrawing([
+      KsSvgCircle(12, 5, 1),
+      KsSvgCircle(12, 12, 1),
+      KsSvgCircle(12, 19, 1),
+    ]),
   );
   static const KsGlyph search = KsFontGlyph(
     IconData(57681, fontFamily: family, fontPackage: package),

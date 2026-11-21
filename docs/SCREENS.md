@@ -22,10 +22,10 @@ Reference PNGs are 820×1728. That is the 390×844 phone plus a 10px bezel (`box
 | U08 | Profile setup | 02 Onboarding B | `/onboarding/profile` | Onboarding | done | Nickname and spoken languages come from `user_profile.json`. Interest chips are the artboard set. |
 | U09 | Permissions primer | 02 Onboarding B | `/onboarding/permissions` | Onboarding | done | |
 | U10 | First-run guide (coach marks) | 02 Onboarding B | `/onboarding/guide` | Onboarding | done | Coach marks over Discover. The discover tab label in config is Home, matching the artboard. The page title is still `U01_title` (Discover). |
-| U11 | Home (Discover) | 03 Discover | `/discover` | Discover | todo | Host photos load from the network. |
-| U12 | Filter sheet | 03 Discover | `/discover/filters` | Discover | todo | |
-| U13 | Host profile | 03 Discover | `/hosts/:hostId` | Discover | todo | |
-| U14 | Photo & intro-clip viewer | 03 Discover | `/hosts/:hostId/media` | Discover | todo | Full-bleed black viewer. |
+| U11 | Home (Discover) | 03 Discover | `/discover` | Discover | done | Priya and Aria come from `hosts.json`. Anjali and Neha are the artboard cards; they are not in that file. Photos are network URLs and the capture shows the hatch. |
+| U12 | Filter sheet | 03 Discover | `/discover/filters` | Discover | done | Language names come from `languages.json`. The "128 hosts" count is the artboard. |
+| U13 | Host profile | 03 Discover | `/hosts/:hostId` | Discover | done | Priya's city, languages, rates, rating, level, calls, and followers come from `hosts.json`. The bio, verified badge, and gift count are the artboard. |
+| U14 | Photo & intro-clip viewer | 03 Discover | `/hosts/:hostId/media` | Discover | done | Full-bleed black viewer. The clip caption and "3 / 6" are the artboard. The call line uses the host name and video rate. |
 | U15 | Quick Match (idle) | 04 Match & Live | `/match` | Match & Live | todo | 260px dashed orbit with three avatars pinned around a centre control. |
 | U16 | Match found (swipe card) | 04 Match & Live | `/match/found` | Match & Live | todo | Tall card, skip / call / follow, auto-skip timer. |
 | U17 | Live rooms list (V2) | 04 Match & Live | `/live` | Match & Live | todo | V2. Room grid. |

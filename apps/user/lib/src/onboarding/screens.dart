@@ -1037,7 +1037,7 @@ class GuideScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-                _TabBar(tabs: tabs),
+                UserTabBar(tabs: tabs),
               ],
             ),
           ),
@@ -1126,61 +1126,6 @@ class GuideScreen extends ConsumerWidget {
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _TabBar extends StatelessWidget {
-  const _TabBar({required this.tabs});
-
-  final List<ConfigTab> tabs;
-
-  static const _icons = {
-    'discover': KsIcons.house,
-    'match': KsIcons.expand,
-    'live': KsIcons.radio,
-    'messages': KsIcons.messageSquare,
-    'me': KsIcons.user,
-  };
-
-  @override
-  Widget build(BuildContext context) {
-    final enabled = tabs.where((tab) => tab.enabled).toList();
-    return Container(
-      height: UserSpace.tabBar,
-      padding: const EdgeInsets.only(bottom: 8),
-      decoration: const BoxDecoration(
-        color: UserColors.surface1,
-        border: Border(top: BorderSide(color: UserColors.line)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          for (final tab in enabled)
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                KsIcon(
-                  _icons[tab.id] ?? KsIcons.circleHelp,
-                  color: tab.id == 'discover'
-                      ? UserColors.primarySoft
-                      : UserColors.muted,
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  // The artboard prints "Home" on the first tab. Config's
-                  // discover tab label is "Discover", which is the page title.
-                  tab.id == 'discover' ? 'Home' : tab.label,
-                  style: UserText.tab.copyWith(
-                    color: tab.id == 'discover'
-                        ? UserColors.primarySoft
-                        : UserColors.muted,
-                  ),
-                ),
-              ],
-            ),
         ],
       ),
     );
