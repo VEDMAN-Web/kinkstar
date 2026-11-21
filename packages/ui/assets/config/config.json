@@ -63,7 +63,10 @@
       "deeplink": "kinkstar://recharge",
       "startAt": "2026-11-01T00:00:00Z",
       "endAt": "2026-12-31T23:59:59Z",
-      "serverDriven": true
+      "serverDriven": true,
+      "title": "First recharge: +100% Diamonds",
+      "detail": "Ends in 23:41:10 · new users only",
+      "cta": "Get"
     },
     {
       "id": "banner_discover",
@@ -75,7 +78,7 @@
     }
   ],
   "tabs": [
-    {"id": "discover", "label": "Discover", "enabled": true},
+    {"id": "discover", "label": "Home", "enabled": true},
     {"id": "match", "label": "Match", "enabled": true},
     {"id": "live", "label": "Live", "enabled": true},
     {"id": "messages", "label": "Messages", "enabled": true},
@@ -105,5 +108,74 @@
     "freeMatchesPerDay": 3,
     "freeMessagesPerHost": 3,
     "lowBalanceWarningSec": 60
+  },
+  "discover": {
+    "cardHostIds": ["host_priya", "host_anjali", "host_neha", "host_aria"],
+    "chips": [
+      {"label": "Hot", "selected": true},
+      {"label": "New", "selected": false},
+      {"label": "Following", "selected": false},
+      {"label": "Hindi", "selected": false},
+      {"label": "Filter", "selected": false}
+    ],
+    "badges": {
+      "online": "● Online",
+      "inCall": "● In a call",
+      "freeCall": "Free call",
+      "verified": "Verified"
+    },
+    "filters": {
+      "title": "Filters",
+      "resetLabel": "Reset",
+      "hostCount": 128,
+      "submitLabel": "Show 128 hosts",
+      "groups": [
+        {
+          "label": "Language",
+          "options": [
+            {"label": "Hindi", "selected": true},
+            {"label": "English", "selected": false},
+            {"label": "Tamil", "selected": false},
+            {"label": "Telugu", "selected": false},
+            {"label": "Bengali", "selected": false},
+            {"label": "Marathi", "selected": false}
+          ]
+        },
+        {
+          "label": "Price per minute",
+          "options": [
+            {"label": "Any", "selected": true},
+            {"label": "Up to 40", "selected": false},
+            {"label": "40–80", "selected": false},
+            {"label": "80+", "selected": false}
+          ]
+        },
+        {
+          "label": "Show",
+          "options": [
+            {"label": "Online now", "selected": true},
+            {"label": "Free-call hosts", "selected": false},
+            {"label": "AI companions", "selected": false}
+          ]
+        },
+        {
+          "label": "Region",
+          "options": [
+            {"label": "All India", "selected": true},
+            {"label": "North", "selected": false},
+            {"label": "South", "selected": false},
+            {"label": "East", "selected": false},
+            {"label": "West", "selected": false}
+          ]
+        }
+      ]
+    },
+    "profile": {
+      "chatLabel": "Chat",
+      "videoCallLabel": "Video call"
+    },
+    "viewer": {
+      "liveCallLabel": "Call $name live · $rate/min"
+    }
   }
 }

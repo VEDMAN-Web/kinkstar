@@ -28,6 +28,9 @@ LANGS = [
 # Tier B is the specified rate. A and C are the mock display ladder.
 TIER_RATES = {"A": (60, 30), "B": (40, 20), "C": (20, 10)}
 
+# U13/U14 fields. They are on Priya only; other hosts do not show them.
+PRIYA_FIELDS = {"bio", "verified", "freeCall", "topGift", "gallery"}
+
 LEDGER_TYPES = {"recharge", "call", "gift", "message", "vip", "bonus", "refund"}
 POSITIVE_TYPES = {"recharge", "bonus", "refund"}
 NEGATIVE_TYPES = {"call", "gift", "message", "vip"}
@@ -67,13 +70,21 @@ def parse_time(value, label: str):
         return None
 
 
-def require_keys(obj, keys: set[str], label: str) -> None:
+def require_keys(
+    obj,
+    keys: set[str],
+    label: str,
+    optional: set[str] | None = None,
+) -> None:
     if not isinstance(obj, dict):
         fail(f"{label}: expected an object")
         return
     actual = set(obj)
+    allowed = set(keys)
+    if optional:
+        allowed |= optional
     missing = keys - actual
-    extra = actual - keys
+    extra = actual - allowed
     if missing:
         fail(f"{label}: missing {sorted(missing)}")
     if extra:
@@ -211,6 +222,15 @@ def check_user(user, levels) -> None:
             fail(f"level gap from Lv2 to Lv3 is {gap}, profile required is {required}")
 
 
+def _expect_host(host, label: str, expected: dict) -> None:
+    if not isinstance(host, dict):
+        fail(f"hosts.json: missing {label}")
+        return
+    for key, value in expected.items():
+        if host.get(key) != value:
+            fail(f"{label}.{key}: expected {value!r}, found {host.get(key)!r}")
+
+
 def check_hosts(hosts) -> dict:
     if not isinstance(hosts, list):
         fail("hosts.json: expected a list")
@@ -241,9 +261,15 @@ def check_hosts(hosts) -> dict:
             fail(f"{label}: expected an object")
             continue
         if host.get("isAI") is True:
-            require_keys(host, human_keys | {"label"}, label)
+            require_keys(host, human_keys | {"label", "subtitle"}, label)
         else:
-            require_keys(host, human_keys, label)
+            require_keys(host, human_keys, label, optional=PRIYA_FIELDS)
+            extras = set(host) - human_keys
+            expected_extras = PRIYA_FIELDS if host.get("id") == "host_priya" else set()
+            if extras != expected_extras:
+                fail(
+                    f"{label}: artboard fields {sorted(extras)} != {sorted(expected_extras)}"
+                )
             humans += 1
         by_id[host.get("id")] = host
         statuses.add(host.get("status"))
@@ -251,6 +277,9 @@ def check_hosts(hosts) -> dict:
             fail(f"{label}: bad status {host.get('status')!r}")
         if host.get("isAI") is True:
             tiers_ok = host.get("tier") is None
+        elif host.get("tier") is None:
+            # Anjali and Neha show a video rate and no tier letter.
+            tiers_ok = True
         else:
             tiers_ok = host.get("tier") in TIER_RATES
             tiers.add(host.get("tier"))
@@ -260,19 +289,27 @@ def check_hosts(hosts) -> dict:
             video, voice = TIER_RATES[host["tier"]]
             if (host.get("videoRatePerMin"), host.get("voiceRatePerMin")) != (video, voice):
                 fail(f"{label}: {host.get('tier')} rates must be {video}/{voice}")
-        if not is_int(host.get("callsCount")) or not is_int(host.get("followers")):
-            fail(f"{label}: callsCount and followers must be integers")
-    if humans != 8:
-        fail(f"hosts.json: expected 8 human hosts, found {humans}")
+            if not is_int(host.get("callsCount")) or not is_int(host.get("followers")):
+                fail(f"{label}: callsCount and followers must be integers")
+        elif host.get("isAI") is False:
+            if host.get("voiceRatePerMin") is not None:
+                fail(f"{label}: voiceRatePerMin stays null until the artboard shows it")
+            if host.get("callsCount") is not None or host.get("followers") is not None:
+                fail(f"{label}: callsCount and followers stay null until the artboard shows them")
+            if not is_int(host.get("videoRatePerMin")):
+                fail(f"{label}: videoRatePerMin must be an integer")
+    if humans != 10:
+        fail(f"hosts.json: expected 10 human hosts, found {humans}")
     aria = by_id.get("host_aria")
     if not aria or aria.get("name") != "Aria" or aria.get("isAI") is not True:
         fail("hosts.json: missing AI companion Aria")
     elif (
-        aria.get("label") != "AI Companion"
+        aria.get("label") != "AI companion"
+        or aria.get("subtitle") != "Always available"
         or aria.get("videoRatePerMin") != 15
         or aria.get("voiceRatePerMin") != 15
     ):
-        fail("Aria must be labelled AI Companion at 15/min video and voice")
+        fail("Aria must be labelled AI companion, subtitle Always available, at 15/min")
     priya = by_id.get("host_priya")
     if not priya:
         fail("hosts.json: missing host_priya")
@@ -281,15 +318,77 @@ def check_hosts(hosts) -> dict:
             "name": "Priya",
             "age": 24,
             "city": "Lucknow",
+            "languages": ["hi", "en"],
+            "rating": 4.8,
+            "callsCount": 2100,
+            "followers": 8400,
             "charmLevel": 12,
             "tier": "B",
             "videoRatePerMin": 40,
             "voiceRatePerMin": 20,
+            "status": "online",
             "isAI": False,
+            "bio": "Hi! I love Bollywood music and long chats about travel. Say hi and let's talk.",
+            "verified": True,
+            "freeCall": True,
         }
         for key, value in expected.items():
             if priya.get(key) != value:
                 fail(f"host_priya.{key}: expected {value!r}, found {priya.get(key)!r}")
+        if priya.get("topGift") != {"giftId": "gift_rose", "count": 120}:
+            fail(f"host_priya.topGift: expected Rose x120, found {priya.get('topGift')!r}")
+        gallery = {
+            "profileIndex": 1,
+            "viewerIndex": 3,
+            "count": 6,
+            "tiles": [
+                {"label": "Photo"},
+                {"label": "Photo"},
+                {"label": "Intro clip", "durationSec": 12, "caption": "Recorded intro"},
+            ],
+            "moreLabel": "+3",
+            "viewerLabel": '[Intro clip \u00b7 12s \u00b7 labelled "Recorded intro"]',
+        }
+        if priya.get("gallery") != gallery:
+            fail(f"host_priya.gallery: expected the U13/U14 media, found {priya.get('gallery')!r}")
+    _expect_host(
+        by_id.get("host_anjali"),
+        "host_anjali",
+        {
+            "name": "Anjali",
+            "age": 26,
+            "city": None,
+            "languages": ["hi", "mr"],
+            "rating": None,
+            "callsCount": None,
+            "followers": None,
+            "charmLevel": None,
+            "tier": None,
+            "videoRatePerMin": 60,
+            "voiceRatePerMin": None,
+            "status": "online",
+            "isAI": False,
+        },
+    )
+    _expect_host(
+        by_id.get("host_neha"),
+        "host_neha",
+        {
+            "name": "Neha",
+            "age": 23,
+            "city": None,
+            "languages": ["ta", "en"],
+            "rating": None,
+            "callsCount": None,
+            "followers": None,
+            "charmLevel": None,
+            "tier": None,
+            "videoRatePerMin": 40,
+            "voiceRatePerMin": None,
+            "status": "busy",
+            "isAI": False,
+        },
+    )
     if statuses != {"online", "busy", "offline"}:
         fail(f"hosts.json: statuses should cover online/busy/offline, found {statuses}")
     if tiers != {"A", "B", "C"}:
@@ -699,6 +798,7 @@ def check_config(config, codes: set[str], packs: dict) -> None:
             "tabs",
             "features",
             "limits",
+            "discover",
         },
         "config",
     )
@@ -740,9 +840,10 @@ def check_config(config, codes: set[str], packs: dict) -> None:
         banners = []
     banner_ids = set()
     banner_keys = {"id", "imageUrl", "deeplink", "startAt", "endAt", "serverDriven"}
+    banner_copy = {"title", "detail", "cta"}
     for i, banner in enumerate(banners):
         label = f"config.homeBanners[{i}]"
-        require_keys(banner, banner_keys, label)
+        require_keys(banner, banner_keys, label, optional=banner_copy)
         if not isinstance(banner, dict):
             continue
         banner_id = banner.get("id")
@@ -762,17 +863,28 @@ def check_config(config, codes: set[str], packs: dict) -> None:
         end = parse_time(banner.get("endAt"), f"{label}.endAt")
         if start is not None and end is not None and end <= start:
             fail(f"{label}: endAt must be after startAt")
+        copy = {key: banner.get(key) for key in banner_copy if key in banner}
+        if banner_id == "banner_recharge":
+            expected_copy = {
+                "title": "First recharge: +100% Diamonds",
+                "detail": "Ends in 23:41:10 \u00b7 new users only",
+                "cta": "Get",
+            }
+            if copy != expected_copy:
+                fail(f"{label}: promo copy {copy!r} != {expected_copy!r}")
+        elif copy:
+            fail(f"{label}: promo copy is only on banner_recharge, found {sorted(copy)}")
 
     tabs = config.get("tabs")
     expected_tabs = [
-        ("discover", "Discover"),
+        ("discover", "Home"),
         ("match", "Match"),
         ("live", "Live"),
         ("messages", "Messages"),
         ("me", "Me"),
     ]
     if not isinstance(tabs, list) or len(tabs) != len(expected_tabs):
-        fail("config.tabs: expected Discover, Match, Live, Messages, Me")
+        fail("config.tabs: expected Home, Match, Live, Messages, Me")
         tabs = []
     for i, (tab_id, label_text) in enumerate(expected_tabs):
         if i >= len(tabs):
@@ -829,6 +941,83 @@ def check_config(config, codes: set[str], packs: dict) -> None:
         or limits.get("lowBalanceWarningSec") != 60
     ):
         fail("config.limits: expected freeMatchesPerDay 3, freeMessagesPerHost 3, lowBalanceWarningSec 60")
+
+    _check_discover(config.get("discover"))
+
+
+def _check_discover(discover) -> None:
+    """U11–U12 copy. Strings are the artboard text, including the en dash in 40–80."""
+    mid = "\u00b7"
+    expected = {
+        "cardHostIds": ["host_priya", "host_anjali", "host_neha", "host_aria"],
+        "chips": [
+            {"label": "Hot", "selected": True},
+            {"label": "New", "selected": False},
+            {"label": "Following", "selected": False},
+            {"label": "Hindi", "selected": False},
+            {"label": "Filter", "selected": False},
+        ],
+        "badges": {
+            "online": "\u25cf Online",
+            "inCall": "\u25cf In a call",
+            "freeCall": "Free call",
+            "verified": "Verified",
+        },
+        "filters": {
+            "title": "Filters",
+            "resetLabel": "Reset",
+            "hostCount": 128,
+            "submitLabel": "Show 128 hosts",
+            "groups": [
+                {
+                    "label": "Language",
+                    "options": [
+                        {"label": "Hindi", "selected": True},
+                        {"label": "English", "selected": False},
+                        {"label": "Tamil", "selected": False},
+                        {"label": "Telugu", "selected": False},
+                        {"label": "Bengali", "selected": False},
+                        {"label": "Marathi", "selected": False},
+                    ],
+                },
+                {
+                    "label": "Price per minute",
+                    "options": [
+                        {"label": "Any", "selected": True},
+                        {"label": "Up to 40", "selected": False},
+                        {"label": "40\u201380", "selected": False},
+                        {"label": "80+", "selected": False},
+                    ],
+                },
+                {
+                    "label": "Show",
+                    "options": [
+                        {"label": "Online now", "selected": True},
+                        {"label": "Free-call hosts", "selected": False},
+                        {"label": "AI companions", "selected": False},
+                    ],
+                },
+                {
+                    "label": "Region",
+                    "options": [
+                        {"label": "All India", "selected": True},
+                        {"label": "North", "selected": False},
+                        {"label": "South", "selected": False},
+                        {"label": "East", "selected": False},
+                        {"label": "West", "selected": False},
+                    ],
+                },
+            ],
+        },
+        "profile": {"chatLabel": "Chat", "videoCallLabel": "Video call"},
+        "viewer": {"liveCallLabel": f"Call $name live {mid} $rate/min"},
+    }
+    if discover != expected:
+        fail("config.discover: does not match the U11–U12 artboard copy")
+        if isinstance(discover, dict) and isinstance(expected, dict):
+            for key in sorted(set(discover) | set(expected)):
+                if discover.get(key) != expected.get(key):
+                    fail(f"config.discover.{key}: mismatch")
 
 
 def _check_lang_map(value, codes: set[str], label: str) -> None:

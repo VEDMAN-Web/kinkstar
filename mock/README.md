@@ -63,15 +63,31 @@ He still has free messages, so the ledger has no `message` row.
 
 ## hosts.json
 
-Eight human hosts plus the AI companion. `callsCount` and `followers` are that host's lifetime totals, not a count of rows in `calls.json`.
+Ten human hosts plus the AI companion. `callsCount` and `followers` are that host's lifetime totals, not a count of rows in `calls.json`. The U13 artboard writes Priya's totals as `2.1k calls` and `8.4k followers`. Those are stored as the integers `2100` and `8400`.
 
-Fields: `id`, `name`, `age`, `city`, `languages`, `rating`, `callsCount`, `followers`, `charmLevel`, `tier` (`A`, `B`, or `C`), `videoRatePerMin`, `voiceRatePerMin`, `status` (`online`, `busy`, `offline`), `isAI`.
+Fields on every host: `id`, `name`, `age`, `city`, `languages`, `rating`, `callsCount`, `followers`, `charmLevel`, `tier` (`A`, `B`, or `C`), `videoRatePerMin`, `voiceRatePerMin`, `status` (`online`, `busy`, `offline`), `isAI`.
 
-**Priya** (`host_priya`) is the host on the profile, call, and call-back screens: 24, Lucknow, charm level 12, tier B, online, not AI. Tier B is 40 Diamonds/min video and 20 Diamonds/min voice. The same object is the only Priya record. Charm level 12 sits in the `11-15` host band.
+**Priya** (`host_priya`) is the host on the profile, call, and call-back screens, and the first U11 card: 24, Lucknow, Hindi and English, rating 4.8, charm level 12, tier B, online, not AI. Tier B is 40 Diamonds/min video and 20 Diamonds/min voice. The same object is the only Priya record. Charm level 12 sits in the `11-15` host band. U13 shows `★ 4.8`, so `rating` stays `4.8`.
+
+U13 and U14 add these fields on Priya only:
+
+| field | artboard |
+| --- | --- |
+| bio | `Hi! I love Bollywood music and long chats about travel. Say hi and let's talk.` |
+| verified | `true`. The badge is `Verified`. |
+| freeCall | `true`. The U11 badge is `Free call`. |
+| topGift | `gift_rose` and `120` (`Top gift: Rose x120`). |
+| gallery.profileIndex / gallery.count | `1` and `6` (badge `1 / 6`). |
+| gallery.viewerIndex | `3` (badge `3 / 6`). |
+| gallery.tiles | `Photo`, `Photo`, `Intro clip` (`durationSec` `12`, `caption` `Recorded intro`). |
+| gallery.moreLabel | `+3`. |
+| gallery.viewerLabel | `[Intro clip · 12s · labelled "Recorded intro"]`. |
+
+**Anjali** (`host_anjali`) is the second U11 card: 26, Hindi and Marathi, online, video 60/min. **Neha** (`host_neha`) is the third: 23, Tamil and English, video 40/min. Her badge is `● In a call`, so `status` is `busy`. City, rating, call count, followers, charm level, tier letter, and voice rate are not on the artboard, so those fields are null. The 60/min and 40/min figures are not used to fill the tier letter or the voice rate.
 
 Display rates for the other human tiers, so the list has a spread: tier A is 60/30, tier C is 20/10. Only tier B was specified.
 
-**Aria** (`host_aria`) is the AI companion. `isAI` is true, `label` is `AI Companion`, and both rates are 15. `age`, `city`, `rating`, `charmLevel`, and `tier` are null. Human hosts do not have `label`.
+**Aria** (`host_aria`) is the AI companion. `isAI` is true, `label` is `AI companion` (the U11 badge), `subtitle` is `Always available`, and both rates are 15. The card title `Aria (AI)` is the name plus `isAI`. `age`, `city`, `rating`, `charmLevel`, and `tier` are null. Human hosts do not have `label` or `subtitle`.
 
 ## wallet.json
 
@@ -146,8 +162,9 @@ The only app config. Prices stay in `wallet.json`. This file points at pack ids 
 | assetBaseUrl | Placeholder CDN origin (`https://cdn.example.com/kinkstar/`) for host photos and gift animations. The app prefixes this onto those asset paths. |
 | strings | Copy keyed by screen id, then by language code. Sample keys: `U01_title` and `U01_subtitle` (Discover), `U32_title` and `U32_subtitle` (Recharge), `U48_lowBalance` (call screen, tied to the 60s low-balance warning). Every string has all seven codes from `languages.json`. |
 | rechargePackIds | Pack ids in `wallet.json` order: `pack_100`, `pack_300`, `pack_700`, `pack_1500`, `pack_4000`, `pack_9000`. |
-| homeBanners | `id`, `imageUrl` (absolute URL on `assetBaseUrl`), `deeplink`, `startAt`, `endAt`, `serverDriven` (`true`). `banner_recharge` opens `kinkstar://recharge`. `banner_discover` opens `kinkstar://discover`. |
-| tabs | Bottom tabs in order: Discover, Match, Live, Messages, Me. Fields `id`, `label`, `enabled`. All five are enabled in this sample. |
+| homeBanners | `id`, `imageUrl` (absolute URL on `assetBaseUrl`), `deeplink`, `startAt`, `endAt`, `serverDriven` (`true`). `banner_recharge` opens `kinkstar://recharge` and carries the U11 promo: `title` `First recharge: +100% Diamonds`, `detail` `Ends in 23:41:10 · new users only`, `cta` `Get`. `banner_discover` opens `kinkstar://discover` and has no promo copy. |
+| tabs | Bottom tabs in order: Home, Match, Live, Messages, Me. Fields `id`, `label`, `enabled`. The first id is still `discover`. The artboard tab label is `Home`. The page title stays `strings.U01_title` (`Discover`). All five are enabled in this sample. |
+| discover | U11–U12 copy that is not a host field. `cardHostIds` is Priya, Anjali, Neha, Aria. `chips` are Hot (selected), New, Following, Hindi, Filter. `badges` are `● Online`, `● In a call`, `Free call`, `Verified`. `filters.hostCount` is `128` and `filters.submitLabel` is `Show 128 hosts`. Language options are Hindi (selected), English, Tamil, Telugu, Bengali, Marathi. Kannada stays in `languages.json` and is not a filter chip. Price options are Any (selected), Up to 40, `40–80` (en dash), `80+`. Show options are Online now (selected), Free-call hosts, AI companions. Region options are All India (selected), North, South, East, West. `profile.chatLabel` is `Chat` and `profile.videoCallLabel` is `Video call`. `viewer.liveCallLabel` is `Call $name live · $rate/min` (`Call Priya live · 40/min` on U14). |
 | features.quickMatch | `true` |
 | features.liveRooms | `true` |
 | features.aiCompanion | `true` (Aria) |
